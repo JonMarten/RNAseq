@@ -1,0 +1,17 @@
+# Commands to install globus on cardio, from https://docs.globus.org/how-to/globus-connect-personal-linux/
+
+wget https://downloads.globus.org/globus-connect-personal/linux/stable/globusconnectpersonal-latest.tgz
+tar xzf globusconnectpersonal-latest.tgz
+module load python/3.6.1
+export PATH=$PATH:/home/jm2294/bin
+
+pip3.6 install --upgrade --user globus-cli
+
+globus --help #to check that install was successful
+
+globus login
+
+globus endpoint create --personal cardio
+
+globusconnectpersonal -setup b710c021-8ee4-4e57-b508-9095e264332b # setup key from previous step
+
