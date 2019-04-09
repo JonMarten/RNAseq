@@ -13,8 +13,9 @@ To create a limix development enviroment
 `source activate limix_qtl`
 
 `conda install -c anaconda pytest pytables`
+`conda install -c conda-forge bgen-reader` # Hangs on solving environments
 
-`conda install -c conda-forge bgen-reader`
+conda install -c conda-forge/label/cf201901 bgen-reader 
 
 `pip install limix`
 

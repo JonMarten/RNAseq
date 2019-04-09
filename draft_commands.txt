@@ -1,0 +1,35 @@
+snakemake 
+	--snakefile ./snakemake 
+	--jobs 50 
+	--latency-wait 30 
+	--cluster-config ../cluster.json 
+	--cluster 'bsub -q {cluster.queue}'
+	-n {cluster.n} 
+	-R "rusage[mem={cluster.memory}]" 
+	-M {cluster.memory} 
+	-o ./cis_eqlts.20181120.o 
+	-e ./cis_eqlts.20181120.e
+	
+	
+GENPATH=/home/jm2294/projects/RNAseq/hipsci_pipeline/geuvadis_CEU_test_data/Genotypes	
+PHEPATH=/home/jm2294/projects/RNAseq/hipsci_pipeline/geuvadis_CEU_test_data/Expression
+OUTPATH=/home/jm2294/projects/RNAseq/hipsci_pipeline/geuvadis_CEU_test_data/output_test
+	
+python /home/jm2294/projects/RNAseq/hipsci_pipeline/limix_QTL_pipeline/run_QTL_analysis.py\
+ --bgen ${GENPATH}/Geuvadis\
+ -af ${PHEPATH}/Geuvadis_CEU_Annot.txt\
+ -pf ${PHEPATH}/Geuvadis_CEU_Expr.txt\
+ -od ${OUTPATH}\
+ -cf ${PHEPATH}/Geuvadis_CEU_YRI_covariates.txt\
+ -c\
+ --kinship_file ${GENPATH}/Geuvadis_chr1_kinship.normalized.txt\
+ -np 10000\
+ -maf 0.000000001\
+ -hwe 0.00001\
+ -cr 0.95\
+ -gm standardize\
+ -w 250000\
+ --block_size 1500
+# --sample_mapping_file {input.smf} # sample mapping file
+ 
+ -gr {chunkFull}\
