@@ -8,4 +8,5 @@ batch2 <- fread("batch2/results-study5591-tic109b/combined/study5591-tic109b-sta
 b2_names <- data.frame("RNA_id" = names(batch2), "batch" = 2)
 
 names <- rbind(b1_names, b2_names)
+names <- names[which(grepl("INT", names$RNA_id)),] # remove rows for columns other than RNA ids
 write.csv(names, "RNA_seq_ids.csv", quote = F, row.names = F)
