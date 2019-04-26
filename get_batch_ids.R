@@ -1,0 +1,11 @@
+setwd("/home/jm2294/projects/RNAseq/globus/")
+library(data.table)
+library(dplyr)
+
+batch1 <- fread("batch1/matrices/counts.FC.unstranded.5281-tic109.txt", data.table=F)
+b1_names <- data.frame("RNA_id" = names(batch1), "batch" = 1)
+batch2 <- fread("batch2/results-study5591-tic109b/combined/study5591-tic109b-star-genecounts.txt")
+b2_names <- data.frame("RNA_id" = names(batch2), "batch" = 2)
+
+names <- rbind(b1_names, b2_names)
+write.csv(names, "RNA_seq_ids.csv", quote = F, row.names = F)
