@@ -5,7 +5,7 @@ setwd("U:/Projects/RNAseq")
 
 dat <- fread("covariates/INTERVALdata_02APR2019.csv", data.table=F)
 ids <- fread("covariates/omicsMap.csv", data.table=F)
-ids3 <- fread("covariates/omicsMap_P3.csv", data.table=F)
+sids3 <- fread("covariates/omicsMap_P3.csv", data.table=F)
 ids[which(ids == "", arr.ind=T)] <- NA
 allids <- full_join(ids, ids3)
 dat2 <- full_join(allids, dat)
@@ -26,8 +26,8 @@ rnaids <- allids %>%
 # Make single column for RNA identifier
 RNA_any <- NA
 for(i in 1:nrow(rnaids)){
-  ids <- as.character(rnaids[i,-1])
-  RNA_any[i] <- paste(unique(na.exclude(ids)), collapse = ",")
+  idsb <- as.character(rnaids[i,-1])
+  RNA_any[i] <- paste(unique(na.exclude(idsb)), collapse = ",")
 }
 rnaids$RNA_any <- RNA_any
 
@@ -53,5 +53,8 @@ if(length(phemiss) == 0){
       paste0(rnaids$RNA_any[phemiss], collapse = ", "))
 }
 
+# Output mapper file
 rna_id_mapper <- rnaids %>%
-  select(identifier, RNA_any)
+  select(identifier, RNA_id = RNA_any)
+rna_id_mapper <- full_join(rna_id_mapper, rna_seq_ids)
+write.csv(rna_id_mapper, "rna_id_mapper.csv", quote=F, row.names=F)
