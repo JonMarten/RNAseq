@@ -1,0 +1,9 @@
+
+module load qctool2/rc4-6.8
+module load gcc/5.2.0 
+qctool\
+ -g /home/jm2294/GENETIC_DATA/INTERVAL/master/impute_22_interval.bgen\
+ -s /home/jm2294/GENETIC_DATA/INTERVAL/master/impute_22_interval.bgen.sample\
+ -incl-samples /home/jm2294/projects/RNAseq/test_run/batch1_ids.txt\
+ -incl-range 22:23500000-24500000\
+ -og /home/jm2294/GENETIC_DATA/INTERVAL/RNAseq/impute_22_23500000-24500000_interval_RNAseq_batch1_withsamples_testfile.bgen
