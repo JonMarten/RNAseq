@@ -1,8 +1,6 @@
 # get list of duplicated SNPs to filter out
 
-library(data.table)
 library(dplyr)
-a <- fread("test_bgen_snp_stats_unique.txt", data.table=F, skip = "#")
 a <- read.table("test_bgen_snp_stats.txt", h=T, stringsAsFactors = F)
 b <- read.table("test_bgen_snp_stats_unique.txt", h=T, stringsAsFactors = F)
 
