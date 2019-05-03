@@ -96,7 +96,6 @@ python /home/jm2294/projects/RNAseq/hipsci_pipeline/limix_QTL_pipeline/run_QTL_a
  -gm standardize\
  -w 250000\
  --block_size 50\
- -wp\
  #-c\
  #-cf ${PHEPATH}/Geuvadis_CEU_YRI_covariates.txt\
  #--kinship_file ${GENPATH}/Geuvadis_chr1_kinship.normalized.txt\
