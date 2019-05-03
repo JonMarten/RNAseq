@@ -85,6 +85,7 @@ python /home/jm2294/projects/RNAseq/hipsci_pipeline/limix_QTL_pipeline/run_QTL_a
  --bgen ${GENPATH}/impute_22_23500000-24500000_interval_RNAseq_batch1_withsamples_testfile_uniqueRSids\
  -af ${PHEPATH}/Feature_Annotation_Ensembl_gene_ids_autosomes.txt\
  -pf ${PHEPATH}/phenotype_5281-fc-genecounts.txt\
+ -cf ${PHEPATH}/INTERVAL_RNA_batch1_2_covariates_sex_age.csv\
  -od ${OUTPATH}\
  --sample_mapping_file ${PHEPATH}/sample_mapping_file_gt_to_phe.txt\
  -t\
@@ -95,6 +96,7 @@ python /home/jm2294/projects/RNAseq/hipsci_pipeline/limix_QTL_pipeline/run_QTL_a
  -gm standardize\
  -w 250000\
  --block_size 50\
+ -wp\
  #-c\
  #-cf ${PHEPATH}/Geuvadis_CEU_YRI_covariates.txt\
  #--kinship_file ${GENPATH}/Geuvadis_chr1_kinship.normalized.txt\
