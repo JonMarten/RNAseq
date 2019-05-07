@@ -5,7 +5,7 @@ setwd("U:/Projects/RNAseq")
 
 dat <- fread("covariates/INTERVALdata_02APR2019.csv", data.table=F)
 ids <- fread("covariates/omicsMap.csv", data.table=F)
-sids3 <- fread("covariates/omicsMap_P3.csv", data.table=F)
+ids3 <- fread("covariates/omicsMap_P3.csv", data.table=F)
 ids[which(ids == "", arr.ind=T)] <- NA
 allids <- full_join(ids, ids3)
 dat2 <- full_join(allids, dat)
@@ -15,13 +15,14 @@ rna_seq_ids <- fread("globus/RNA_seq_ids.csv", data.table = F)
 
 # filter to just RNA id columns and rows with an RNA id
 RNAcols <- grep("RNA", names(allids))
-RNArows <- rowSums(is.na(rnaids[,-1])) != ncol(rnaids[,-1]) # list rows with at least one non-NA RNA id
 rnaids <- allids %>% 
   select(identifier, RNAcols) %>%
-  filter(RNArows) %>%
   mutate(RNAseq_gwasQC_24m = as.character(RNAseq_gwasQC_24m),
          RNAseq_gwasQC_48m = as.character(RNAseq_gwasQC_48m),
          RNAseq_gwasQC_p3 = as.character(RNAseq_gwasQC_p3))
+RNArows <- rowSums(is.na(rnaids[,-1])) != ncol(rnaids[,-1]) # list rows with at least one non-NA RNA id
+rnaids <- rnaids %>% 
+  filter(RNArows)
 
 # Make single column for RNA identifier
 RNA_any <- NA
