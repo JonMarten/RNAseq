@@ -8,7 +8,7 @@ ids <- fread("covariates/omicsMap.csv", data.table=F)
 ids3 <- fread("covariates/omicsMap_P3.csv", data.table=F)
 ids[which(ids == "", arr.ind=T)] <- NA
 allids <- full_join(ids, ids3)
-dat2 <- full_join(allids, dat)
+#dat2 <- full_join(allids, dat)
 
 # Read in ids from RNA seq data
 rna_seq_ids <- fread("globus/RNA_seq_ids.csv", data.table = F)
