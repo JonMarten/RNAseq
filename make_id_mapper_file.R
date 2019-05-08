@@ -59,3 +59,18 @@ rna_id_mapper <- rnaids %>%
   select(identifier, RNA_id = RNA_any)
 rna_id_mapper <- full_join(rna_id_mapper, rna_seq_ids)
 write.csv(rna_id_mapper, "rna_id_mapper.csv", quote=F, row.names=F)
+
+
+# Check overlap between batches for different INTERVAL phases for Artika
+all <- merge(dat,rnaids)
+all %>% group_by(batch) %>%
+  summarise(
+    ids_RAW_24 = length(which(!is.na(RNAseq_RAW_24m))),
+    ids_RAW_48 = length(which(!is.na(RNAseq_RAW_48m))),
+    ids_RAW_p3 = length(which(!is.na(RNAseq_RAW_p3))))
+
+all2 <- all %>% 
+  select(RNAseq_RAW_24m, RNAseq_RAW_48m, RNAseq_RAW_p3, RNA_any, batch)
+all2$num_time_points = apply(X = all2, MARGIN = 1, FUN = function(x){length(which(!is.na(x[1:3])))})
+
+
