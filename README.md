@@ -19,3 +19,7 @@ The 'HipSci Pipeline' is currently only available to download from Marc's Google
 
 The file limix_install.txt is mostly adapted from a file contained within the Google Drive. I have detailed the commands I used to get the pipeline running below:
 1. Download `hipsci_pipeline.zip` from Google Drive and unzip to cardio. This is currently stored in `/home/jm2294/projects/RNAseq/hipsci_pipeline`.
+2. Set up a new **conda** environment to ensure the correct versions of each package are installed with `conda create -n limix_qtl python=3 anaconda`
+3. Activate the environment with `source activate limix_qtl`
+4. Install dependencies: `conda install -c anaconda pytest pytables`
+5. Install limix: `pip install limix==2.0.3`. **Note that version 2.0.3 of limix is required for the pipeline to work, as limix 3.0 outputs different file structures.**
