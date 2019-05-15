@@ -22,4 +22,6 @@ The file limix_install.txt is mostly adapted from a file contained within the Go
 2. Set up a new **conda** environment to ensure the correct versions of each package are installed with `conda create -n limix_qtl python=3 anaconda`
 3. Activate the environment with `source activate limix_qtl`
 4. Install dependencies: `conda install -c anaconda pytest pytables`
-5. Install limix: `pip install limix==2.0.3`. **Note that version 2.0.3 of limix is required for the pipeline to work, as limix 3.0 outputs different file structures.**
+5. Install limix: `pip install limix==2.0.3`. **Note that version 2.0.3 of limix is required for the pipeline to work, as limix 3.0 outputs different file structures.** This will also install the required versions of bgen-reader and other dependencies.
+
+Limix can now be called directly from the command line, but Marc's pipeline is implemented by calling  `hipsci_pipeline/limix_QTL_pipeline\run_QTL_analysis.py`
