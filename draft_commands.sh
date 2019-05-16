@@ -89,7 +89,7 @@ python /home/jm2294/projects/RNAseq/hipsci_pipeline/limix_QTL_pipeline/run_QTL_a
  -od ${OUTPATH}\
  --sample_mapping_file ${PHEPATH}/sample_mapping_file_gt_to_phe.txt\
  -t\
- -np 10000\
+ -np 1000\
  -maf 0.000000001\
  -hwe 0.00001\
  -cr 0.95\
