@@ -3,7 +3,7 @@ This is a repository of scripts used in the analysis of the RNA seq data from th
 ## Current state of analysis
 ### Data
 #### Phenotype
-Batches 1-3 of seq data have been downloaded from the Sanger server with globus, these are currently stored in `/home/jm2294/projects/RNAseq/globus`. CRAM files have not been downloaded. 
+Batches 1-4 of seq data have been downloaded from the Sanger server with globus, these are currently stored in `/home/jm2294/projects/RNAseq/globus`. CRAM files have not been downloaded. 
 #### Covariate
 Covariate data has been requested for the whole cohort from the data management team. Identifier mapping is currently available for batches 1 & 2 (see [the appropriate R script](make_id_mapper_file.R) for creation of the mapping file).	
 #### Genotype
@@ -19,3 +19,10 @@ The 'HipSci Pipeline' is currently only available to download from Marc's Google
 
 The file limix_install.txt is mostly adapted from a file contained within the Google Drive. I have detailed the commands I used to get the pipeline running below:
 1. Download `hipsci_pipeline.zip` from Google Drive and unzip to cardio. This is currently stored in `/home/jm2294/projects/RNAseq/hipsci_pipeline`.
+2. Set up a new **conda** environment to ensure the correct versions of each package are installed with `conda create -n limix_qtl python=3 anaconda`
+3. Activate the environment with `source activate limix_qtl`
+4. Install dependencies: `conda install -c anaconda pytest pytables`
+5. Install limix: `pip install limix==2.0.3`. **Note that version 2.0.3 of limix is required for the pipeline to work, as limix 3.0 outputs different file structures.** This will also install the required versions of bgen-reader and other dependencies.
+6. If using snakemake, install with `pip install snakemake==4.5.0` (the current version of snakemake cannot be installed due to problems with the `datrie` depedent package. 
+
+Limix can now be called directly from the command line, but Marc's pipeline is implemented in a series of python scripts. QTLs are called with `hipsci_pipeline/limix_QTL_pipeline\run_QTL_analysis.py`. His implementation uses a **snakemake** file to manage the workflow and chunk the file into manageable pieces. This is currently being investigated.
