@@ -25,11 +25,15 @@ for(i in 1:22){
   rm(a, numbins, b)
 }
 
+# Get start end end positions for chunks
+window <- 1000000 # This is the +- window to take either side of the chunk, to ensure that SNPs around the first and last features are included.
+chunkList <- anno2 %>%
+  group_by(bin) %>%
+  summarise(chr = unique(chromosome),
+            start = min(start),
+            end = max(end) + window) %>%
+  arrange(chr, start) %>%
+  select(-bin) %>%
+  data.frame()
 
-
-breaks <- a[c(seq(1,length(a), 100), length(a))]
-b <- cut(a, breaks, labels = F, include.lowest = T)
-cut_number(1:length(a), numbins) %>% levels
-
-
-
+write.table(chunklist)
