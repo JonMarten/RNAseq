@@ -36,4 +36,4 @@ chunkList <- anno2 %>%
   select(-bin) %>%
   data.frame()
 
-write.table(chunklist)
+write.table(chunkList, file = "../test_run_chunks/chunklist.txt", sep = "\t", row.names = F, col.names =F)
