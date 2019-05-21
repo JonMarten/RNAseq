@@ -54,15 +54,26 @@ if(length(phemiss) == 0){
       paste0(rnaids$RNA_any[phemiss], collapse = ", "))
 }
 
+#
+rnaidsPhase <- rnaids %>% select(identifier, RNAseq_RAW_24m, RNAseq_RAW_48m, RNAseq_RAW_p3, RNA_any) 
+rnaidsPhase$RNAphase <- ifelse(!is.na(rnaidsPhase$RNAseq_RAW_24m), 
+                     "24m",
+                     ifelse(!is.na(rnaidsPhase$RNAseq_RAW_48m), 
+                            "48m",
+                            ifelse(!is.na(rnaidsPhase$RNAseq_RAW_p3), 
+                                   "p3",
+                                   "none")))
+
 # Output mapper file
-rna_id_mapper <- rnaids %>%
-  select(identifier, RNA_id = RNA_any)
+rna_id_mapper <- rnaidsPhase %>%
+  select(identifier, RNA_id = RNA_any, phase = RNAphase)
 rna_id_mapper <- full_join(rna_id_mapper, rna_seq_ids)
 write.csv(rna_id_mapper, "rna_id_mapper.csv", quote=F, row.names=F)
 
 
 # Check overlap between batches for different INTERVAL phases for Artika
-all <- merge(dat,rnaids)
+all <- merge(dat,rnaids, all = T)
+all <- merge(all, rna_id_mapper, all = T)
 all %>% group_by(batch) %>%
   summarise(
     ids_RAW_24 = length(which(!is.na(RNAseq_RAW_24m))),
