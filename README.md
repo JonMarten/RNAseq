@@ -1,20 +1,31 @@
 # INTERVAL RNA seq eQTL analysis
 This is a repository of scripts used in the analysis of the RNA seq data from the INTERVAL cohort. Currently this is a work in progress, but this README will be updated as the analysis progresses.
-## Current state of analysis
-### Data
-#### Phenotype
+
+## Data
+### Phenotype
 Batches 1-4 of seq data have been downloaded from the Sanger server with globus, these are currently stored in `/home/jm2294/projects/RNAseq/globus`. CRAM files have not been downloaded. 
-#### Covariate
-Covariate data has been requested for the whole cohort from the data management team. Identifier mapping is currently available for batches 1 & 2 (see [the appropriate R script](make_id_mapper_file.R) for creation of the mapping file).	
-#### Genotype
+### Covariate
+Covariate data has been provided for the whole cohort by the data management team; the current data relase is stored in `V:\INTERVAL\INTERVAL_MasterMerge\p1103\20190513\Data`. Phenotypes are stored in `INTERVALdata_13MAY2019.csv` and `INTERVALdata_P3_13MAY2019.csv`. `omicsMap.csv` and `omicsMap_P3.csv` map the randomly-generated 7 digit individual identifiers used by the data management team to the identifiers used on the various omic datasets, including the RNA-seq data. 
+
+The INTERVAL study is split into phases which do not directly affect the RNA seq data but do affect how phenotype data is stored. Each individual has only one timepoint at which RNA was measured. This is preferentially two years after recruitment but may be later if no blood was available at this timepoint.
+
+[This script](make_id_mapper_file.R) processes the omicsmap files to create a single file, `rna_id_mapper.csv`. This maps the phenotype 'identifier' to the INT_RNA identifier used for the RNA seq files. It also lists 'batch' (corresponding to RNA seq data release batch from the Sanger) and 'phase', corresponding to the phase of the sample used for sequencing. **N.B. This is inferred from the omicsmap file - if the INT_RNA seq is in a column with `_24m_` in the name, it is assumed to be a 2 year sample, `_48m_` a 4 year sample and `_p3_` a phase 3 sample. Where an id is included in multiple columns it is assigned one on the following order of preference: 24m > 48m > p3.** This is important for calculating the correct age at the time the blood sample was extracted.
+
+#### Calculating Ages
+Ages are calculated using date of birth (assuming birth date to be the 15th as only month and year are available) and the appointment date corresponding to 24m, 48m or p3 for each sample, as obtained above. The plot below gives the age difference between intitial appointment and RNA appointment, separated by phase and coloured by batch (only batches 1 and 2 currently have data). Points are jittered for clarity.
+
+![age plot](https://github.com/JonMarten/RNAseq/blob/master/ageplot.png?raw=true)
+
+
+### Genotype
 The 'master' bgen files are stored in `/scratch/curated_genetic_data/interval/imputed/impute_[CHR]_interval.bgen`, symlinked in `/home/jm2294/GENETIC_DATA/INTERVAL/master`
 These are unsuitable for limix analysis as the pipeline requires bgen v1.2, which contains sample identifiers embedded in the file. 
 To test the limix pipeline, a new version of the bgen files has been created with qctool v2 (see [this script](make_test_bgen.sh) for details).
 In the first instance, the file was pruned to just chr22:23500000-24500000, and limited to the 188 individuals in batch 1. 
 It became apparent that duplicate SNP ids in the file were causing problems with the pipeline, so the current version prunes out any SNP with nonunique identifiers. These include SNPS without rsids coded as "." as well as triallelic SNPs and indels ([This script](get_duplicate_rsids.R) documents how these were identified). 
-### Pipeline
+## Pipeline
 The Limix python pipeline as written by Marc Jan Bonder is currently being tested. Limix is installed on Cardio and is currently in the process of being set up on CSD3. It currently works on phased test data provided with the code, but not on our own data.
-#### Installation
+### Installation
 The 'HipSci Pipeline' is currently only available to download from Marc's Google Drive, please email me for the link.
 
 The file limix_install.txt is mostly adapted from a file contained within the Google Drive. I have detailed the commands I used to get the pipeline running below:
