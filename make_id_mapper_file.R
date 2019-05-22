@@ -84,4 +84,11 @@ all2 <- all %>%
   select(RNAseq_RAW_24m, RNAseq_RAW_48m, RNAseq_RAW_p3, RNA_any, batch)
 all2$num_time_points = apply(X = all2, MARGIN = 1, FUN = function(x){length(which(!is.na(x[1:3])))})
 
+# venn
+library(VennDiagram)
 
+nonmiss <- list("24m" = which(!is.na(rnaids$RNAseq_RAW_24m)),
+                "48m" = which(!is.na(rnaids$RNAseq_RAW_48m)),
+                "p3" = which(!is.na(rnaids$RNAseq_RAW_p3)))
+venn.diagram(nonmiss, filename = "venn.tiff")
+                
