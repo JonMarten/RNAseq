@@ -12,7 +12,9 @@ The INTERVAL study is split into phases which do not directly affect the RNA seq
 [This script](make_id_mapper_file.R) processes the omicsmap files to create a single file, `rna_id_mapper.csv`. This maps the phenotype 'identifier' to the INT_RNA identifier used for the RNA seq files. It also lists 'batch' (corresponding to RNA seq data release batch from the Sanger) and 'phase', corresponding to the phase of the sample used for sequencing. **N.B. This is inferred from the omicsmap file - if the INT_RNA seq is in a column with `_24m_` in the name, it is assumed to be a 2 year sample, `_48m_` a 4 year sample and `_p3_` a phase 3 sample. Where an id is included in multiple columns it is assigned one on the following order of preference: 24m > 48m > p3.** This is important for calculating the correct age at the time the blood sample was extracted.
 
 #### Calculating Ages
-Ages are calculated using date of birth (assuming birth date to be the 15th as only month and year are available) and the appointment date corresponding to 24m, 48m or p3 for each sample, as obtained above.
+Ages are calculated using date of birth (assuming birth date to be the 15th as only month and year are available) and the appointment date corresponding to 24m, 48m or p3 for each sample, as obtained above. The plot below gives the age difference between intitial appointment and RNA appointment, separated by phase and coloured by batch (only batches 1 and 2 currently have data). Points are jittered for clarity.
+
+![age plot](https://github.com/JonMarten/RNAseq/blob/master/ageplot.png?raw=true)
 
 
 ### Genotype
