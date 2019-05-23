@@ -46,6 +46,14 @@ ageplot <- ggplot(filter(dat3, !is.na(phase) & !is.na(batch)),
   geom_jitter(pch = 21, width = 0.3, height = 0.01, size = 2) +
   scale_fill_manual(values = pal, name = "Batch") +
   labs(y = "Years after initial appointment", x = "INTERVAL 'phase' used for RNA")
+
+ggplot(filter(dat3, !is.na(phase) & !is.na(batch)), 
+                  aes(y = age_RNA, x = as.factor(phase), fill = as.factor(batch))) +
+  geom_boxplot() +
+  geom_jitter(pch = 21, width = 0.3, height = 0.01, size = 2) +
+  scale_fill_manual(values = pal, name = "Batch") +
+  labs(y = "Years after initial appointment", x = "INTERVAL 'phase' used for RNA")
+
 ggsave(plot = ageplot, filename = "scripts/RNAseq/ageplot.png")
 
 datTall <- dat2 %>% 
