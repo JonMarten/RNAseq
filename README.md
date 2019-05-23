@@ -14,7 +14,7 @@ The INTERVAL study is split into phases which do not directly affect the RNA seq
 #### Calculating Ages
 Ages are calculated using date of birth (assuming birth date to be the 15th as only month and year are available) and the appointment date corresponding to blood sample, as obtained above. The plot below gives the age difference between intitial appointment and RNA appointment, separated by phase and coloured by batch (only batches 1 and 2 currently have data). Points are jittered for clarity.
 
-![age plot](https://github.com/JonMarten/RNAseq/blob/master/ageplot.png?raw=true)
+![age plot](https://github.com/JonMarten/RNAseq/blob/master/bothplot.png?raw=true)
 
 
 ### Genotype
