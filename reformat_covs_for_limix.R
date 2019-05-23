@@ -33,10 +33,61 @@ dat3 <- dat2 %>%
                                  ifelse(phase=="p3", agep3, NA)))) %>%
   mutate(ageDif = age_RNA - age1)
 
-## Write out covariate file 
+## Write out test covariate file 
 covOut <- dat3 %>% 
   select(sample_id, sexPulse, age_RNA, batch, phase) %>% 
   filter(!is.na(phase) & !is.na(batch))
 
 fwrite(sep = "\t", covOut, file = "covariates/INTERVAL_RNA_batch1_2_covariates_sex_age.txt", quote = F, na = NA)
 
+## Generate phenotype file that only includes cell count data from the same phase as the RNA sample
+pheAll <- dat3 %>%
+  select(sample_id, age_RNA)
+dat <- rename(dat, sample_id = RNA_id)
+pheAll <- left_join(pheAll, dat)
+pheAll <- pheAll %>%
+  select(-identifier)
+
+m24Cols <- names(pheAll)[grep("_24", names(pheAll))] 
+m48Cols <- names(pheAll)[grep("_48", names(pheAll))] 
+p3Cols <- names(pheAll)[grep("_p3", names(pheAll))] 
+blCols <- names(pheAll)[grep("_bl", names(pheAll))] 
+otherCols <- names(pheAll)[which(!names(pheAll) %in% c(blCols, m24Cols, m48Cols, p3Cols))]
+
+# Check cols are the same other than suffix
+identical(
+  gsub("_24m", "", m24Cols),
+  gsub("_48m", "", m48Cols)
+)
+identical(
+  gsub("_24m", "", m24Cols),
+  gsub("_p3", "", p3Cols)
+)
+
+phe24 <- pheAll %>% 
+  filter(phase == "24m") %>%
+  select(otherCols, m24Cols) %>%
+  rename_at(vars(m24Cols), funs(gsub("_24m","___RNA",.)))
+
+phe48 <- pheAll %>% 
+  filter(phase == "48m") %>%
+  select(otherCols, m48Cols) %>%
+  rename_at(vars(m48Cols), funs(gsub("_48m","___RNA",.)))
+
+phep3 <- pheAll %>% 
+  filter(phase == "p3") %>%
+  select(otherCols, p3Cols) %>%
+  rename_at(vars(p3Cols), funs(gsub("_p3","___RNA",.)))
+
+pheRNA <- rbind(phe24, phe48, phep3) %>%
+  filter(!is.na(batch))
+
+### check for dupes:
+
+dat %>% group_by(identifier) %>%
+  filter(n()>1) %>%
+  data.frame %>% 
+  head
+
+
+write.csv(allOut, file = "covariates/INTERVAL_RNA")
