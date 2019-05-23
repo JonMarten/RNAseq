@@ -33,40 +33,10 @@ dat3 <- dat2 %>%
                                  ifelse(phase=="p3", agep3, NA)))) %>%
   mutate(ageDif = age_RNA - age1)
 
-# plots to check ages
-library(tidyr)
-library(ggplot2)
-library(cowplot)
-library(yarrr)
-
-pal <- piratepal(palette = "xmen") %>% unname
-
-ageplot <- ggplot(filter(dat3, !is.na(phase) & !is.na(batch)), 
-                  aes(y = ageDif, x = as.factor(phase), fill = as.factor(batch))) +   
-  geom_jitter(pch = 21, width = 0.3, height = 0.01, size = 2) +
-  scale_fill_manual(values = pal, name = "Batch") +
-  labs(y = "Years after initial appointment", x = "INTERVAL 'phase' used for RNA")
-
-ggplot(filter(dat3, !is.na(phase) & !is.na(batch)), 
-                  aes(y = age_RNA, x = as.factor(phase), fill = as.factor(batch))) +
-  geom_boxplot() +
-  geom_jitter(pch = 21, width = 0.3, height = 0.01, size = 2) +
-  scale_fill_manual(values = pal, name = "Batch") +
-  labs(y = "Years after initial appointment", x = "INTERVAL 'phase' used for RNA")
-
-ggsave(plot = ageplot, filename = "scripts/RNAseq/ageplot.png")
-
-datTall <- dat2 %>% 
-  select(sample_id, agePulse, age1, age24m, age48m, agep3) %>%
-  gather(age1:agep3, key = "phase", value = "age", -sample_id)
-
-ggplot(datTall, aes(x = agePulse, y = age, colour = phase)) + 
-  geom_point() +
-  geom_abline(slope = 1, intercept = 0) 
-
 ## Write out covariate file 
 covOut <- dat3 %>% 
   select(sample_id, sexPulse, age_RNA, batch, phase) %>% 
   filter(!is.na(phase) & !is.na(batch))
 
 fwrite(sep = "\t", covOut, file = "covariates/INTERVAL_RNA_batch1_2_covariates_sex_age.txt", quote = F, na = NA)
+
