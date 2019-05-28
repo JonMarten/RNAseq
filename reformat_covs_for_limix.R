@@ -2,10 +2,22 @@
 library(dplyr)
 library(data.table)
 setwd("U:/Projects/RNAseq")
+rna_id_mapper <- fread("rna_id_mapper.csv", data.table=F)
+rna_id_mapper <- rna_id_mapper %>%
+  filter(!is.na(identifier) & !is.na(batch))
 
 dat <- fread("covariates/sarah_data_2/INTERVALdata_13MAY2019.csv", data.table=F)
 datp3 <- fread("covariates/sarah_data_2/INTERVALdata_P3_13MAY2019.csv", data.table=F)
-rna_id_mapper <- fread("rna_id_mapper.csv", data.table=F)
+datp3 <- datp3 %>%
+  filter(identifier %in% rna_id_mapper$identifier[which(rna_id_mapper$phase=="p3")])
+
+
+# check for dupes in phase 3
+datp3 %>% group_by(identifier) %>%
+  filter(n()>1) %>%
+  data.frame %>% 
+  nrow
+
 
 dat <- full_join(dat, datp3, by="identifier")
 dat <- left_join(rna_id_mapper, dat)
@@ -81,13 +93,5 @@ phep3 <- pheAll %>%
 
 pheRNA <- rbind(phe24, phe48, phep3) %>%
   filter(!is.na(batch))
-
-### check for dupes:
-
-dat %>% group_by(identifier) %>%
-  filter(n()>1) %>%
-  data.frame %>% 
-  head
-
 
 write.csv(allOut, file = "covariates/INTERVAL_RNA")
