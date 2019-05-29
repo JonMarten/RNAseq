@@ -1,7 +1,9 @@
 # get list of duplicated SNPs to filter out
 setwd("/home/jm2294/GENETIC_DATA/INTERVAL/RNAseq")
 library(dplyr)
-a <- read.table("c22_test_bgen_snp_stats.txt", h=T, stringsAsFactors = F)
+library(data.table)
+a <- fread("c22_filtered_snp_stats.txt", skip = 8, data.table=F) # skip header of file
+#a <- read.table("c22_test_bgen_snp_stats.txt", h=T, stringsAsFactors = F)
 
 a2 <- a %>% 
   group_by(rsid) %>% 
