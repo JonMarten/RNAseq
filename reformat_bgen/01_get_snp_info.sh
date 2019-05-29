@@ -1,3 +1,4 @@
+#!/bin/sh
 # Get SNP info from master bgen files
 module load gcc/5.2.0 
 module load qctool2/rc4-6.8
