@@ -1,7 +1,7 @@
 #!/bin/sh
 # Get SNP info from master bgen files
 #SBATCH -p medium
-#SBATCH -n snpstats
+#SBATCH --job-name=snpstats
 #SBATCH -t 24:0:0
 module load gcc/5.2.0 
 module load qctool2/rc4-6.8
