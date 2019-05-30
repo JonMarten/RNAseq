@@ -6,6 +6,12 @@ a <- fread("c22_filtered_snp_stats.txt", skip = 8, data.table=F)
 a <- a %>%
   mutate(indel = ifelse(nchar(alleleA)>1 | nchar(alleleB)>1, 1, 0))
 
+b38 <- fread("/home/jm2294/GENETIC_DATA/INTERVAL/RNAseq/b37_b38_liftover/INTERVAL_24_8_18_imputed_chr22_hg38.vcf", data.table = F, skip = 5)
+names(b38) <- c("CHROM","POS","ID","REF","ALT")
+
+old_in_new <- which(a$rsid %in% b38$ID)
+old_not_in_new <- which(!a$rsid %in% b38$ID)
+
 # Create CPTIDs for SNPs (sort alleles in alphabetical order)
 snps <- a %>%
   filter(indel == 0) %>%
@@ -43,13 +49,5 @@ b <- rbind(snps, indels) %>%
   arrange(chromosome, position)
 
 
-##Create a marker name column
-snps.index <- which(nchar(assoc[,alleleA])==1 & nchar(assoc[,alleleB])==1)
-indels.index <- which(nchar(assoc[,alleleA])>1 | nchar(assoc[,alleleB])>1)
 
-assoc[snps.index,name:=paste(chromosome,position,alleleA,alleleB,sep=":")]
-assoc[intersect(snps.index,which(alleleA>alleleB)),name:=paste(chromosome,position,alleleB,alleleA,sep=":")]
-assoc[indels.index,name:=paste(chromosome,position,alleleA,alleleB,sep=":")]
-assoc[intersect(indels.index,which(nchar(alleleB)>nchar(alleleA))),name:=paste(chromosome,position,alleleB,alleleA,sep=":")]
-assoc[,name:=paste0("chr",name)]
 
