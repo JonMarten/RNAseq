@@ -53,6 +53,15 @@ if(nrow(dupes > 0)){
   b$cptid.b38[dupevec] <- paste0(b$cptid.b38[dupevec], "___",b$rsid.x[dupevec])
 }
 
-
+# For qctool:
+# -map-id-data	
+# Update the chromosome, position, IDs and/or alleles of a set of SNPs with new values. 
+# The argument must be a file with six named columns giving the original SNPID, rsid, chromosome, position and alleles, followed by another six columns containing the values to replace with. SNPs not in this file will be passed to the output file unchanged. This option only affects the identifying data, not genotypes themselves.
+#map.txt is a file with 12 (named) columns: old SNPID, rsid, chromosome, position, alleleA, alleleB, and new SNPID, rsid chromosome, position, alleleA, alleleB. (from https://www.jiscmail.ac.uk/cgi-bin/webadmin?A2=OXSTATGEN;841f4240.1607)
+newMap <- b %>%
+  mutate(rsid=rsid.x, alternate_id.b38=cptid.b38,rsid.38=rsid.x, chromosome.38=CHROM.b38, position.b38=POS.b38,alleleA.b38=alleleA, alleleB.b38=alleleB) %>%
+  select(alternate_ids, rsid, chromosome, position, alleleA, alleleB,
+         alternate_id.b38, rsid.38, chromosome.38, position.b38,alleleA.b38, alleleB.b38)
+write.table(newMap, quote = F, sep = "\t", col.names = T, row.names = F, file = "b37_b38_liftover/INTERVAL_chr22_b37_to_b38_map.txt")
 
 
