@@ -2,35 +2,54 @@
 setwd("/home/jm2294/GENETIC_DATA/INTERVAL/RNAseq")
 library(dplyr)
 library(data.table)
-a <- fread("c22_filtered_snp_stats.txt", skip = 8, data.table=F)
-a <- a %>%
-  mutate(indel = ifelse(nchar(alleleA)>1 | nchar(alleleB)>1, 1, 0))
 
-b38 <- fread("/home/jm2294/GENETIC_DATA/INTERVAL/RNAseq/b37_b38_liftover/INTERVAL_24_8_18_imputed_chr22_hg38.vcf", data.table = F, skip = 5)
-names(b38) <- c("CHROM","POS","ID","REF","ALT")
+chr <- 22
 
-old_in_new <- which(a$rsid %in% b38$ID)
-old_not_in_new <- which(!a$rsid %in% b38$ID)
+# Read in SNP stats output from qctool and add column to check if variant is an indel
+snpstats <- fread(paste0("/home/jm2294/GENETIC_DATA/INTERVAL/RNAseq/snp_stats/impute_",chr,"_interval_snp_stats_unfiltered.txt"), skip = 8, data.table=F)
+snpstats <- snpstats %>%
+  mutate(indel = ifelse(nchar(alleleA)>1 | nchar(alleleB)>1, 1, 0)) %>%
+  filter(rsid != ".") %>%
+  mutate(alleleA_sort = ifelse(alleleA <= alleleB, alleleA, alleleB),
+         alleleB_sort = ifelse(alleleA <= alleleB, alleleB, alleleA)) %>%
+  mutate(match_id = paste0(rsid,"_",alleleA_sort,"_",alleleB_sort))
+
+# read in b38 map
+b38 <- fread(paste0("/home/jm2294/GENETIC_DATA/INTERVAL/RNAseq/b37_b38_liftover/INTERVAL_24_8_18_imputed_chr",chr,"_hg38.vcf"), data.table = F, skip = 5)
+names(b38) <- c("CHROM.b38","POS.b38","rsid","REF.b38","ALT.b38")
+b38 <- b38 %>%
+  filter(rsid != ".") %>%
+  mutate(REF.b38_sort = ifelse(REF.b38 < ALT.b38, REF.b38, ALT.b38),
+         ALT.b38_sort = ifelse(REF.b38 < ALT.b38, ALT.b38, REF.b38))  %>%
+  mutate(match_id = paste0(rsid,"_",REF.b38_sort,"_",ALT.b38_sort))
+
+snpsmerge <- inner_join(snpstats, b38, by = "match_id")
+no_b38 <- snpstats$match_id[which(!snpstats$match_id %in% snpsmerge$match_id)]
 
 # Create CPTIDs for SNPs (sort alleles in alphabetical order)
-snps <- a %>%
+snps <- snpsmerge %>%
   filter(indel == 0) %>%
-  mutate(alleleA_sort = ifelse(alleleA < alleleB, alleleA, alleleB),
-         alleleB_sort = ifelse(alleleA < alleleB, alleleB, alleleA)) %>%
-  mutate(cptid = paste0(chromosome, ":", position, "_", alleleA_sort, "_", alleleB_sort))
+  filter(!is.na(CHROM.b38)) %>%
+  mutate(REF.b38_sort = ifelse(REF.b38 < ALT.b38, REF.b38, ALT.b38),
+         ALT.b38_sort = ifelse(REF.b38 < ALT.b38, ALT.b38, REF.b38)) %>%
+  mutate(cptid.b38 = paste0(CHROM.b38, ":", POS.b38, "_", REF.b38_sort, "_", ALT.b38_sort))
 
 # Create CPTIDs for indels (sort alleles by smallest first)
-indels <- a %>%
+indels <- snpsmerge %>%
   filter(indel == 1) %>%
-  mutate(alleleA_sort = ifelse(nchar(alleleA) <= nchar(alleleB), alleleA, alleleB),
-         alleleB_sort = ifelse(nchar(alleleA) > nchar(alleleB), alleleA, alleleB)) %>%
-  mutate(cptid = paste0(chromosome, ":", position, "_", alleleA_sort, "_", alleleB_sort))
+  filter(!is.na(CHROM.b38)) %>%
+  mutate(REF.b38_sort = ifelse(nchar(REF.b38) <= nchar(ALT.b38), REF.b38, ALT.b38),
+         ALT.b38_sort = ifelse(nchar(REF.b38) > nchar(ALT.b38), REF.b38, ALT.b38)) %>%
+  mutate(cptid.b38 = paste0(CHROM.b38, ":", POS.b38, "_", REF.b38_sort, "_", ALT.b38_sort))
 
 # Check for duplicated ids on SNPs
-snps %>% 
-  group_by(cptid) %>%
+snpdupe <- snps %>% 
+  group_by(cptid.b38) %>%
   filter(n() > 1) %>%
-  data.frame()
+  data.frame()%>%
+  mutate(alleleA_sort = ifelse(alleleA <= alleleB, alleleA, alleleB),
+         alleleB_sort = ifelse(alleleA <= alleleB, alleleB, alleleA)) %>%
+  mutate(cptid = paste0(CHROM.b38, ":", POS.b38, "_", alleleA_sort, "_", alleleB_sort))
 
 # Check for duplicated ids on indels
 dupes <- indels %>% 
