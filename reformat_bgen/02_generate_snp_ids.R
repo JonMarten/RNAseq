@@ -62,6 +62,6 @@ newMap <- b %>%
   mutate(rsid=rsid.x, alternate_id.b38=cptid.b38,rsid.38=rsid.x, chromosome.38=CHROM.b38, position.b38=POS.b38,alleleA.b38=alleleA, alleleB.b38=alleleB) %>%
   select(alternate_ids, rsid, chromosome, position, alleleA, alleleB,
          alternate_id.b38, rsid.38, chromosome.38, position.b38,alleleA.b38, alleleB.b38)
-write.table(newMap, quote = F, sep = "\t", col.names = T, row.names = F, file = "b37_b38_liftover/INTERVAL_chr22_b37_to_b38_map.txt")
+write.table(newMap, quote = F, sep = " ", col.names = T, row.names = F, file = "b37_b38_liftover/INTERVAL_chr22_b37_to_b38_map.txt")
 
 
