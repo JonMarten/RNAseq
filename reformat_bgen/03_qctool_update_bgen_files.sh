@@ -1,7 +1,7 @@
 #!/bin/sh
 # Get SNP info from master bgen files
 #SBATCH -p long
-#SBATCH --job-name=snpstats
+#SBATCH --job-name=update_bgen
 #SBATCH -t 36:0:0
 
 # get start time
