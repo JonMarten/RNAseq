@@ -25,7 +25,8 @@ PHEPATH=/home/jm2294/projects/RNAseq/test_run
 OUTPATH=/home/jm2294/projects/RNAseq/test_run_chunks/output
 
 # Specify files
-GENFILE=${GENPATH}/impute_${CHR}_interval_RNAseq_batch1_withsamples_testfile_uniqueRSids
+#GENFILE=${GENPATH}/impute_${CHR}_interval_RNAseq_batch1_withsamples_testfile_uniqueRSids
+GENFILE=${GENPATH}/impute_22_23500000-24500000_interval_RNAseq_batch1_withsamples_testfile_uniqueRSids
 ANFILE=${PHEPATH}/Feature_Annotation_Ensembl_gene_ids_autosomes.txt
 PHEFILE=${PHEPATH}/phenotype_5281-fc-genecounts.txt
 SAMPLEMAPFILE=${PHEPATH}/sample_mapping_file_gt_to_phe.txt
@@ -58,9 +59,10 @@ python -u /home/jm2294/projects/RNAseq/hipsci_pipeline/limix_QTL_pipeline/run_QT
  -hwe 0.00001\
  -cr 0.95\
  -gm standardize\
- -w 500000\
- --block_size 1500\
- -gr $GR
+ -w 1000000\
+ --block_size 2000\
+ -gr 22:23500000-24500000
+# -gr $GR
 
 python -u /home/jm2294/projects/RNAseq/hipsci_pipeline/post-processing_QTL/minimal_postprocess.py\
  -id $OUTPATH\
