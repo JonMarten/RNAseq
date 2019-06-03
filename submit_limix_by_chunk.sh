@@ -21,17 +21,17 @@ source activate limix_qtl
 
 # Specify file paths
 GENPATH=/home/jm2294/GENETIC_DATA/INTERVAL/RNAseq
-PHEPATH=/home/jm2294/projects/RNAseq/test_runb37_b38_liftover
+PHEPATH=/home/jm2294/projects/RNAseq
 OUTPATH=/home/jm2294/projects/RNAseq/test_run_chunks/output
 
-# Specify files
+# Specify files. NOTE THAT GENFILE DOES NOT NEED .bgen SUFFIX
 #GENFILE=${GENPATH}/impute_${CHR}_interval_RNAseq_batch1_withsamples_testfile_uniqueRSids
 #GENFILE=${GENPATH}/impute_22_23500000-24500000_interval_RNAseq_batch1_withsamples_testfile_uniqueRSids
-GENFILE=${GENPATH}/b37_b38_liftover/impute_22_interval_b38.bgen
+GENFILE=${GENPATH}/b37_b38_liftover/impute_22_interval_b38
 ANFILE=${PHEPATH}/annotation_file/Feature_Annotation_Ensembl_gene_ids_autosomes_b38.txt
-PHEFILE=${PHEPATH}/phenotype_5281-fc-genecounts.txt
-SAMPLEMAPFILE=${PHEPATH}/sample_mapping_file_gt_to_phe.txt
-COVFILE=${PHEPATH}/INTERVAL_RNA_batch1_2_covariates_sex_age.txt
+PHEFILE=${PHEPATH}/test_run/phenotype_5281-fc-genecounts.txt
+SAMPLEMAPFILE=${PHEPATH}/test_run/sample_mapping_file_gt_to_phe.txt
+COVFILE=${PHEPATH}/test_run/INTERVAL_RNA_batch1_2_covariates_sex_age.txt
 GR=$(echo ${CHR}:${START}-${END})
 
 # Echo config for log file
@@ -62,8 +62,8 @@ python -u /home/jm2294/projects/RNAseq/hipsci_pipeline/limix_QTL_pipeline/run_QT
  -gm standardize\
  -w 1000000\
  --block_size 2000\
-# -gr 22:23500000-24500000
  -gr $GR
+# -gr 22:23500000-24500000
 
 python -u /home/jm2294/projects/RNAseq/hipsci_pipeline/post-processing_QTL/minimal_postprocess.py\
  -id $OUTPATH\
