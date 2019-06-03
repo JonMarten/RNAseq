@@ -21,13 +21,14 @@ source activate limix_qtl
 
 # Specify file paths
 GENPATH=/home/jm2294/GENETIC_DATA/INTERVAL/RNAseq
-PHEPATH=/home/jm2294/projects/RNAseq/test_run
+PHEPATH=/home/jm2294/projects/RNAseq/test_runb37_b38_liftover
 OUTPATH=/home/jm2294/projects/RNAseq/test_run_chunks/output
 
 # Specify files
 #GENFILE=${GENPATH}/impute_${CHR}_interval_RNAseq_batch1_withsamples_testfile_uniqueRSids
-GENFILE=${GENPATH}/impute_22_23500000-24500000_interval_RNAseq_batch1_withsamples_testfile_uniqueRSids
-ANFILE=${PHEPATH}/Feature_Annotation_Ensembl_gene_ids_autosomes.txt
+#GENFILE=${GENPATH}/impute_22_23500000-24500000_interval_RNAseq_batch1_withsamples_testfile_uniqueRSids
+GENFILE=${GENPATH}/b37_b38_liftover/impute_22_interval_b38.bgen
+ANFILE=${PHEPATH}/annotation_file/Feature_Annotation_Ensembl_gene_ids_autosomes_b38.txt
 PHEFILE=${PHEPATH}/phenotype_5281-fc-genecounts.txt
 SAMPLEMAPFILE=${PHEPATH}/sample_mapping_file_gt_to_phe.txt
 COVFILE=${PHEPATH}/INTERVAL_RNA_batch1_2_covariates_sex_age.txt
@@ -54,15 +55,15 @@ python -u /home/jm2294/projects/RNAseq/hipsci_pipeline/limix_QTL_pipeline/run_QT
  --sample_mapping_file $SAMPLEMAPFILE\
  -cf $COVFILE\
  -c\
- -np 1000\
+ -np 100\
  -maf 0.001\
  -hwe 0.00001\
  -cr 0.95\
  -gm standardize\
  -w 1000000\
  --block_size 2000\
- -gr 22:23500000-24500000
-# -gr $GR
+# -gr 22:23500000-24500000
+ -gr $GR
 
 python -u /home/jm2294/projects/RNAseq/hipsci_pipeline/post-processing_QTL/minimal_postprocess.py\
  -id $OUTPATH\
