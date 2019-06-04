@@ -37,9 +37,9 @@ ageDiffBoxPlot <- ggplot(filter(dat3, !is.na(phase) & !is.na(batch)),
 
 bothPlot <- plot_grid(ageBoxPlot, ageDiffBoxPlot)
 
-ggsave(plot = ageplot, filename = "scripts/RNAseq/ageplot.png")
-ggsave(plot = ageBoxPlot, filename = "scripts/RNAseq/ageboxplot.png")
-ggsave(plot = bothPlot, filename = "scripts/RNAseq/bothplot.png")
+ggsave(plot = ageplot, filename = "U:/Projects/RNAseq/scripts/RNAseq/covariates/ageplot.png")
+ggsave(plot = ageBoxPlot, filename = "U:/Projects/RNAseq/scripts/RNAseq/covariates/ageboxplot.png")
+ggsave(plot = bothPlot, filename = "U:/Projects/RNAseq/scripts/RNAseq/covariates/bothplot.png", )
 
 datTall <- dat2 %>% 
   select(sample_id, agePulse, age1, age24m, age48m, agep3) %>%
