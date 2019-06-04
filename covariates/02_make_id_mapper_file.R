@@ -1,33 +1,35 @@
 # Reformat covariates for LIMIX pipeline
 library(dplyr)
 library(data.table)
-setwd("U:/Projects/RNAseq")
+setwd("U:/Projects/RNAseq/covariates")
 
-dat <- fread("covariates/sarah_data_2/INTERVALdata_13MAY2019.csv", data.table=F)
-ids <- fread("covariates/sarah_data_2/omicsMap.csv", data.table=F)
-ids3 <- fread("covariates/sarah_data_2/omicsMap_P3.csv", data.table=F)
+dat <- fread("data_release_20190531/INTERVALdata_31MAY2019.csv", data.table=F)
+ids <- fread("data_release_20190531/omicsMap.csv", data.table=F)
+ids3 <- fread("data_release_20190531/omicsMap_P3.csv", data.table=F)
 ids[which(ids == "", arr.ind=T)] <- NA
+ids3[which(ids3 == "", arr.ind=T)] <- NA
 allids <- full_join(ids, ids3)
 #dat2 <- full_join(allids, dat)
 
 # Read in ids from RNA seq data
-rna_seq_ids <- fread("globus/RNA_seq_ids.csv", data.table = F)
+rna_seq_ids <- fread("../globus/RNA_seq_ids.csv", data.table = F)
 
 # filter to just RNA id columns and rows with an RNA id
 RNAcols <- grep("RNA", names(allids))
 rnaids <- allids %>% 
-  select(identifier, RNAcols) %>%
+  select(identifier, RNAcols, attendanceDate_p3) %>%
   mutate(RNAseq_gwasQC_24m = as.character(RNAseq_gwasQC_24m),
          RNAseq_gwasQC_48m = as.character(RNAseq_gwasQC_48m),
          RNAseq_gwasQC_p3 = as.character(RNAseq_gwasQC_p3))
-RNArows <- rowSums(is.na(rnaids[,-1])) != ncol(rnaids[,-1]) # list rows with at least one non-NA RNA id
+
+RNArows <- rowSums(is.na(select(rnaids, -identifier, -attendanceDate_p3))) != ncol(select(rnaids, -identifier, -attendanceDate_p3)) # list rows with at least one non-NA RNA id
 rnaids <- rnaids %>% 
   filter(RNArows)
 
 # Make single column for RNA identifier
 RNA_any <- NA
 for(i in 1:nrow(rnaids)){
-  idsb <- as.character(rnaids[i,-1])
+  idsb <- as.character(select(rnaids, -identifier, -attendanceDate_p3)[i,])
   RNA_any[i] <- paste(unique(na.exclude(idsb)), collapse = ",")
 }
 rnaids$RNA_any <- RNA_any
@@ -55,7 +57,7 @@ if(length(phemiss) == 0){
 }
 
 #
-rnaidsPhase <- rnaids %>% select(identifier, RNAseq_RAW_24m, RNAseq_RAW_48m, RNAseq_RAW_p3, RNA_any) 
+rnaidsPhase <- rnaids %>% select(identifier, RNAseq_RAW_24m, RNAseq_RAW_48m, RNAseq_RAW_p3, RNA_any,attendanceDate_p3) 
 rnaidsPhase$RNAphase <- ifelse(!is.na(rnaidsPhase$RNAseq_RAW_24m), 
                      "24m",
                      ifelse(!is.na(rnaidsPhase$RNAseq_RAW_48m), 
@@ -66,8 +68,10 @@ rnaidsPhase$RNAphase <- ifelse(!is.na(rnaidsPhase$RNAseq_RAW_24m),
 
 # Output mapper file
 rna_id_mapper <- rnaidsPhase %>%
-  select(identifier, RNA_id = RNA_any, phase = RNAphase)
-rna_id_mapper <- full_join(rna_id_mapper, rna_seq_ids)
+  select(identifier, RNA_id = RNA_any, phase = RNAphase, attendanceDate_p3) %>% 
+  filter(!is.na(identifier))
+rna_id_mapper <- full_join(rna_id_mapper, rna_seq_ids) %>%
+  filter(!is.na(batch))
 write.csv(rna_id_mapper, "rna_id_mapper.csv", quote=F, row.names=F)
 
 
@@ -84,7 +88,7 @@ all2 <- all %>%
   select(RNAseq_RAW_24m, RNAseq_RAW_48m, RNAseq_RAW_p3, RNA_any, batch)
 all2$num_time_points = apply(X = all2, MARGIN = 1, FUN = function(x){length(which(!is.na(x[1:3])))})
 
-# venn
+# Venn diagram showing overlap of phases
 library(VennDiagram)
 
 nonmiss <- list("24m" = which(!is.na(rnaids$RNAseq_RAW_24m)),

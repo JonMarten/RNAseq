@@ -1,26 +1,27 @@
 # Reformat covariates for LIMIX pipeline
 library(dplyr)
 library(data.table)
-setwd("U:/Projects/RNAseq")
-rna_id_mapper <- fread("rna_id_mapper.csv", data.table=F)
-rna_id_mapper <- rna_id_mapper %>%
-  filter(!is.na(identifier) & !is.na(batch))
+setwd("U:/Projects/RNAseq/covariates")
+rna_id_mapper <- fread("rna_id_mapper.csv", data.table=F) 
+dat <- fread("data_release_20190531/INTERVALdata_31MAY2019.csv", data.table=F)
 
-dat <- fread("covariates/sarah_data_2/INTERVALdata_13MAY2019.csv", data.table=F)
-datp3 <- fread("covariates/sarah_data_2/INTERVALdata_P3_13MAY2019.csv", data.table=F)
+# Filter phase 3 data to get the correct timepoint to match sample used for RNA seq data
+p3mapper <- rna_id_mapper %>%
+  filter(phase == "p3" & !is.na(attendanceDate_p3)) %>%
+  mutate(p3_mapper = paste0(identifier,attendanceDate_p3)) %>%
+  pull(p3_mapper)
+
+datp3 <- fread("data_release_20190531/INTERVALdata_P3_31MAY2019.csv", data.table=F)
 datp3 <- datp3 %>%
-  filter(identifier %in% rna_id_mapper$identifier[which(rna_id_mapper$phase=="p3")])
+  mutate(p3_mapper = paste0(identifier,attendanceDate_p3)) %>%
+  filter(p3_mapper %in% p3mapper) %>%
+  select(-p3_mapper)
 
-
-# check for dupes in phase 3
-datp3 %>% group_by(identifier) %>%
-  filter(n()>1) %>%
-  data.frame %>% 
-  nrow
-
-
+# Merge together all phases and merge in INT_RNA identifiers
 dat <- full_join(dat, datp3, by="identifier")
-dat <- left_join(rna_id_mapper, dat)
+rna_id_mapper <- rna_id_mapper %>% 
+  select(-attendanceDate_p3)
+dat <- left_join(rna_id_mapper, dat, by="identifier")
 
 # Find all columns with an attendance date
 names(dat)[grep("att", names(dat))]
@@ -50,7 +51,7 @@ covOut <- dat3 %>%
   select(sample_id, sexPulse, age_RNA, batch, phase) %>% 
   filter(!is.na(phase) & !is.na(batch))
 
-fwrite(sep = "\t", covOut, file = "covariates/INTERVAL_RNA_batch1_2_covariates_sex_age.txt", quote = F, na = NA)
+fwrite(sep = "\t", covOut, file = "INTERVAL_RNA_batch1_2_covariates_sex_age.txt", quote = F, na = NA)
 
 ## Generate phenotype file that only includes cell count data from the same phase as the RNA sample
 pheAll <- dat3 %>%
@@ -60,10 +61,10 @@ pheAll <- left_join(pheAll, dat)
 pheAll <- pheAll %>%
   select(-identifier)
 
-m24Cols <- names(pheAll)[grep("_24", names(pheAll))] 
-m48Cols <- names(pheAll)[grep("_48", names(pheAll))] 
-p3Cols <- names(pheAll)[grep("_p3", names(pheAll))] 
-blCols <- names(pheAll)[grep("_bl", names(pheAll))] 
+m24Cols <- names(pheAll)[grep("_24", names(pheAll))] %>% sort
+m48Cols <- names(pheAll)[grep("_48", names(pheAll))] %>% sort
+p3Cols <- names(pheAll)[grep("_p3", names(pheAll))] %>% sort
+blCols <- names(pheAll)[grep("_bl", names(pheAll))] %>% sort
 otherCols <- names(pheAll)[which(!names(pheAll) %in% c(blCols, m24Cols, m48Cols, p3Cols))]
 
 # Check cols are the same other than suffix
@@ -92,6 +93,10 @@ phep3 <- pheAll %>%
   rename_at(vars(p3Cols), funs(gsub("_p3","___RNA",.)))
 
 pheRNA <- rbind(phe24, phe48, phep3) %>%
-  filter(!is.na(batch))
+  filter(!is.na(batch)) %>%
+  arrange(sample_id) %>%
+  rename(sex=sexPulse, ethnicity=ethnicPulse, sequencingBatch = batch, intervalPhase = phase) %>%
+  select(-monthPulse, -yearPulse, -agePulse, -attendanceDate, -appointmentTime, -outCome) 
+pheRNA$appointmentTime___RNA[which(pheRNA$appointmentTime___RNA == "")] <- NA # Set missing appointment times to NA
 
-write.csv(allOut, file = "covariates/INTERVAL_RNA")
+write.csv(pheRNA, file = "INTERVAL_RNA_batch1_4_all_covariates_release31MAY2019.csv", row.names = F)
