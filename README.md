@@ -14,7 +14,7 @@ The INTERVAL study is split into phases which do not directly affect the RNA seq
 #### Calculating Ages
 Ages are calculated using date of birth (assuming the 15th of the month) and the appointment date corresponding to blood sample, as obtained above. The plots below show how age varies with phase and batch, both absolute age and time between initial appointment and the blood sample used for RNA. Note that all batch 1 samples (the pilot study) are in the 24 month phase. Currently, phentoype data is only mapped to INT_RNA identifiers for batches 1 and 2.
 
-![age plot](https://github.com/JonMarten/RNAseq/blob/master/bothplot.png?raw=true)
+![ageplot](https://github.com/JonMarten/RNAseq/blob/master/covariates/bothplot.png?raw=true)
 
 
 ### Genotype
