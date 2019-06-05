@@ -4,9 +4,12 @@ library(data.table)
 setwd("U:/Projects/RNAseq/covariates")
 rna_id_mapper <- fread("rna_id_mapper.csv", data.table=F) 
 techCov <- fread("rna_technical_covariates_may19.csv", data.table = F)
+<<<<<<< HEAD
 techCovPilot <- fread("rna_technical_covariates_pilot_may19.csv", data.table = F)
 techCov <- rbind(techCovPilot, techCov)
 
+=======
+>>>>>>> 3fa532ef612179a512176e21616b18b907e38444
 techCov <- techCov %>% 
   filter(SANGER_Sample_ID != "") %>%
   select(sample_id = SANGER_Sample_ID,INTERVAL_Box,RNA_Extraction_Date, RIN, Normalization_Plate_ID, seq_run_id, seq_tag_index) %>%
