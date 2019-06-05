@@ -3,6 +3,17 @@ library(dplyr)
 library(data.table)
 setwd("U:/Projects/RNAseq/covariates")
 rna_id_mapper <- fread("rna_id_mapper.csv", data.table=F) 
+techCov <- fread("rna_technical_covariates_may19.csv", data.table = F)
+techCovPilot <- fread("rna_technical_covariates_pilot_may19.csv", data.table = F)
+techCov <- rbind(techCovPilot, techCov)
+
+techCov <- techCov %>% 
+  filter(SANGER_Sample_ID != "") %>%
+  select(sample_id = SANGER_Sample_ID,INTERVAL_Box,RNA_Extraction_Date, RIN, Normalization_Plate_ID, seq_run_id, seq_tag_index) %>%
+  mutate(RNA_Extraction_Date = as.Date(RNA_Extraction_Date, "%d/%m/%Y"))
+
+
+
 dat <- fread("data_release_20190531/INTERVALdata_31MAY2019.csv", data.table=F)
 
 # Filter phase 3 data to get the correct timepoint to match sample used for RNA seq data
@@ -47,11 +58,11 @@ dat3 <- dat2 %>%
   mutate(ageDif = age_RNA - age1)
 
 ## Write out test covariate file 
-covOut <- dat3 %>% 
-  select(sample_id, sexPulse, age_RNA, batch, phase) %>% 
-  filter(!is.na(phase) & !is.na(batch))
-
-fwrite(sep = "\t", covOut, file = "INTERVAL_RNA_batch1_2_covariates_sex_age.txt", quote = F, na = NA)
+#covOut <- dat3 %>% 
+#  select(sample_id, sexPulse, age_RNA, batch, phase) %>% 
+#  filter(!is.na(phase) & !is.na(batch))
+#
+#fwrite(sep = "\t", covOut, file = "INTERVAL_RNA_batch1_2_covariates_sex_age.txt", quote = F, #na = NA)
 
 ## Generate phenotype file that only includes cell count data from the same phase as the RNA sample
 pheAll <- dat3 %>%
@@ -99,4 +110,9 @@ pheRNA <- rbind(phe24, phe48, phep3) %>%
   select(-monthPulse, -yearPulse, -agePulse, -attendanceDate, -appointmentTime, -outCome) 
 pheRNA$appointmentTime___RNA[which(pheRNA$appointmentTime___RNA == "")] <- NA # Set missing appointment times to NA
 
-write.csv(pheRNA, file = "INTERVAL_RNA_batch1_4_all_covariates_release31MAY2019.csv", row.names = F)
+# merge in technical covariates
+out <- full_join(techCov, pheRNA, by = "sample_id") %>%
+  mutate(attendanceDate___RNA = as.Date(attendanceDate___RNA, format = "%d%b%Y"),
+         processDate___RNA = as.Date(processDate___RNA, format = "%d%b%Y"))
+
+write.csv(out, file = "INTERVAL_RNA_batch1_4_covariates_release31MAY2019.csv", row.names = F)

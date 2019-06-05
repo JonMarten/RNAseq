@@ -70,8 +70,8 @@ rnaidsPhase$RNAphase <- ifelse(!is.na(rnaidsPhase$RNAseq_RAW_24m),
 rna_id_mapper <- rnaidsPhase %>%
   select(identifier, RNA_id = RNA_any, phase = RNAphase, attendanceDate_p3) %>% 
   filter(!is.na(identifier))
-rna_id_mapper <- full_join(rna_id_mapper, rna_seq_ids) %>%
-  filter(!is.na(batch))
+rna_id_mapper <- full_join(rna_id_mapper, rna_seq_ids) #%>%
+#  filter(!is.na(batch)) # Remove this filter to allow unnumbered batch 5 ids through for now
 write.csv(rna_id_mapper, "rna_id_mapper.csv", quote=F, row.names=F)
 
 
