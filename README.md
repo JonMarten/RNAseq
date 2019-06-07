@@ -5,7 +5,7 @@ This is a repository of scripts used in the analysis of the RNA seq data from th
 ### Phenotype
 Batches 1-4 of seq data have been downloaded from the Sanger server with globus, these are currently stored in `/home/jm2294/projects/RNAseq/globus`. CRAM files have not been downloaded. 
 ### Covariates
-Covariate data is stored in a QC-ready file `INTERVAL_RNA_batch1_5_covariates_release31MAY2019.csv`. This file includes technical covariates from the RNA sequencing run as well as age and sysmex data from the same timepoint as the blood sample used for RNA seq. Derivation of this file is detailed in the readme file in the `Covariates` folder.
+Covariate data is stored in a QC-ready file `INTERVAL_RNA_batch1_5_covariates_release31MAY2019.csv`. This file includes technical covariates from the RNA sequencing run as well as age and sysmex data from the same timepoint as the blood sample used for RNA seq. Derivation of this file is detailed [here](https://github.com/JonMarten/RNAseq/blob/master/covariates/README.md#phenotypes-in-the-interval-study).
 
 ### Genotype
 The 'master' bgen files are stored in `/scratch/curated_genetic_data/interval/imputed/impute_[CHR]_interval.bgen`, symlinked in `/home/jm2294/GENETIC_DATA/INTERVAL/master`
