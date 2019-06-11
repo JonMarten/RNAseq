@@ -44,7 +44,7 @@ if(length(rnamiss) == 0){
   cat("\n",
       length(rnamiss),
       " RNA seq ids missing in phenotype data:", 
-      paste0(rna_seq_ids$RNA_id[rnamiss]))
+      paste0(rna_seq_ids$RNA_id[rnamiss], collapse = ", "))
 }
 
 if(length(phemiss) == 0){

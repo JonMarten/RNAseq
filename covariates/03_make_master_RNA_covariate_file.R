@@ -104,7 +104,7 @@ phep3 <- pheAll %>%
   rename_at(vars(p3Cols), funs(gsub("_p3","___RNA",.)))
 
 pheRNA <- rbind(phe24, phe48, phep3) %>%
-  filter(!is.na(batch)) %>%
+  #filter(!is.na(batch)) %>%
   arrange(sample_id) %>%
   rename(sex=sexPulse, ethnicity=ethnicPulse, sequencingBatch = batch, intervalPhase = phase) %>%
   select(-monthPulse, -yearPulse, -agePulse, -attendanceDate, -appointmentTime, -outCome) 
@@ -115,4 +115,11 @@ out <- full_join(techCov, pheRNA, by = "sample_id") %>%
   mutate(attendanceDate___RNA = as.Date(attendanceDate___RNA, format = "%d%b%Y"),
          processDate___RNA = as.Date(processDate___RNA, format = "%d%b%Y"))
 
-write.csv(out, file = "INTERVAL_RNA_batch1_4_covariates_release31MAY2019.csv", row.names = F)
+# Bodgy hack to re-add sequencing batch for samples that have RNA seq data but haven't been added to the phenotype database yet. 
+fullbatch <- rna_id_mapper %>%
+  select(sample_id=RNA_id, fullbatch = batch)
+out2 <- full_join(out, fullbatch) %>%
+  select(-sequencingBatch) %>%
+  rename(sequencingBatch = fullbatch)
+
+write.csv(out2, file = "INTERVAL_RNA_batch1_5_covariates_release31MAY2019.csv", row.names = F)
