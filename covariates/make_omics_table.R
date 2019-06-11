@@ -23,12 +23,6 @@ dat <- dat[,order(colnames(dat))]
 dat[which(dat$Affymetrix_gwasQC_24m != dat$Affymetrix_gwasQC_bl),]
 dat[which(dat$Affymetrix_gwasQC_24m == dat$Affymetrix_QC_24m),]
 
-getIds <- function(x, cols){
-  apply(x, MARGIN = 1, FUN = paste(unique(x[,cols]), collapse = ";"))
-}
-
-cbind(dat$Affymetrix_gwasQC_24m, dat$Affymetrix_gwasQC_bl, dat$Affymetrix_QC_24m, dat$Affymetrix_QC_bl)[i,] %>% unique %>% na.exclude %>% paste(collapse = ";")
-
 dat2 <-dat %>% 
   rowwise() %>%
   mutate(affymetrix_ID = c(Affymetrix_QC_bl, Affymetrix_gwasQC_bl, Affymetrix_gwasQC_24m, Affymetrix_QC_24m) %>% unique %>% na.exclude %>% paste(collapse = ";"),
@@ -43,11 +37,13 @@ dat2 <-dat %>%
          RNA_ID = c(RNAseq_gwasQC_24m, RNAseq_gwasQC_48m, RNAseq_gwasQC_p3, RNAseq_QC_24m, RNAseq_QC_48m, RNAseq_QC_p3, RNAseq_RAW_24m, RNAseq_RAW_48m, RNAseq_RAW_p3) %>% unique %>% na.exclude %>% paste(collapse = ";"),
          soma_ID = c(soma4000_gwasQC_bl, soma4000_QC_bl) %>% unique %>% na.exclude %>% paste(collapse = ";"),
          WES_ID = Wes_gwasQC_bl,
-         WGS_ID = c(Wes_gwasQC_bl, Wgs_gwasQC_bl, Wgs_QC_bl) %>% unique %>% na.exclude %>% paste(collapse = ";")
+         WGS_ID = c(Wgs_gwasQC_bl, Wgs_gwasQC_bl, Wgs_QC_bl) %>% unique %>% na.exclude %>% paste(collapse = ";")
          ) %>%
   data.frame
-
 dat2[which(dat2 == "", arr.ind = T)] <- NA
+
+#Count non-missing ids
+apply(dat2, MARGIN = 2, FUN = function(x){length(which(!is.na(x)))})
 
 dat3 <- dat2 %>% select(data_management_project_id = identifier, agePulse, NIHRConsent, picklistRNA, sexPulse, Tempus2Y, TempusP3, Tempusp4, affymetrix_ID, brainshake_ID, metabolon_ID, olink_ID, olink_CVD2, olink_CVD3, olink_INF, olink_NEU, RNA_ID, soma_ID, WES_ID, WGS_ID) %>%
   rowwise() %>%
