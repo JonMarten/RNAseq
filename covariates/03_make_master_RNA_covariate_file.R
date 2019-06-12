@@ -14,7 +14,7 @@ techCov <- techCov %>%
 
 
 
-dat <- fread("data_release_20190531/INTERVALdata_31MAY2019.csv", data.table=F)
+dat <- fread("data_release_20190611/INTERVALdata_11JUN2019.csv", data.table=F)
 
 # Filter phase 3 data to get the correct timepoint to match sample used for RNA seq data
 p3mapper <- rna_id_mapper %>%
@@ -22,7 +22,7 @@ p3mapper <- rna_id_mapper %>%
   mutate(p3_mapper = paste0(identifier,attendanceDate_p3)) %>%
   pull(p3_mapper)
 
-datp3 <- fread("data_release_20190531/INTERVALdata_P3_31MAY2019.csv", data.table=F)
+datp3 <- fread("data_release_20190611/INTERVALdata_P3_11JUN2019.csv", data.table=F)
 datp3 <- datp3 %>%
   mutate(p3_mapper = paste0(identifier,attendanceDate_p3)) %>%
   filter(p3_mapper %in% p3mapper) %>%
@@ -67,7 +67,10 @@ dat3 <- dat2 %>%
 ## Generate phenotype file that only includes cell count data from the same phase as the RNA sample
 pheAll <- dat3 %>%
   select(sample_id, age_RNA)
-dat <- rename(dat, sample_id = RNA_id)
+dat <- rename(dat, 
+              sample_id = RNA_id,
+              height = ht_bl,
+              weight = wt_bl)
 pheAll <- left_join(pheAll, dat)
 pheAll <- pheAll %>%
   select(-identifier)
@@ -122,4 +125,13 @@ out2 <- full_join(out, fullbatch) %>%
   select(-sequencingBatch) %>%
   rename(sequencingBatch = fullbatch)
 
-write.csv(out2, file = "INTERVAL_RNA_batch1_5_covariates_release31MAY2019.csv", row.names = F)
+# Process weight data to replace 777 with 190, remove unfeasibly large numbers of significant figures (weight assumed accurate to .1 kg and height to 1cm) and calculate BMI, then reorder columns for saving.
+out3 <- out2 %>%
+  mutate(weight = ifelse(weight==777, 190, weight)) %>%
+  mutate(weight = round(weight,1),
+         height = round(height,2)) %>%
+  mutate(BMI = weight / height ^2) %>%
+  mutate(BMI = round(BMI, 2)) %>%
+  select(sample_id:age_RNA, sequencingBatch, intervalPhase:weight, BMI, attendanceDate___RNA, appointmentTime___RNA, processDate___RNA, processTime___RNA, BA_D_10_9_L___RNA:PLT_O_10_9_L___RNA, RBC_10_12_L___RNA:WBC_N_10_9_L___RNA)
+
+write.csv(out3, file = "INTERVAL_RNA_batch1_5_covariates_release_2019_06_11.csv", row.names = F)

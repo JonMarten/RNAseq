@@ -3,9 +3,9 @@ library(dplyr)
 library(data.table)
 setwd("U:/Projects/RNAseq/covariates")
 
-dat <- fread("data_release_20190531/INTERVALdata_31MAY2019.csv", data.table=F)
-ids <- fread("data_release_20190531/omicsMap.csv", data.table=F)
-ids3 <- fread("data_release_20190531/omicsMap_P3.csv", data.table=F)
+dat <- fread("data_release_20190611/INTERVALdata_11JUN2019.csv", data.table=F)
+ids <- fread("data_release_20190611/omicsMap.csv", data.table=F)
+ids3 <- fread("data_release_20190611/omicsMap_P3.csv", data.table=F)
 ids[which(ids == "", arr.ind=T)] <- NA
 ids3[which(ids3 == "", arr.ind=T)] <- NA
 allids <- full_join(ids, ids3)
