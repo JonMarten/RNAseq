@@ -21,8 +21,8 @@ mismatch <- allids2[which(!allids2$identifier %in% allids$identifier),]
 
 dat <- dat[,order(colnames(dat))]
 
-dat[which(dat$Affymetrix_gwasQC_24m != dat$Affymetrix_gwasQC_bl),]
-dat[which(dat$Affymetrix_gwasQC_24m == dat$Affymetrix_QC_24m),]
+#dat[which(dat$Affymetrix_gwasQC_24m != dat$Affymetrix_gwasQC_bl),]
+#dat[which(dat$Affymetrix_gwasQC_24m == dat$Affymetrix_QC_24m),]
 
 dat2 <-dat %>% 
   rowwise() %>%
@@ -38,7 +38,7 @@ dat2 <-dat %>%
          RNA_ID = c(RNAseq_gwasQC_24m, RNAseq_gwasQC_48m, RNAseq_gwasQC_p3, RNAseq_QC_24m, RNAseq_QC_48m, RNAseq_QC_p3, RNAseq_RAW_24m, RNAseq_RAW_48m, RNAseq_RAW_p3) %>% unique %>% na.exclude %>% paste(collapse = ";"),
          soma_ID = c(soma4000_gwasQC_bl, soma4000_QC_bl) %>% unique %>% na.exclude %>% paste(collapse = ";"),
          WES_ID = Wes_gwasQC_bl,
-         WGS_ID = c(Wgs_gwasQC_bl, Wgs_gwasQC_bl, Wgs_QC_bl) %>% unique %>% na.exclude %>% paste(collapse = ";")
+         WGS_ID = c(Wgs_QC_bl, Wgs_gwasQC_bl, Wgs_QC_24m, Wgs_gwasQC_24m) %>% unique %>% na.exclude %>% paste(collapse = ";")
          ) %>%
   data.frame
 dat2[which(dat2 == "", arr.ind = T)] <- NA
