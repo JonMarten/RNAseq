@@ -1,10 +1,11 @@
 # Script to make a table of all INTERVAL participants detailing omics data available on them
 library(dplyr)
-setwd("U:/Projects/RNAseq/covariates/dirk_data/20190513")
+dataRelease <- "11JUN2019"
+setwd(paste0("U:/Projects/RNAseq/RNA_sample_selection/", dataRelease))
 ids <- read.csv("omicsMap.csv", stringsAsFactors = F)
 ids3 <- read.csv("omicsMap_P3.csv", stringsAsFactors = F)
 RNApick <- read.csv("RNAPick.csv", stringsAsFactors = F)
-agesex <- read.csv("INTERVALdata_13MAY2019.csv", stringsAsFactors = F)
+agesex <- read.csv(paste0("INTERVALdata_", dataRelease, ".csv"), stringsAsFactors = F)
 
 ids[which(ids == "", arr.ind=T)] <- NA
 ids3[which(ids3 == "", arr.ind=T)] <- NA
@@ -48,8 +49,12 @@ apply(dat2, MARGIN = 2, FUN = function(x){length(which(!is.na(x)))})
 dat3 <- dat2 %>% select(data_management_project_id = identifier, agePulse, NIHRConsent, picklistRNA, sexPulse, Tempus2Y, TempusP3, Tempusp4, affymetrix_ID, brainshake_ID, metabolon_ID, olink_ID, olink_CVD2, olink_CVD3, olink_INF, olink_NEU, RNA_ID, soma_ID, WES_ID, WGS_ID) %>%
   rowwise() %>%
   mutate(tempus = ifelse(!is.na(Tempus2Y) | !is.na(TempusP3) | !is.na(Tempusp4),1,0)) %>%
-  data.frame()
-  
+  mutate(RNA_pick_priority_1 = ifelse(picklistRNA == 1, ifelse(is.na(RNA_ID), "not_yet_assigned", RNA_ID), NA),
+         RNA_pick_priority_2 = ifelse(picklistRNA == 2, ifelse(is.na(RNA_ID), "not_yet_assigned", RNA_ID), NA),
+         RNA_pick_priority_3 = ifelse(picklistRNA == 3, ifelse(is.na(RNA_ID), "not_yet_assigned", RNA_ID), NA),
+         RNA_pick_priority_4 = ifelse(picklistRNA == 4, ifelse(is.na(RNA_ID), "not_yet_assigned", RNA_ID), NA)) %>%
+  data.frame() 
+
 out <- dat3 %>%
   select(data_management_project_id, 
          sex = sexPulse, 
@@ -61,13 +66,10 @@ out <- dat3 %>%
          brainshake_ID,
          metabolon_ID,
          soma_ID,
-         olink_ID,
-         olink_CVD2,
-         olink_CVD3,
-         olink_INF,
-         olink_NEU,
+         olink_ID:olink_NEU,
          tempus,
          picklistRNA,
-         RNA_ID)
-write.csv(out, row.names = F, quote = T, file = "../../../INTERVAL_omics_table.csv")
+         RNA_pick_priority_1:RNA_pick_priority_4,
+         olink_ID)
 
+write.csv(out, row.names = F, quote = T, file = paste0("../INTERVAL_omics_table_",dataRelease,".csv"))
