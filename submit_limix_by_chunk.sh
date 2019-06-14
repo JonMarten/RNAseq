@@ -22,7 +22,7 @@ source activate limix_qtl
 # Specify file paths
 GENPATH=/home/jm2294/GENETIC_DATA/INTERVAL/RNAseq
 PHEPATH=/home/jm2294/projects/RNAseq
-OUTPATH=/home/jm2294/projects/RNAseq/test_run_chunks/output
+OUTPATH=/home/jm2294/projects/RNAseq/test_run_chunks/output_no_covariates
 
 # Specify files. NOTE THAT GENFILE DOES NOT NEED .bgen SUFFIX
 #GENFILE=${GENPATH}/impute_${CHR}_interval_RNAseq_batch1_withsamples_testfile_uniqueRSids
@@ -53,7 +53,6 @@ python -u /home/jm2294/projects/RNAseq/hipsci_pipeline/limix_QTL_pipeline/run_QT
  -pf $PHEFILE\
  -od $OUTPATH\
  --sample_mapping_file $SAMPLEMAPFILE\
- -cf $COVFILE\
  -c\
  -np 100\
  -maf 0.001\
@@ -63,6 +62,7 @@ python -u /home/jm2294/projects/RNAseq/hipsci_pipeline/limix_QTL_pipeline/run_QT
  -w 1000000\
  --block_size 2000\
  -gr $GR
+# -cf $COVFILE\
 # -gr 22:23500000-24500000
 
 python -u /home/jm2294/projects/RNAseq/hipsci_pipeline/post-processing_QTL/minimal_postprocess.py\
