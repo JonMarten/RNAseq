@@ -57,11 +57,17 @@ if(nrow(dupes > 0)){
 # -map-id-data	
 # Update the chromosome, position, IDs and/or alleles of a set of SNPs with new values. 
 # The argument must be a file with six named columns giving the original SNPID, rsid, chromosome, position and alleles, followed by another six columns containing the values to replace with. SNPs not in this file will be passed to the output file unchanged. This option only affects the identifying data, not genotypes themselves.
-#map.txt is a file with 12 (named) columns: old SNPID, rsid, chromosome, position, alleleA, alleleB, and new SNPID, rsid chromosome, position, alleleA, alleleB. (from https://www.jiscmail.ac.uk/cgi-bin/webadmin?A2=OXSTATGEN;841f4240.1607)
+#map.txt is a file with 12 (named) columns: old SNPID, rsid, chromosome, position, alleleA, alleleB, and new SNPID, rsid chromosome, position, alleleA, alleleB. (from https://www.jiscmail.ac.uk/cgi-bin/webadmin?A2=OXSTATGEN;841f4240.1607). The "map" file given to -map-id-data must be a text file with twelve named columns, in the following order: the current SNPID, rsid, chromosome, position, first and second alleles, followed by the desired updated SNPID, rsid, chromosome, position and alleles. The first line is treated as column names (currently it doesn't matter what these are called.) Variants not in this file are not affected by the mapping, and will be output unchanged. (https://www.well.ox.ac.uk/~gav/qctool_v2/documentation/examples/altering_id_data.html)
 newMap <- b %>%
   mutate(rsid=rsid.x, alternate_id.b38=cptid.b38,rsid.38=rsid.x, chromosome.38=CHROM.b38, position.b38=POS.b38,alleleA.b38=alleleA, alleleB.b38=alleleB) %>%
   select(alternate_ids, rsid, chromosome, position, alleleA, alleleB,
-         alternate_id.b38, rsid.38, chromosome.38, position.b38,alleleA.b38, alleleB.b38)
+         alternate_id.b38, rsid.38, chromosome.38, position.b38, alleleA.b38, alleleB.b38)
 write.table(newMap, quote = F, sep = " ", col.names = T, row.names = F, file = "b37_b38_liftover/INTERVAL_chr22_b37_to_b38_map.txt")
+
+# As not all SNPs are currently mappable in the b38 data due to ambiguous rsids (eg snps coded as "."), SNPs have to be filtered to retain only those which have unambiguous b38 positions.
+#--incl-snps	Exclude all SNPs not in the given file(s) from the analysis. The format of this file is the same as that output by the -write-snp-excl-list option. It must have six columns interpreted as SNPID, rsid, chromosome, position, first and second alleles. 
+snplist <- newMap %>%
+  select(alternate_id.b38)
+write.table(snplist, row.names = F, col.names = F, quote = F, file = "b37_b38_liftover/c22_b38_filter_snps.txt")
 
 
