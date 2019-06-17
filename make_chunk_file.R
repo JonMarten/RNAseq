@@ -1,9 +1,9 @@
 # Script to generate chunking file to run limix on 100-200 genes at a time
-setwd("/home/jm2294/projects/RNAseq/test_run")
+setwd("/home/jm2294/projects/RNAseq/test_run_chunks")
 Packages <- c("dplyr", "data.table","ggplot2")
 lapply(Packages, library, character.only = TRUE)
 
-anno <- fread("Feature_Annotation_Ensembl_gene_ids_autosomes.txt", data.table = F)
+anno <- fread("../annotation_file/Feature_Annotation_Ensembl_gene_ids_autosomes_b38.txt", data.table = F)
 anno <- anno %>% 
   arrange(chromosome, start)
 
@@ -26,14 +26,13 @@ for(i in 1:22){
 }
 
 # Get start end end positions for chunks
-window <- 1000000 # This is the +- window to take either side of the chunk, to ensure that SNPs around the first and last features are included.
 chunkList <- anno2 %>%
   group_by(bin) %>%
   summarise(chr = unique(chromosome),
             start = min(start),
-            end = max(end) + window) %>%
+            end = max(end)) %>%
   arrange(chr, start) %>%
   select(-bin) %>%
   data.frame()
 
-write.table(chunkList, file = "../test_run_chunks/chunklist.txt", sep = "\t", row.names = F, col.names =F)
+write.table(chunkList, file = "chunklist_b38.txt", sep = "\t", row.names = F, col.names =F)

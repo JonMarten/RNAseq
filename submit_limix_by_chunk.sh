@@ -9,7 +9,7 @@
 start=$(date +%s.%N)
 
 # Get genomic positions for chunk
-CHUNK=$(head /home/jm2294/projects/RNAseq/test_run_chunks/chunklist.txt -n $SLURM_ARRAY_TASK_ID | tail -n 1)
+CHUNK=$(head /home/jm2294/projects/RNAseq/test_run_chunks/chunklist_b38.txt -n $SLURM_ARRAY_TASK_ID | tail -n 1)
 #CHUNK=$(head /home/jm2294/projects/RNAseq/test_run_chunks/chunklist.txt -n 529 | tail -n 1)  ## TEST LINE FOR INTERACTIVE RUN
 
 CHR=$(echo $CHUNK | cut -d ' ' -f1)
