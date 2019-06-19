@@ -11,11 +11,10 @@ b <- a %>%
          chromosome = "Chromosome/scaffold_name",
          start = "Gene_start_(bp)",
          end = "Gene_end_(bp)",
-         ensembl_gene_id = Gene_stable_ID,
          feature_strand = Strand,
          gene_name = HGNC_symbol) %>%
   filter(chromosome %in% 1:22) %>% 
-  filter(!duplicated(ensembl_gene_id)) %>%
-  mutate(gene_name = ifelse(gene_name == "", ensembl_gene_id, gene_name)) # use ensembl gene id for genes with no HGNC symbol
+  filter(!duplicated(feature_id)) %>%
+  mutate(gene_name = ifelse(gene_name == "", feature_id, gene_name)) # use ensembl gene id for genes with no HGNC symbol
 
 fwrite(b, sep = "\t", "Feature_Annotation_Ensembl_gene_ids_autosomes_b38.txt")
