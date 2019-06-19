@@ -1,9 +1,12 @@
 #!/bin/bash
 #SBATCH --job-name=eqtl_chunktest
-#SBATCH --time=48:0:0
-#SBATCH --cpus-per-task=5 
+#SBATCH --time=96:0:0
+#SBATCH --cpus-per-task=8
 #SBATCH --partition=long 
 #SBATCH --output=eqtl_chunktest_%A_%a.log
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=jm2294@medschl.cam.ac.uk
+
 
 # get start time
 start=$(date +%s.%N)
@@ -27,7 +30,7 @@ OUTPATH=/home/jm2294/projects/RNAseq/test_run_chunks/output_no_covariates
 # Specify files. NOTE THAT GENFILE DOES NOT NEED .bgen SUFFIX
 #GENFILE=${GENPATH}/impute_${CHR}_interval_RNAseq_batch1_withsamples_testfile_uniqueRSids
 #GENFILE=${GENPATH}/impute_22_23500000-24500000_interval_RNAseq_batch1_withsamples_testfile_uniqueRSids
-GENFILE=${GENPATH}/b37_b38_liftover/impute_22_interval_b38
+GENFILE=${GENPATH}/b37_b38_liftover/impute_22_interval_b38_filtered_on_rsids
 ANFILE=${PHEPATH}/annotation_file/Feature_Annotation_Ensembl_gene_ids_autosomes_b38.txt
 PHEFILE=${PHEPATH}/test_run/phenotype_5281-fc-genecounts.txt
 SAMPLEMAPFILE=${PHEPATH}/test_run/sample_mapping_file_gt_to_phe.txt
@@ -60,10 +63,9 @@ python -u /home/jm2294/projects/RNAseq/hipsci_pipeline/limix_QTL_pipeline/run_QT
  -cr 0.95\
  -gm standardize\
  -w 1000000\
- --block_size 2000\
- -gr $GR
-# -cf $COVFILE\
-# -gr 22:23500000-24500000
+ --block_size 3000\
+ -gr $GR\
+ -cf $COVFILE
 
 python -u /home/jm2294/projects/RNAseq/hipsci_pipeline/post-processing_QTL/minimal_postprocess.py\
  -id $OUTPATH\

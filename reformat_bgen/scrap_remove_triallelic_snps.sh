@@ -1,3 +1,4 @@
+#!/bin/sh
 # Get SNP info from master bgen files
 #SBATCH -p long
 #SBATCH --job-name=update_bgen
@@ -7,9 +8,6 @@
 
 # get start time
 start=$(date +%s.%N)
-
-module load gcc/5.2.0 
-module load qctool2/rc4-6.8
 
 module load gcc/5.2.0 
 module load qctool2/rc4-6.8
