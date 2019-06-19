@@ -14,7 +14,7 @@ start=$(date +%s.%N)
 # Get genomic positions for chunk
 CHUNK=$(head /home/jm2294/projects/RNAseq/test_run_chunks/chunklist_b38.txt -n $SLURM_ARRAY_TASK_ID | tail -n 1)
 #CHUNK=$(head /home/jm2294/projects/RNAseq/test_run_chunks/chunklist.txt -n 529 | tail -n 1)  ## TEST LINE FOR INTERACTIVE RUN
-
+	
 CHR=$(echo $CHUNK | cut -d ' ' -f1)
 START=$(echo $CHUNK | cut -d ' ' -f2)
 END=$(echo $CHUNK | cut -d ' ' -f3)
@@ -36,6 +36,9 @@ PHEFILE=${PHEPATH}/test_run/phenotype_5281-fc-genecounts.txt
 SAMPLEMAPFILE=${PHEPATH}/test_run/sample_mapping_file_gt_to_phe.txt
 COVFILE=${PHEPATH}/test_run/INTERVAL_RNA_batch1_2_covariates_sex_age.txt
 GR=$(echo ${CHR}:${START}-${END})
+BLOCKSIZE=3000
+WINDOW=1000000
+PERMUTATIONS=100
 
 # Echo config for log file
 echo Running Limix
@@ -47,6 +50,9 @@ echo Phenotype File: $PHEFILE
 echo Annotation File: $ANFILE
 echo Sample Map File: $SAMPLEMAPFILE
 echo Covariate File: $COVFILE
+echo Block Size: $BLOCKSIZE
+echo Window: $WINDOW
+echo Permutations: $PERMUTATIONS
 echo "****************************************"
 
 # Run QTL mapping
@@ -57,19 +63,19 @@ python -u /home/jm2294/projects/RNAseq/hipsci_pipeline/limix_QTL_pipeline/run_QT
  -od $OUTPATH\
  --sample_mapping_file $SAMPLEMAPFILE\
  -c\
- -np 100\
+ -np $PERMUTATIONS\
  -maf 0.001\
  -hwe 0.00001\
  -cr 0.95\
  -gm standardize\
- -w 1000000\
- --block_size 3000\
+ -w $WINDOW\
+ --block_size $BLOCKSIZE\
  -gr $GR\
  -cf $COVFILE
 
-python -u /home/jm2294/projects/RNAseq/hipsci_pipeline/post-processing_QTL/minimal_postprocess.py\
- -id $OUTPATH\
- -od $OUTPATH 
+#python -u /home/jm2294/projects/RNAseq/hipsci_pipeline/post-processing_QTL/minimal_postprocess.py\
+# -id $OUTPATH\
+# -od $OUTPATH 
 
 conda deactivate 
  
