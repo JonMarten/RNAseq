@@ -10,9 +10,9 @@ batch3 <- fread("batch3/results-study5591-tic109d/combined/study5591-tic109d-sta
 b3_names <- data.frame("RNA_id" = names(batch3), "batch" = 3)
 batch4 <- fread("batch4/results-study5591-tic276/combined/study5591-tic276-star-genecounts.txt")
 b4_names <- data.frame("RNA_id" = names(batch4), "batch" = 4)
-batch5 <- fread("batch5/results-study5591-tic297/combined/study5591-tic297-star-genecounts.txt")
-b5_names <- data.frame("RNA_id" = names(batch5), "batch" = 5)
+batch6 <- fread("batch6/results-study5591-tic297/combined/study5591-tic297-star-genecounts.txt")
+b6_names <- data.frame("RNA_id" = names(batch6), "batch" = 6)
 
-names <- rbind(b1_names, b2_names, b3_names, b4_names, b5_names)
+names <- rbind(b1_names, b2_names, b3_names, b4_names, b6_names)
 names <- names[which(grepl("INT", names$RNA_id)),] # remove rows for columns other than RNA ids
 write.csv(names, "RNA_seq_ids.csv", quote = F, row.names = F)

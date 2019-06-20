@@ -134,4 +134,4 @@ out3 <- out2 %>%
   mutate(BMI = round(BMI, 2)) %>%
   select(sample_id:age_RNA, sequencingBatch, intervalPhase:weight, BMI, attendanceDate___RNA, appointmentTime___RNA, processDate___RNA, processTime___RNA, BA_D_10_9_L___RNA:PLT_O_10_9_L___RNA, RBC_10_12_L___RNA:WBC_N_10_9_L___RNA)
 
-write.csv(out3, file = "INTERVAL_RNA_batch1_5_covariates_release_2019_06_11.csv", row.names = F)
+write.csv(out3, file = "INTERVAL_RNA_batch1-4_and_6_covariates_release_2019_06_11.csv", row.names = F)
