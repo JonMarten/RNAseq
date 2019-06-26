@@ -69,6 +69,7 @@ out <- dat3 %>%
          olink_ID:olink_NEU,
          tempus,
          picklistRNA,
+         RNA_ID,
          RNA_pick_priority_1:RNA_pick_priority_4,
          olink_ID)
 
