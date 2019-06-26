@@ -12,9 +12,9 @@ source activate limix_qtl
 start=$(date +%s.%N)
 
 
-/home/jm2294/projects/RNAseq/hipsci_pipeline_19_06_18/post-processing_QTL/minimal_postprocess.py\
--id /home/jm2294/projects/RNAseq/test_run_chunks/output_new_pipeline/test\
--od /home/jm2294/projects/RNAseq/test_run_chunks/output_new_pipeline/test 
+python /home/jm2294/projects/RNAseq/hipsci_pipeline_19_06_18/post-processing_QTL/minimal_postprocess.py\
+ -id /home/jm2294/projects/RNAseq/test_run_chunks/output_new_pipeline/test\
+ -od /home/jm2294/projects/RNAseq/test_run_chunks/output_new_pipeline/test 
 
 conda deactivate 
 
