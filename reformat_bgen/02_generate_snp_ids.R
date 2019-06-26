@@ -2,6 +2,7 @@
 setwd("/home/jm2294/GENETIC_DATA/INTERVAL/RNAseq")
 library(dplyr)
 library(data.table)
+library(stringr)
 
 chr <- 22
 
@@ -9,23 +10,35 @@ chr <- 22
 snpstats <- fread(paste0("/home/jm2294/GENETIC_DATA/INTERVAL/RNAseq/snp_stats/impute_",chr,"_interval_snp_stats_unfiltered.txt"), skip = 8, data.table=F)
 snpstats <- snpstats %>%
   mutate(indel = ifelse(nchar(alleleA)>1 | nchar(alleleB)>1, 1, 0)) %>%
-  filter(rsid != ".") %>%
+  #filter(rsid != ".") %>%
   mutate(alleleA_sort = ifelse(alleleA <= alleleB, alleleA, alleleB),
          alleleB_sort = ifelse(alleleA <= alleleB, alleleB, alleleA)) %>%
-  mutate(match_id = paste0(rsid,"_",alleleA_sort,"_",alleleB_sort))
+  mutate(match_id = paste0(str_pad(chr,2,pad = "0"),"_", position, "_", alleleA, "_", alleleB, ":", rsid))
+
 
 # read in b38 map
-b38 <- fread(paste0("/home/jm2294/GENETIC_DATA/INTERVAL/RNAseq/b37_b38_liftover/INTERVAL_24_8_18_imputed_chr",chr,"_hg38.vcf"), data.table = F, skip = 5)
-names(b38) <- c("CHROM.b38","POS.b38","rsid","REF.b38","ALT.b38")
-b38 <- b38 %>%
-  distinct %>%
-  filter(rsid != ".") %>%
-  mutate(REF.b38_sort = ifelse(REF.b38 < ALT.b38, REF.b38, ALT.b38),
-         ALT.b38_sort = ifelse(REF.b38 < ALT.b38, ALT.b38, REF.b38))  %>%
-  mutate(match_id = paste0(rsid,"_",REF.b38_sort,"_",ALT.b38_sort))
+b38 <- fread(paste0("/home/jm2294/GENETIC_DATA/INTERVAL/RNAseq/b37_b38_liftover/INTERVAL_imputed_liftover_hg38_cleaned/INTERVAL_imputed_liftover_hg38_cleaned_chr",chr,".vcf"), data.table = F, skip = 5)
+names(b38) <- c("CHROM.b38","POS.b38","match_id","REF.b38","ALT.b38")
+
+# b38 <- b38 %>%
+#   distinct %>%
+#   filter(rsid != ".") %>%
+#   mutate(REF.b38_sort = ifelse(REF.b38 < ALT.b38, REF.b38, ALT.b38),
+#          ALT.b38_sort = ifelse(REF.b38 < ALT.b38, ALT.b38, REF.b38))  %>%
+#   mutate(match_id = paste0(rsid,"_",REF.b38_sort,"_",ALT.b38_sort))
 
 snpsmerge <- inner_join(snpstats, b38, by = "match_id")
+
+# Make list of SNPs that don't have b38 positions
 no_b38 <- snpstats$match_id[which(!snpstats$match_id %in% snpsmerge$match_id)]
+no_snpstats <- b38$match_id[which(!b38$match_id %in% snpsmerge$match_id)]
+
+cat("\n",length(no_b38), "variants do not match to b38.")
+
+drops <- snpstats %>%
+  filter(match_id %in% no_b38) %>%
+  mutate(chrpos = paste0(chromosome,":",position)) %>%
+  pull(chrpos)
 
 # Create CPTIDs for SNPs (sort alleles in alphabetical order)
 snps <- snpsmerge %>%
