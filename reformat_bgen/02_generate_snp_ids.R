@@ -20,12 +20,12 @@ snpstats <- snpstats %>%
 b38 <- fread(paste0("/home/jm2294/GENETIC_DATA/INTERVAL/RNAseq/b37_b38_liftover/INTERVAL_imputed_liftover_hg38_cleaned/INTERVAL_imputed_liftover_hg38_cleaned_chr",chr,".vcf"), data.table = F, skip = 5)
 names(b38) <- c("CHROM.b38","POS.b38","match_id","REF.b38","ALT.b38")
 
-# b38 <- b38 %>%
-#   distinct %>%
-#   filter(rsid != ".") %>%
-#   mutate(REF.b38_sort = ifelse(REF.b38 < ALT.b38, REF.b38, ALT.b38),
-#          ALT.b38_sort = ifelse(REF.b38 < ALT.b38, ALT.b38, REF.b38))  %>%
-#   mutate(match_id = paste0(rsid,"_",REF.b38_sort,"_",ALT.b38_sort))
+b38 <- b38 %>%
+  distinct %>%
+  filter(rsid != ".") %>%
+  mutate(REF.b38_sort = ifelse(REF.b38 < ALT.b38, REF.b38, ALT.b38),
+         ALT.b38_sort = ifelse(REF.b38 < ALT.b38, ALT.b38, REF.b38))  %>%
+  mutate(match_id = paste0(rsid,"_",REF.b38_sort,"_",ALT.b38_sort))
 
 snpsmerge <- inner_join(snpstats, b38, by = "match_id")
 
@@ -40,10 +40,10 @@ drops <- snpstats %>%
   mutate(chrpos = paste0(chromosome,":",position)) %>%
   pull(chrpos)
 
-# Create CPTIDs for SNPs (sort alleles in alphabetical order)
+# Create CPTIDs for SNPs (sort alleles in alphabetical order) USING ALLELES FROM b37 HERE.
 snps <- snpsmerge %>%
   filter(indel == 0) %>%
-  mutate(cptid.b38 = paste0(CHROM.b38, ":", POS.b38, "_", REF.b38_sort, "_", ALT.b38_sort))
+  mutate(cptid.b38 = paste0(CHROM.b38, ":", POS.b38, "_", alleleA_sort, "_", alleleB_sort))
 
 # Create CPTIDs for indels (sort alleles by smallest first)
 indels <- snpsmerge %>%
