@@ -6,6 +6,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
 #SBATCH -a 1-22
+# submit with --dependency=afterok:1640947 to run after step 02b
 
 # Remake BGEN files with new positions and duplicates removed
 
