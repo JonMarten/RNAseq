@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=eqtl_chunktest_newpipe_nofilter
-#SBATCH --time=24:0:0
-#SBATCH --cpus-per-task=10
-#SBATCH --partition=medium 
+#SBATCH --time=96:0:0
+#SBATCH --cpus-per-task=8
+#SBATCH --partition=long 
 #SBATCH --output=/home/jm2294/projects/RNAseq/test_run_chunks/output_newpipeline_nofilter/eqtl_chunktest_newpipe_%A_%a.log
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
