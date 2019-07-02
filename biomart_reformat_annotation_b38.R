@@ -13,8 +13,8 @@ b <- a %>%
          end = "Gene_end_(bp)",
          feature_strand = Strand,
          gene_name = HGNC_symbol) %>%
-  filter(chromosome %in% 1:22) %>% 
-  filter(!duplicated(feature_id)) %>%
-  mutate(gene_name = ifelse(gene_name == "", feature_id, gene_name)) # use ensembl gene id for genes with no HGNC symbol
-
+  distinct() %>%
+  filter(chromosome %in% c(1:22, "X", "Y", "MT"))  %>% 
+  mutate(gene_name = ifelse(gene_name == "", feature_id, gene_name)) %>% # use ensembl gene id for genes with no HGNC symbol
+  filter(!duplicated(feature_id)) # remove 3 annotations where one gene has multiple transcripts. Retain one from each pair.
 fwrite(b, sep = "\t", "Feature_Annotation_Ensembl_gene_ids_autosomes_b38.txt")
