@@ -17,6 +17,9 @@ These are unsuitable for limix analysis as the pipeline requires bgen v1.2, whic
 To test the limix pipeline, a new version of the bgen files has been created with qctool v2 (see [this script](make_test_bgen.sh) for details).
 In the first instance, the file was pruned to just chr22:23500000-24500000, and limited to the 188 individuals in batch 1. 
 It became apparent that duplicate SNP ids in the file were causing problems with the pipeline, so the current version prunes out any SNP with nonunique identifiers. These include SNPS without rsids coded as "." as well as triallelic SNPs and indels ([This script](get_duplicate_rsids.R) documents how these were identified). 
+
+Filter of MAF > 0.2% (roughly corresponding to MAC > 10 in the full sample of ~2,500) was applied before running the analysis. No imputation quality filter was applied pre-analysis as this is not implemented in the pipeline and makes little difference on the number of SNPs after filtering on MAF. A post-GWAS filter will be applied.
+
 ## Pipeline
 The Limix python pipeline as written by Marc Jan Bonder is currently being tested. Limix is installed on Cardio and is currently in the process of being set up on CSD3. It currently works on phased test data provided with the code, but not on our own data.
 ### Installation
