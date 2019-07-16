@@ -74,3 +74,4 @@ out <- dat3 %>%
          olink_ID)
 
 write.csv(out, row.names = F, quote = T, file = paste0("../INTERVAL_omics_table_",dataRelease,".csv"))
+apply(out, MARGIN = 2, FUN = function(x){length(which(!is.na(x)))}) #list numbers of non-missing ids
