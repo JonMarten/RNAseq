@@ -37,7 +37,7 @@ SAMPLEMAPFILE=${PHEPATH}/test_run/sample_mapping_file_gt_to_phe.txt
 COVFILE=${PHEPATH}/test_run/INTERVAL_RNA_batch1_2_covariates_sex_age.txt
 GR=$(echo ${CHR}:${START}-${END})
 BLOCKSIZE=3000
-WINDOW=1000000
+WINDOW=500000
 PERMUTATIONS=100
 
 # Echo config for log file
