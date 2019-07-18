@@ -1,9 +1,10 @@
 #!/bin/bash
+#SBATCH -A PETERS-SL3-CPU
+#SBATCH -p skylake
+#SBATCH --mem 40G
 #SBATCH --job-name=eqtl_chunktest_newpipe_nofilter
-#SBATCH --time=96:0:0
-#SBATCH --cpus-per-task=8
-#SBATCH --partition=long 
-#SBATCH --output=/home/jm2294/projects/RNAseq/test_run_chunks/output_newpipeline_nofilter/eqtl_chunktest_newpipe_%A_%a.log
+#SBATCH --time=72:0:0
+#SBATCH --output=/rds/user/jm2294/hpc-work/projects/RNAseq/test_run_chunks/output_newpipeline_nofilter/eqtl_chunktest_newpipe_%A_%a.log
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
 
@@ -12,8 +13,8 @@
 start=$(date +%s.%N)
 
 # Get genomic positions for chunk
-CHUNK=$(head /home/jm2294/projects/RNAseq/test_run_chunks/chunklist_b38.txt -n $SLURM_ARRAY_TASK_ID | tail -n 1)
-#CHUNK=$(head /home/jm2294/projects/RNAseq/test_run_chunks/chunklist.txt -n 529 | tail -n 1)  ## TEST LINE FOR INTERACTIVE RUN
+CHUNK=$(head /rds/user/jm2294/hpc-work/projects/RNAseq/test_run_chunks/chunklist_b38.txt -n $SLURM_ARRAY_TASK_ID | tail -n 1)
+#CHUNK=$(head /rds/user/jm2294/hpc-work/projects/RNAseq/test_run_chunks/chunklist.txt -n 529 | tail -n 1)  ## TEST LINE FOR INTERACTIVE RUN
 	
 CHR=$(echo $CHUNK | cut -d ' ' -f1)
 START=$(echo $CHUNK | cut -d ' ' -f2)
@@ -23,9 +24,9 @@ END=$(echo $CHUNK | cut -d ' ' -f3)
 source activate limix_qtl
 
 # Specify file paths
-GENPATH=/home/jm2294/GENETIC_DATA/INTERVAL/RNAseq
-PHEPATH=/home/jm2294/projects/RNAseq
-OUTPATH=/home/jm2294/projects/RNAseq/test_run_chunks/output_newpipeline_nofilter
+GENPATH=/rds/user/jm2294/hpc-work/projects/RNAseq/GENETIC_DATA/INTERVAL/RNAseq
+PHEPATH=/rds/user/jm2294/hpc-work/projects/RNAseq
+OUTPATH=/rds/user/jm2294/hpc-work/projects/RNAseq/test_run_chunks/output_newpipeline_nofilter
 
 # Specify files. NOTE THAT GENFILE DOES NOT NEED .bgen SUFFIX
 #GENFILE=${GENPATH}/impute_${CHR}_interval_RNAseq_batch1_withsamples_testfile_uniqueRSids
@@ -55,7 +56,7 @@ echo Permutations: $PERMUTATIONS
 echo "****************************************"
 
 # Run QTL mapping
-python -u /home/jm2294/projects/RNAseq/hipsci_pipeline_19_06_18/limix_QTL_pipeline/run_QTL_analysis.py\
+python -u /rds/user/jm2294/hpc-work/projects/RNAseq/hipsci_pipeline_19_06_18/limix_QTL_pipeline/run_QTL_analysis.py\
  --bgen $GENFILE\
  -af $ANFILE\
  -pf $PHEFILE\
@@ -71,10 +72,10 @@ python -u /home/jm2294/projects/RNAseq/hipsci_pipeline_19_06_18/limix_QTL_pipeli
  --block_size $BLOCKSIZE\
  -gr $GR\
  -cf $COVFILE
-# --variant_filter /home/jm2294/GENETIC_DATA/INTERVAL/RNAseq/b37_b38_liftover/b38_biallelic_snps_only_no_indels.txt
-# --variant_filter /home/jm2294/GENETIC_DATA/INTERVAL/RNAseq/b37_b38_liftover/b38_indels_only.txt
+# --variant_filter /rds/user/jm2294/hpc-work/projects/RNAseq/b37_b38_liftover/b38_biallelic_snps_only_no_indels.txt
+# --variant_filter /rds/user/jm2294/hpc-work/projects/RNAseq/b37_b38_liftover/b38_indels_only.txt
 
-#python -u /home/jm2294/projects/RNAseq/hipsci_pipeline/post-processing_QTL/minimal_postprocess.py\
+#python -u /rds/user/jm2294/hpc-work/projects/RNAseq/hipsci_pipeline/post-processing_QTL/minimal_postprocess.py\
 # -id $OUTPATH\
 # -od $OUTPATH 
 
