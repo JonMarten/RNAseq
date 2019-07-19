@@ -39,6 +39,7 @@ GR=$(echo ${CHR}:${START}-${END})
 BLOCKSIZE=3000
 WINDOW=500000
 PERMUTATIONS=100
+MAF=0.002
 
 # Echo config for log file
 echo Running Limix
@@ -53,6 +54,7 @@ echo Covariate File: $COVFILE
 echo Block Size: $BLOCKSIZE
 echo Window: $WINDOW
 echo Permutations: $PERMUTATIONS
+echo MAF: $MAF
 echo "****************************************"
 
 # Run QTL mapping
@@ -64,7 +66,7 @@ python -u /rds/user/jm2294/hpc-work/projects/RNAseq/hipsci_pipeline_19_06_18/lim
  --sample_mapping_file $SAMPLEMAPFILE\
  -c\
  -np $PERMUTATIONS\
- -maf 0.001\
+ -maf $MAF\
  -hwe 0.00001\
  -cr 0.95\
  -gm standardize\
