@@ -31,11 +31,12 @@ chunkList <- anno2 %>%
   summarise(chr = unique(chromosome),
             start = min(start),
             end = max(end)) %>%
+  mutate(chr = as.numeric(chr)) %>%
   arrange(chr, start) %>%
   select(-bin) %>%
   data.frame()
 
-write.table(chunkList, file = "chunklist_b38_50genes.txt", sep = "\t", row.names = F, col.names =F)
+write.table(chunkList, file = "chunklist_b38_50genes.txt", sep = "\t", row.names = F, col.names =F, quote = F)
 
 # Get chunk ranges for chromosome
 chrTable <- chunkList %>% 
@@ -45,4 +46,4 @@ chrTable <- chunkList %>%
   data.frame %>% 
   mutate(chr = as.numeric(chr)) %>%
   arrange(chr)
-write.table(chrTable, row.names = F, col.names = T, file = "/home/jm2294/rds/hpc-work/projects/RNAseq/scripts/RNAseq/reformat_bgen/chunks_by_chr_50genes.txt")
+write.table(chrTable, row.names = F, col.names = T, file = "/home/jm2294/rds/hpc-work/projects/RNAseq/scripts/RNAseq/reformat_bgen/chunks_by_chr_50genes.txt", quote = F)
