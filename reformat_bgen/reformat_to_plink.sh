@@ -15,14 +15,18 @@
 module purge                  
 module load rhel7/default-peta4
 module load plink
+module load qctool
 
 # get start time
 start=$(date +%s.%N)
 
 cd /rds/user/jm2294/hpc-work/projects/RNAseq/GENETIC_DATA/INTERVAL/RNAseq/b37_b38_liftover
 
+qctool -g /rds/user/jm2294/hpc-work/projects/RNAseq/GENETIC_DATA/b37_b38_liftover/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_filtered.bgen\
+ -og /rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/plink_bfile/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_filtered.vcf
+
 plink2\
- --bgen /rds/user/jm2294/hpc-work/projects/RNAseq/GENETIC_DATA/b37_b38_liftover/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_filtered.bgen\
+ --vcf /rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/plink_bfile/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_filtered.vcf\
  --make-bed\
  --out /rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/plink_bfile/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_filtered
 
