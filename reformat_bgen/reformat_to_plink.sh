@@ -23,7 +23,8 @@ cd /rds/user/jm2294/hpc-work/projects/RNAseq/GENETIC_DATA/INTERVAL/RNAseq/b37_b3
 
 plink2\
  --bgen /rds/user/jm2294/hpc-work/projects/RNAseq/GENETIC_DATA/b37_b38_liftover/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_filtered.bgen\
- --bfile /rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/plink_bfile/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_filtered
+ --make-bed\
+ --out /rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/plink_bfile/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_filtered
 
 # get end time
 end=$(date +%s.%N)    
