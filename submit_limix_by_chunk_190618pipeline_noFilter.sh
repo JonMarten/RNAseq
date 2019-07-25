@@ -24,13 +24,13 @@ END=$(echo $CHUNK | cut -d ' ' -f3)
 source activate limix_qtl
 
 # Specify file paths
-GENPATH=/home/jm2294/rds/hpc-work/projects/RNAseq/GENETIC_DATA
+GENPATH=/rds/user/jm2294/hpc-work/projects/RNAseq/GENETIC_DATA/bgen_b38_filtered
 PHEPATH=/rds/user/jm2294/hpc-work/projects/RNAseq
 OUTPATH=/rds/user/jm2294/hpc-work/projects/RNAseq/test_run_chunks/output_newpipeline_nofilter/500kb_window
 
 # Specify files. NOTE THAT GENFILE DOES NOT NEED .bgen SUFFIX
 #GENFILE=${GENPATH}/impute_${CHR}_interval_RNAseq_batch1_withsamples_testfile_uniqueRSids
-GENFILE=${GENPATH}/b37_b38_liftover/impute_${CHR}_interval_b38_filtered
+GENFILE=${GENPATH}/impute_${CHR}_interval_b38_filtered
 ANFILE=${PHEPATH}/annotation_file/Feature_Annotation_Ensembl_gene_ids_autosomes_b38.txt
 PHEFILE=${PHEPATH}/test_run/phenotype_5281-fc-genecounts.txt
 SAMPLEMAPFILE=${PHEPATH}/test_run/sample_mapping_file_gt_to_phe.txt
@@ -44,6 +44,7 @@ MAF=0.01
 # Echo config for log file
 echo Running Limix
 echo "************** Parameters **************"
+echo Job number:  $SLURM_ARRAY_JOB_ID
 echo Chunk: $SLURM_ARRAY_TASK_ID
 echo Genomic Region: chr$GR
 echo Genotype File: ${GENFILE}.bgen
