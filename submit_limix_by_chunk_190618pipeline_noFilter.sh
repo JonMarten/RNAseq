@@ -1,19 +1,23 @@
 #!/bin/bash
 #SBATCH -A PETERS-SL3-CPU
 #SBATCH -p skylake-himem
-#SBATCH --mem 50G
-#SBATCH --job-name=eqtl_chunktest_newpipe_nofilter
+#SBATCH --mem 100G
+#SBATCH --job-name=eqtl_test
 #SBATCH --time=12:0:0
-#SBATCH --output=/rds/user/jm2294/hpc-work/projects/RNAseq/test_run_chunks/output_newpipeline_nofilter/500kb_window/eqtl_chunktest_newpipe_%A_%a.log
+#SBATCH --output=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/logs/eqtl_test_%A_%a.log
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
 
+
+######################################################
+############### PATHS NEED UPDATING!!! ###############
+######################################################
 
 # get start time
 start=$(date +%s.%N)
 
 # Get genomic positions for chunk
-CHUNK=$(head /rds/user/jm2294/hpc-work/projects/RNAseq/test_run_chunks/chunklist_b38_50genes.txt -n $SLURM_ARRAY_TASK_ID | tail -n 1)
+CHUNK=$(head /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/bgen_b38_filtered/chunklist_b38_50genes.txt -n $SLURM_ARRAY_TASK_ID | tail -n 1)
 #CHUNK=$(head /rds/user/jm2294/hpc-work/projects/RNAseq/test_run_chunks/chunklist.txt -n 529 | tail -n 1)  ## TEST LINE FOR INTERACTIVE RUN
 	
 CHR=$(echo $CHUNK | cut -d ' ' -f1)
@@ -24,17 +28,20 @@ END=$(echo $CHUNK | cut -d ' ' -f3)
 source activate limix_qtl
 
 # Specify file paths
-GENPATH=/rds/user/jm2294/hpc-work/projects/RNAseq/GENETIC_DATA/bgen_b38_filtered
-PHEPATH=/rds/user/jm2294/hpc-work/projects/RNAseq
-OUTPATH=/rds/user/jm2294/hpc-work/projects/RNAseq/test_run_chunks/output_newpipeline_nofilter/500kb_window
+GENPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA
+PHEPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing
+OUTPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/results/eqtl_test_${SLURM_ARRAY_JOB_ID}
+
+# Create output directory if it doesn't exist
+mkdir -p $OUTPATH
 
 # Specify files. NOTE THAT GENFILE DOES NOT NEED .bgen SUFFIX
 #GENFILE=${GENPATH}/impute_${CHR}_interval_RNAseq_batch1_withsamples_testfile_uniqueRSids
 GENFILE=${GENPATH}/impute_${CHR}_interval_b38_filtered
 ANFILE=${PHEPATH}/annotation_file/Feature_Annotation_Ensembl_gene_ids_autosomes_b38.txt
-PHEFILE=${PHEPATH}/test_run/phenotype_5281-fc-genecounts.txt
-SAMPLEMAPFILE=${PHEPATH}/test_run/sample_mapping_file_gt_to_phe.txt
-COVFILE=${PHEPATH}/test_run/INTERVAL_RNA_batch1_2_covariates_sex_age.txt
+PHEFILE=${PHEPATH}/phenotype/phenotype_5281-fc-genecounts.txt
+SAMPLEMAPFILE=${PHEPATH}/phenotype/sample_mapping_file_gt_to_phe.txt
+COVFILE=${PHEPATH}/covariates/INTERVAL_RNA_batch1_2_covariates_sex_age.txt
 GR=$(echo ${CHR}:${START}-${END})
 BLOCKSIZE=3000
 WINDOW=500000
@@ -44,7 +51,7 @@ MAF=0.01
 # Echo config for log file
 echo Running Limix
 echo "************** Parameters **************"
-echo Job number:  $SLURM_ARRAY_JOB_ID
+#echo Chunk number:  $SLURM_ARRAY_TASK_ID
 echo Chunk: $SLURM_ARRAY_TASK_ID
 echo Genomic Region: chr$GR
 echo Genotype File: ${GENFILE}.bgen
@@ -59,7 +66,7 @@ echo MAF: $MAF
 echo "****************************************"
 
 # Run QTL mapping
-python -u /rds/user/jm2294/hpc-work/projects/RNAseq/hipsci_pipeline_19_06_18/limix_QTL_pipeline/run_QTL_analysis.py\
+python -u /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/hipsci_pipeline/limix_QTL_pipeline/run_QTL_analysis.py\
  --bgen $GENFILE\
  -af $ANFILE\
  -pf $PHEFILE\
@@ -75,12 +82,6 @@ python -u /rds/user/jm2294/hpc-work/projects/RNAseq/hipsci_pipeline_19_06_18/lim
  --block_size $BLOCKSIZE\
  -gr $GR\
  -cf $COVFILE
-# --variant_filter /rds/user/jm2294/hpc-work/projects/RNAseq/b37_b38_liftover/b38_biallelic_snps_only_no_indels.txt
-# --variant_filter /rds/user/jm2294/hpc-work/projects/RNAseq/b37_b38_liftover/b38_indels_only.txt
-
-#python -u /rds/user/jm2294/hpc-work/projects/RNAseq/hipsci_pipeline/post-processing_QTL/minimal_postprocess.py\
-# -id $OUTPATH\
-# -od $OUTPATH 
 
 conda deactivate 
  
