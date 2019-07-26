@@ -28,7 +28,7 @@ END=$(echo $CHUNK | cut -d ' ' -f3)
 source activate limix_qtl
 
 # Specify file paths
-GENPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA
+GENPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/bgen_b38_filtered
 PHEPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing
 OUTPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/results/eqtl_test_${SLURM_ARRAY_JOB_ID}
 
