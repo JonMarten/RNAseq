@@ -19,7 +19,7 @@ source activate limix_qtl
 
 # Set directory of results to merge
 RESULT_DIR=$1
-OUTPUT_DIR=$(echo ${RESULT_DIR}/processed/processed_)
+OUTPUT_DIR=$(echo ${RESULT_DIR}/processed)
 mkdir -p $OUTPUT_DIR
 
 # Start runtime
@@ -29,7 +29,7 @@ start=$(date +%s.%N)
 
 python /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/hipsci_pipeline/post-processing_QTL/minimal_postprocess.py\
  -id $RESULT_DIR\
- -od $OUTPUT_DIR
+ -od ${OUTPUT_DIR}/processed_
 
 conda deactivate 
 
