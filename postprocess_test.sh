@@ -19,7 +19,7 @@ source activate limix_qtl
 
 # Set directory of results to merge
 RESULT_DIR=$1
-OUTPUT_DIR=$(echo ${RESULT_DIR}/processed)
+OUTPUT_DIR=$(echo ${RESULT_DIR}/processed/processed_)
 mkdir -p $OUTPUT_DIR
 
 # Start runtime
