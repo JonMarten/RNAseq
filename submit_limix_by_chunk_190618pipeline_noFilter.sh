@@ -8,18 +8,11 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
 
-
-######################################################
-############### PATHS NEED UPDATING!!! ###############
-######################################################
-
 # get start time
 start=$(date +%s.%N)
 
 # Get genomic positions for chunk
 CHUNK=$(head /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/bgen_b38_filtered/chunklist_b38_50genes.txt -n $SLURM_ARRAY_TASK_ID | tail -n 1)
-#CHUNK=$(head /rds/user/jm2294/hpc-work/projects/RNAseq/test_run_chunks/chunklist.txt -n 529 | tail -n 1)  ## TEST LINE FOR INTERACTIVE RUN
-	
 CHR=$(echo $CHUNK | cut -d ' ' -f1)
 START=$(echo $CHUNK | cut -d ' ' -f2)
 END=$(echo $CHUNK | cut -d ' ' -f3)
@@ -27,7 +20,7 @@ END=$(echo $CHUNK | cut -d ' ' -f3)
 # Load limix environment
 source activate limix_qtl
 
-# Specify file paths
+# Specify file paths. Current config creates a new output directory for every new job submitted
 GENPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/bgen_b38_filtered
 PHEPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing
 OUTPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/results/eqtl_test_${SLURM_ARRAY_JOB_ID}
@@ -36,7 +29,6 @@ OUTPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing
 mkdir -p $OUTPATH
 
 # Specify files. NOTE THAT GENFILE DOES NOT NEED .bgen SUFFIX
-#GENFILE=${GENPATH}/impute_${CHR}_interval_RNAseq_batch1_withsamples_testfile_uniqueRSids
 GENFILE=${GENPATH}/impute_${CHR}_interval_b38_filtered
 ANFILE=${PHEPATH}/annotation_file/Feature_Annotation_Ensembl_gene_ids_autosomes_b38.txt
 PHEFILE=${PHEPATH}/phenotype/phenotype_5281-fc-genecounts.txt
