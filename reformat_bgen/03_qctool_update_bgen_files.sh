@@ -1,12 +1,12 @@
-#!/bin/sh
-#SBATCH -p medium
+#!/bin/bash
 #SBATCH --job-name=update_bgen
-#SBATCH -t 24:0:0
-#SBATCH --output=/home/jm2294/GENETIC_DATA/INTERVAL/RNAseq/b37_b38_liftover/update_bgen_%A_%a.log
+#SBATCH -A PETERS-SL3-CPU
+#SBATCH -p skylake-himem
+#SBATCH --mem 120G
+#SBATCH --time=12:0:0
+#SBATCH --output=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/logs/update_bgen_%A_%a.log
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
-#SBATCH -a 1-16
-# submit with --dependency=afterok:1640947 to run after step 02b
 
 # Remake BGEN files with new positions and duplicates removed
 
@@ -26,10 +26,10 @@ module load qctool2/rc4-6.8
 
 # use unique identifiers to retain only non-duplicated SNPs mapped to b38
 qctool\
- -g /home/jm2294/GENETIC_DATA/INTERVAL/RNAseq/b37_b38_liftover/impute_${SLURM_ARRAY_TASK_ID}_interval_b38.bgen\
- -incl-snpids /home/jm2294/GENETIC_DATA/INTERVAL/RNAseq/b37_b38_liftover/c${SLURM_ARRAY_TASK_ID}_b38_filter_snps.txt\
- -s /home/jm2294/GENETIC_DATA/INTERVAL/master/impute_22_interval.bgen.sample\
- -og /home/jm2294/GENETIC_DATA/INTERVAL/RNAseq/b37_b38_liftover/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_filtered.bgen
+ -g /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/impute_${SLURM_ARRAY_TASK_ID}_interval_b38.bgen\
+ -incl-snpids /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/c${SLURM_ARRAY_TASK_ID}_b38_filter_snps.txt\
+ -s /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/impute_22_interval.bgen.sample\
+ -og /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/bgen_b38_filtered/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_filtered.bgen
  
 end=$(date +%s.%N)
 
