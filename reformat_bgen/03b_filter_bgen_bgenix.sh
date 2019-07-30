@@ -18,4 +18,4 @@ INCL=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_l
 OUT=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/bgen_b38_filtered/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_filtered.bgen
 
 # extract variants in lists
-bgenix -g $BGEN  -incl-rsids $INCL > $OUT
+bgenix -g $BGEN -incl-rsids $INCL > $OUT
