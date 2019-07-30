@@ -2,7 +2,7 @@
 #SBATCH --job-name=update_bgen
 #SBATCH -A PETERS-SL3-CPU
 #SBATCH -p skylake-himem
-#SBATCH --mem 120G
+#SBATCH --mem 20G
 #SBATCH --time=12:0:0
 #SBATCH --output=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/logs/update_bgen_%A_%a.log
 #SBATCH --mail-type=ALL
