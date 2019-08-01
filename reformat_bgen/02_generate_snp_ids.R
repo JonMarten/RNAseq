@@ -4,9 +4,9 @@ library(dplyr)
 library(data.table)
 library(stringr)
 
-#args <- commandArgs(trailingOnly=TRUE)
-#chr <- args[1]
-for(chr in 1:22){
+args <- commandArgs(trailingOnly=TRUE)
+chr <- args[1]
+#for(chr in 1:22){
 
 # Read in SNP stats output from qctool and add column to check if variant is an indel
 snpstats <- fread(paste0("snp_stats/impute_",chr,"_interval_snp_stats_unfiltered.txt"), skip = 8, data.table=F)
@@ -105,5 +105,5 @@ snplist <- newMap %>%
   select(alternate_id.b38)
 write.table(snplist, row.names = F, col.names = F, quote = F, file = paste0("b37_b38_liftover/c",chr,"_b38_filter_snps.txt"))
 rm(list=ls())
-}
+
 
