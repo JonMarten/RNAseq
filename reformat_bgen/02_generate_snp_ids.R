@@ -1,15 +1,15 @@
 # Make new alternate ID for bgen 1.2 files
-setwd("/home/jm2294/GENETIC_DATA/INTERVAL/RNAseq")
+setwd("/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA")
 library(dplyr)
 library(data.table)
 library(stringr)
 
-args = commandArgs(trailingOnly=TRUE)
-chr <- args[1]
-#for(chr in 1:22){
+#args <- commandArgs(trailingOnly=TRUE)
+#chr <- args[1]
+for(chr in 1:22){
 
 # Read in SNP stats output from qctool and add column to check if variant is an indel
-snpstats <- fread(paste0("/home/jm2294/GENETIC_DATA/INTERVAL/RNAseq/snp_stats/impute_",chr,"_interval_snp_stats_unfiltered.txt"), skip = 8, data.table=F)
+snpstats <- fread(paste0("snp_stats/impute_",chr,"_interval_snp_stats_unfiltered.txt"), skip = 8, data.table=F)
 snpstats <- snpstats %>%
   mutate(indel = ifelse(nchar(alleleA)>1 | nchar(alleleB)>1, 1, 0)) %>%
   #filter(rsid != ".") %>%
@@ -18,7 +18,7 @@ snpstats <- snpstats %>%
   mutate(match_id = paste0(str_pad(chr,2,pad = "0"),"_", position, "_", alleleA, "_", alleleB, ":", rsid))
 
 # read in b38 map
-b38 <- fread(paste0("/home/jm2294/GENETIC_DATA/INTERVAL/RNAseq/b37_b38_liftover/INTERVAL_imputed_liftover_hg38_cleaned/INTERVAL_imputed_liftover_hg38_cleaned_chr",chr,".vcf"), data.table = F, skip = 5)
+b38 <- fread(paste0("b37_b38_liftover/from_savita_INTERVAL_imputed_liftover_hg38_cleaned/INTERVAL_imputed_liftover_hg38_cleaned_chr",chr,".vcf"), data.table = F, skip = 5)
 names(b38) <- c("CHROM.b38","POS.b38","match_id","REF.b38","ALT.b38")
 
 #b38 <- b38 %>%
@@ -87,6 +87,11 @@ newMap <- b %>%
   select(alternate_ids, rsid, chromosome, position, alleleA, alleleB, alternate_id.b38, rsid.38, chromosome.38, position.b38, alleleA.b38, alleleB.b38) %>%
   mutate(rsid.38 = ifelse(rsid.38 == ".", alternate_id.b38, rsid.38))
 
+if(chr < 10){
+  newMap$chromosome <- paste0("0", as.character(newMap$chromosome))
+  newMap$chromosome.38 <- paste0("0", as.character(newMap$chromosome.38))
+}
+
 write.table(newMap, 
             quote = F, 
             sep = " ", 
@@ -100,5 +105,5 @@ snplist <- newMap %>%
   select(alternate_id.b38)
 write.table(snplist, row.names = F, col.names = F, quote = F, file = paste0("b37_b38_liftover/c",chr,"_b38_filter_snps.txt"))
 rm(list=ls())
-#}
+}
 
