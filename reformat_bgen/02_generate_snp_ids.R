@@ -5,7 +5,7 @@ library(data.table)
 library(stringr)
 
 args <- commandArgs(trailingOnly=TRUE)
-chr <- args[1]
+chr <- as.numeric(args[1])
 #for(chr in 1:22){
 
 # Read in SNP stats output from qctool and add column to check if variant is an indel
