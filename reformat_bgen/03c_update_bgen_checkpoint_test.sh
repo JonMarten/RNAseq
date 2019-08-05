@@ -2,7 +2,7 @@
 #SBATCH -J checkpoint_test_update_bgen
 #SBATCH -A PETERS-SL3-CPU
 #SBATCH --output=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/logs/checkpoint_test_update_bgen_%A_%a.log
-#SBATCH --time=00:01:00
+#SBATCH --time=01:00:00
 #SBATCH -p skylake-himem
 #SBATCH --mem 20G
 #SBATCH --mail-type=ALL
@@ -20,7 +20,7 @@ export DMTCP_QUIET=2
 
 runcmd='
 qctool -g /home/jm2294/rds/rds-jmmh2-pre_qc_data/interval/affy_ukbiobank_array/raw_data/genetics/imputed/impute_22_interval.bgen -s /home/jm2294/rds/rds-jmmh2-pre_qc_data/interval/affy_ukbiobank_array/raw_data/genetics/imputed/interval.samples -incl-samples /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/results/test_run/batch1_ids.txt -map-id-data /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/INTERVAL_chr22_b37_to_b38_map.txt -og /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/b38_bgen/impute_22_interval_b38_checkpointtest_small_comparisonfile.bgen'
-tint=60
+tint=300
 
 echo "Start coordinator"
 date
