@@ -2,7 +2,7 @@
 #SBATCH -J checkpoint_update_bgen
 #SBATCH -A PETERS-SL3-CPU
 #SBATCH --output=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/logs/checkpoint_update_bgen_%A_%a.log
-#SBATCH --time=21:	00:00
+#SBATCH --time=12:00:00
 #SBATCH -p skylake-himem
 #SBATCH --mem 20G
 #SBATCH --mail-type=ALL
