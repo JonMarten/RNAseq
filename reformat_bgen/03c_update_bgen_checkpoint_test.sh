@@ -18,7 +18,8 @@ ulimit -s 8192
 RESTARTSCRIPT="dmtcp_restart_script.sh"
 export DMTCP_QUIET=2
 
-runcmd='qctool -g /home/jm2294/rds//home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/test_bgen/impute_22_20000000-30000000_interval_RNAseq_batch1_withsamples.bgen -map-id-data /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/INTERVAL_chr${SLURM_ARRAY_TASK_ID}_b37_to_b38_map.txt -og /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/b38_bgen/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_checkpointtest_small.bgen'
+runcmd='
+qctool -g /home/jm2294/rds/rds-jmmh2-pre_qc_data/interval/affy_ukbiobank_array/raw_data/genetics/imputed/impute_22_interval.bgen -s /home/jm2294/rds/rds-jmmh2-pre_qc_data/interval/affy_ukbiobank_array/raw_data/genetics/imputed/interval.samples -incl-samples /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/results/test_run/batch1_ids.txt -map-id-data /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/INTERVAL_chr22_b37_to_b38_map.txt -og /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/b38_bgen/impute_22_interval_b38_checkpointtest_small_comparisonfile.bgen'
 tint=60
 
 echo "Start coordinator"
