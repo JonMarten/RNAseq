@@ -13,8 +13,10 @@
 # get start time
 start=$(date +%s.%N)
 
-module load gcc/5.2.0 
-module load qctool2/rc4-6.8
+. /etc/profile.d/modules.sh     
+module purge
+module load rhel7/default-peta4
+module load qctool
 
 # Note that sample file can just be the chr22 file for any chromosome as this does not change.
 # Update position and make new unique identifiers
