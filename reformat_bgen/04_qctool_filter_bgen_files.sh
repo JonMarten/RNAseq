@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=update_bgen
+#SBATCH --job-name=filter_bgen
 #SBATCH -A PETERS-SL3-CPU
 #SBATCH -p skylake-himem
 #SBATCH --mem 10G
