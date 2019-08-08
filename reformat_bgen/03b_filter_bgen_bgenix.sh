@@ -8,6 +8,8 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
 
+date
+
 . /etc/profile.d/modules.sh     
 module purge
 module load rhel7/default-peta4
@@ -19,3 +21,5 @@ OUT=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_li
 
 # extract variants in lists
 bgenix -g $BGEN -incl-rsids $INCL > $OUT
+
+date
