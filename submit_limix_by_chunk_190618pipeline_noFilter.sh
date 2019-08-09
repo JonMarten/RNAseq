@@ -4,7 +4,7 @@
 #SBATCH --mem 120G
 #SBATCH --job-name=eqtl_test
 #SBATCH --time=12:0:0
-#SBATCH --output=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/logs/eqtl_test_%A_%a.log
+#SBATCH --output=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/logs/eqtl_test_withfilter_%A_%a.log
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
 
@@ -21,7 +21,7 @@ END=$(echo $CHUNK | cut -d ' ' -f3)
 source activate limix_qtl
 
 # Specify file paths. Current config creates a new output directory for every new job submitted
-GENPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/bgen_b38_filtered
+GENPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover
 PHEPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing
 OUTPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/results/eqtl_test_${SLURM_ARRAY_JOB_ID}
 
@@ -29,7 +29,7 @@ OUTPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing
 mkdir -p $OUTPATH
 
 # Specify files. NOTE THAT GENFILE DOES NOT NEED .bgen SUFFIX
-GENFILE=${GENPATH}/impute_${CHR}_interval_b38_filtered
+GENFILE=${GENPATH}/b38_bgen/impute_${CHR}_interval_b38
 ANFILE=${PHEPATH}/annotation_file/Feature_Annotation_Ensembl_gene_ids_autosomes_b38.txt
 PHEFILE=${PHEPATH}/phenotype/phenotype_5281-fc-genecounts.txt
 SAMPLEMAPFILE=${PHEPATH}/phenotype/sample_mapping_file_gt_to_phe.txt
@@ -39,6 +39,7 @@ BLOCKSIZE=3000
 WINDOW=500000
 PERMUTATIONS=100
 MAF=0.01
+VARIANTFILTER=${GENPATH}/all_b38_filter_snps.txt
 
 # Echo config for log file
 echo Running Limix
@@ -55,6 +56,7 @@ echo Block Size: $BLOCKSIZE
 echo Window: $WINDOW
 echo Permutations: $PERMUTATIONS
 echo MAF: $MAF
+echo Variant Filter: $VARIANTFILTER
 echo "****************************************"
 
 # Run QTL mapping
@@ -73,7 +75,8 @@ python -u /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/hipsci_pipeline/l
  -w $WINDOW\
  --block_size $BLOCKSIZE\
  -gr $GR\
- -cf $COVFILE
+ -cf $COVFILE\
+ -vf $VARIANTFILTER
 
 conda deactivate 
  

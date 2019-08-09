@@ -106,4 +106,4 @@ snplist <- newMap %>%
 write.table(snplist, row.names = F, col.names = F, quote = F, file = paste0("b37_b38_liftover/c",chr,"_b38_filter_snps.txt"))
 rm(list=ls())
 
-
+# Alternative for faster filtering: use 
