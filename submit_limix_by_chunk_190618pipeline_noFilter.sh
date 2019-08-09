@@ -12,7 +12,7 @@
 start=$(date +%s.%N)
 
 # Get genomic positions for chunk
-CHUNK=$(head /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/bgen_b38_filtered/chunklist_b38_50genes.txt -n $SLURM_ARRAY_TASK_ID | tail -n 1)
+CHUNK=$(head /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/chunklist_b38_50genes.txt -n $SLURM_ARRAY_TASK_ID | tail -n 1)
 CHR=$(echo $CHUNK | cut -d ' ' -f1)
 START=$(echo $CHUNK | cut -d ' ' -f2)
 END=$(echo $CHUNK | cut -d ' ' -f3)
