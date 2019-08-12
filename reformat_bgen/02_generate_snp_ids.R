@@ -105,7 +105,7 @@ write.table(snplist, row.names = F, col.names = F, quote = F, file = paste0("b37
 
 # Alternative for faster filtering: use bgenix. Problem - filters on RSID, not alt_id. Stupid me should have made those the same but I didn't because I thought I was being clever, and I have no compute budget left to do it. So instead of an inclusion filter, I'm going to use an exclusion filter. This might mean some SNPs are lost that would otherwise be retained, but this is better than the reverse. This will remove all remaining SNPs with "." as rsid but that's okay since the SNPs to be retained have had this changed to cptid instead.
 no_b38_df <- snpstats[which(!snpstats$match_id %in% snpsmerge$match_id),]
-filter_rsids <- no_b38_df$rsid.b38 %>% unique
+filter_rsids <- no_b38_df$rsid %>% unique
 lostsnps <- which(filter_rsids %in% newMap$rsid.38)
 cat("\n",length(lostsnps), "variants will be lost if filtering by rsid in bgenix.")
 write.table(filter_rsids, row.names = F, col.names = F, quote = F, file = paste0("b37_b38_liftover/c",chr,"_b38_rsids_to_remove_bgenix.txt"))
