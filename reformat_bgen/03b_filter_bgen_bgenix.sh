@@ -16,10 +16,10 @@ module load rhel7/default-peta4
 module load bgen
 
 BGEN=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/b38_bgen/impute_${SLURM_ARRAY_TASK_ID}_interval_b38.bgen
-INCL=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/c${SLURM_ARRAY_TASK_ID}_b38_filter_snps.txt
+EXCL=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/c${SLURM_ARRAY_TASK_ID}_b38_rsids_to_remove_bgenix.txt
 OUT=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/b38_bgen/filtered/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_filtered.bgen
 
 # extract variants in lists
-bgenix -g $BGEN -incl-rsids $INCL > $OUT
+bgenix -g $BGEN -excl-rsids $INCL > $OUT
 
 date
