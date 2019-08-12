@@ -1,8 +1,12 @@
+# Merge results chunks and post-process
+
 setwd( "U:/Projects/RNAseq/analysis/00_testing/results/eqtl_test_13633258/processed")
 library(data.table)
 library(dplyr)
+library(stringr)
 
 files <- list.files()
+files <- files[grepl("processed_qtl_results", files)]
 
 for (file in files){
   
@@ -28,21 +32,69 @@ datSplit <- dat %>%
   group_by(fail) %>%
   group_split()
 
+# Save list of dropped features
 droppedFeatures <- datSplit[[2]] %>% 
   pull(gene_name) %>% 
   unique
 write.table(droppedFeatures, row.names = F, col.names = F, quote = F, file = "dropped_features.txt")
 
+
+# Remove dropped features and reformat results
 dat2 <- datSplit[[1]] %>%
   select(-fail) %>%
   data.frame
 
-dat3 <- dat2 %>%
-  mutate(mergeid = paste0(feature_id, "_", rsid))
+rsid <- str_split_fixed(dat2$snp_id, ":", 2)
+dat2$rsid <- rsid[,2]
+
+dat3 <- dat2 %>% 
+  arrange(feature_id) %>%
+  select(feature_id, feature_chromosome:beta_param, snp_id, rsid, snp_chromosome:hwe_p, beta, beta_se, p_value, empirical_feature_p_value)
+
+fwrite(dat3, quote = F, file = "results_merged_chr22.txt")
+
+rm(files, dat, dat2, rsid, datSplit)
+
+#### Multple testing correction
+# Get SNP with minimum corrected (at gene level) p-value for each feature
 tops <- dat3 %>% 
   group_by(feature_id) %>%
   filter(empirical_feature_p_value == min(empirical_feature_p_value)) %>%
-  data.frame
+  data.frame %>%
+  mutate(p_adjusted_BH = p.adjust(empirical_feature_p_value, method = "BH"))
+
+bonfThresh <- 0.05 / nrow(tops)
+
+sigTops <- tops %>%
+  filter(empirical_feature_p_value < bonfThresh)
+eGenes <-sigTops %>% 
+  pull(feature_id)
+
+# Identify eSNPs within significant eGenes by selecting all SNPs with locally-adjusted P lower than the p-value threshold that corresponds to a global BH-adjusted P-value of 0.05
+
+# from https://rdrr.io/bioc/IHW/src/R/helpers.R Function to work out what the theshold is for rejecting a p-value
+get_bh_threshold <- function(pvals, alpha, mtests = length(pvals)){
+  m <- length(pvals)
+  pvals <- sort(pvals)
+  prejected <- which(pvals <= (1:m)/mtests*alpha)
+  ifelse(length(prejected)==0, 0, pvals[prejected[which.max(prejected)]])
+}
+
+eSNPThresh <- get_bh_threshold(tops$empirical_feature_p_value, 0.05)
+
+eSNPs <- dat3 %>% 
+  filter(feature_id %in% eGenes & empirical_feature_p_value < eSNPThresh)
+
+fwrite(eSNPs, file = "significant_eSNPs_BH.csv")
+###############
+
+# Compare to eQTLgen
+
+
+
+
+dat3 <- wba %>%
+  mutate(mergeid = paste0(feature_id, "_", rsid))
 
 
 bonfthresh <- 0.05 / nrow(tops)
@@ -63,10 +115,6 @@ david <- fread("../../../../../v01_188id_preview/davids_calls/20PCs_Removed_eQTL
 #remap <- fread("../../../../../GENETIC_DATA/b37_b38_liftover/from_savita_INTERVAL_imputed_liftover_hg38_cleaned/INTERVAL_imputed_liftover_hg38_cleaned_chr22.vcf", data.table=F)
 #names(remap) <- c("chr_b38","pos_b38","matchid", "ref_b38", "alt_b38")
 
-library(stringr)
-rsid <- str_split_fixed(dat2$snp_id, ":", 2)
-
-dat2$rsid <- rsid[,2]
 
 
 d2 <- david %>%
