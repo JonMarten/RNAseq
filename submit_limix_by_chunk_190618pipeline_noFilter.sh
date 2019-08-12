@@ -29,7 +29,7 @@ OUTPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing
 mkdir -p $OUTPATH
 
 # Specify files. NOTE THAT GENFILE DOES NOT NEED .bgen SUFFIX
-GENFILE=${GENPATH}/b38_bgen/impute_${CHR}_interval_b38
+GENFILE=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/OLD_bgen_b38_filtered/impute_${CHR}_interval_b38_filtered
 ANFILE=${PHEPATH}/annotation_file/Feature_Annotation_Ensembl_gene_ids_autosomes_b38.txt
 PHEFILE=${PHEPATH}/phenotype/phenotype_5281-fc-genecounts.txt
 SAMPLEMAPFILE=${PHEPATH}/phenotype/sample_mapping_file_gt_to_phe.txt
@@ -75,8 +75,9 @@ python -u /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/hipsci_pipeline/l
  -w $WINDOW\
  --block_size $BLOCKSIZE\
  -gr $GR\
- -cf $COVFILE\
- -vf $VARIANTFILTER
+ -cf $COVFILE
+ #\
+ #-vf $VARIANTFILTER
 
 conda deactivate 
  
