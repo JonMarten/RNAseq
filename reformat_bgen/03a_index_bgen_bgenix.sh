@@ -13,7 +13,7 @@ module purge
 module load rhel7/default-peta4
 module load bgen
 
-BGEN=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/b38_bgen/impute_${SLURM_ARRAY_TASK_ID}_interval_b38.bgen
+BGEN=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/b38_bgen/filtered/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_filtered.bgen
 
 # index bgen files
-bgenix -g $BGEN -index
+bgenix -g $BGEN -index -clobber
