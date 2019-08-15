@@ -86,7 +86,7 @@ newMap <- b %>%
 
 if(chr < 10){
   newMap$chromosome <- paste0("0", as.character(newMap$chromosome))
-  newMap$chromosome.38 <- paste0("0", as.character(newMap$chromosome.38))
+#  newMap$chromosome.38 <- paste0("0", as.character(newMap$chromosome.38))
 }
 
 write.table(newMap, 
