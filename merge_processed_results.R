@@ -4,6 +4,7 @@ setwd( "U:/Projects/RNAseq/analysis/00_testing/results/eqtl_test_13633258/proces
 library(data.table)
 library(dplyr)
 library(stringr)
+library(ggplot2)
 
 files <- list.files()
 files <- files[grepl("processed_qtl_results", files)]
@@ -89,10 +90,31 @@ fwrite(eSNPs, file = "significant_eSNPs_BH.csv")
 ###############
 
 # Compare to eQTLgen
+eQTL <- fread("U:/Projects/RNAseq/eQTLgen/cis-eQTLs_full_20180905.txt", data.table = F)
+names(eQTL) <- paste0("eQTLgen_", names(eQTL))
+e22 <- eQTL %>% 
+  filter(eQTLgen_SNPChr == 22) %>%
+  mutate(matchID = paste0(eQTLgen_Gene, "_", eQTLgen_SNP))
+names(dat3) <- paste0("limix_", names(dat3))
+dat3 <- dat3 %>%
+  mutate(matchID = paste0(limix_feature_id, "_", limix_rsid))
+merge <- inner_join(dat3, e22)
+
+mplot <- runif(3000, 1, nrow(merge))
+
+ggplot(merge[mplot,], aes(x = -log10(limix_p_value), y = -log10(eQTLgen_Pvalue))) + geom_point()
 
 
 
 
+
+
+
+
+
+
+
+###################
 dat3 <- wba %>%
   mutate(mergeid = paste0(feature_id, "_", rsid))
 
