@@ -4,7 +4,7 @@ setwd("/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/
 library(data.table)
 library(dplyr)
 
-a <- fread("zcat mart_export.txt.gz", data.table=F)
+a <- fread("zcat mart_export.txt.gz", data.table = F)
 names(a) <- gsub(" ", "_", names(a))
 b <- a %>%
   select(feature_id = Gene_stable_ID,
@@ -20,8 +20,10 @@ b <- a %>%
   filter(!duplicated(feature_id)) %>% # remove 3 annotations where one gene has multiple transcripts. Retain one from each pair. 
   arrange(chromosome, start)
 
+fwrite(b, sep = "\t", "Feature_Annotation_Ensembl_gene_ids_autosomes_b38.txt", quote = F)
+
 b$chromosome <- as.character(b$chromosome)
-vec <- which(nchar(b$chromosome)==1)
+vec <- which(nchar(b$chromosome) == 1)
 b$chromosome[vec] <- paste0("0", b$chromosome[vec])
 
-fwrite(b, sep = "\t", "Feature_Annotation_Ensembl_gene_ids_autosomes_b38.txt", quote = F)
+fwrite(b, sep = "\t", "Feature_Annotation_Ensembl_gene_ids_autosomes_b38_leading0s.txt", quote = F)
