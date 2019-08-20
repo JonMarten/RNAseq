@@ -3,7 +3,7 @@
 #SBATCH -A PAUL-SL2-CPU
 #SBATCH -p skylake-himem
 #SBATCH --mem 12G
-#SBATCH --time=24:0:0
+#SBATCH --time=36:0:0
 #SBATCH --output=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/logs/update_bgen_%A_%a.log
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
