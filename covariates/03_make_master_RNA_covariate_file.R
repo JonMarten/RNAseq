@@ -139,5 +139,10 @@ out4 <- out3 %>%
 
 write.csv(out4, file = "INTERVAL_RNA_batch1-8_covariates_release_2019_08_15.csv", row.names = F)
 
-
-
+ob <- out3 %>% select(Batch, sequencingBatch)
+ob$Batch[which(is.na(ob$Batch))] <- 99
+ob$sequencingBatch[which(is.na(ob$sequencingBatch))] <- 98
+table(ob$Batch, ob$sequencingBatch)
+missvec <- which(ob$Batch != ob$sequencingBatch & ob$Batch != 99)
+missingBatch <- out3[missvec,]
+write.csv(missingBatch, file = "INTERVAL_RNA_batch1-8_covariates_release_2019_08_15_dropped_IDs.csv", row.names = F)
