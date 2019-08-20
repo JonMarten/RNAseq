@@ -1,16 +1,21 @@
 #!/bin/bash
 #SBATCH --job-name=plink_calc_PCs
-#SBATCH --time=24:0:0
-#SBATCH --partition=medium 
+#SBATCH -p skylake-himem
+#SBATCH -A PETERS-SL3-CPU
+#SBATCH --time=12:0:0
+#SBATCH --mem=15G
 #SBATCH --output=/home/jm2294/projects/RNAseq/genetic_PCs/plink_calc_PCs_%A_%a.log
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
 
-module load plink/2.0_09_09_18
+. /etc/profile.d/modules.sh     
+module purge
+module load rhel7/default-peta4
+module load plink
 
 plink2\
- --bfile /scratch/curated_genetic_data/interval/genotyped/interval_qced_24.8.18\
- --keep /home/jm2294/projects/RNAseq/genetic_PCs/rna_seq_5k_affy_ids.txt\
+ --bfile /home/jm2294/rds/rds-jmmh2-pre_qc_data/interval/affy_ukbiobank_array/raw_data/genetics/merged/merged_samplecleaned\
+ --keep /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/genetic_PCs/rna_seq_2.7k_affy_ids.txt\
  --pca 20 'var-wts'\
  --make-rel\
- --out /home/jm2294/projects/RNAseq/genetic_PCs/INTERVAL_genotype_PCs
+ --out /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/genetic_PCs/INTERVAL_genotype_PCs_phase1
