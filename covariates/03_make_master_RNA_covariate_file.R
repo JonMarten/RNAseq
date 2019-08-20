@@ -3,18 +3,16 @@ library(dplyr)
 library(data.table)
 setwd("U:/Projects/RNAseq/covariates")
 rna_id_mapper <- fread("rna_id_mapper.csv", data.table=F) 
-techCov <- fread("rna_technical_covariates_may19.csv", data.table = F)
-techCovPilot <- fread("rna_technical_covariates_pilot_may19.csv", data.table = F)
-techCov <- rbind(techCovPilot, techCov)
+techCov <- fread("INTERVAL_RNA_Covariates_09-08-2019.csv", data.table = F)
+#techCovPilot <- fread("rna_technical_covariates_pilot_may19.csv", data.table = F)
+#techCov <- rbind(techCovPilot, techCov)
 
 techCov <- techCov %>% 
-  filter(SANGER_Sample_ID != "") %>%
-  select(sample_id = SANGER_Sample_ID,INTERVAL_Box,RNA_Extraction_Date, RIN, Normalization_Plate_ID, seq_run_id, seq_tag_index) %>%
-  mutate(RNA_Extraction_Date = as.Date(RNA_Extraction_Date, "%d/%m/%Y"))
+#  select(sample_id = INT_ID,INTERVAL_Box,RNA_Extraction_Date, RIN, Normalization_Plate_ID, seq_run_id, seq_tag_index) %>%
+  rename(sample_id = INT_ID) %>%
+  mutate(Extraction_Date = as.Date(Extraction_Date, "%d/%m/%Y"))
 
-
-
-dat <- fread("data_release_20190611/INTERVALdata_11JUN2019.csv", data.table=F)
+dat <- fread("data_release_20190815/INTERVALdata_15AUG2019.csv", data.table=F)
 
 # Filter phase 3 data to get the correct timepoint to match sample used for RNA seq data
 p3mapper <- rna_id_mapper %>%
@@ -22,7 +20,7 @@ p3mapper <- rna_id_mapper %>%
   mutate(p3_mapper = paste0(identifier,attendanceDate_p3)) %>%
   pull(p3_mapper)
 
-datp3 <- fread("data_release_20190611/INTERVALdata_P3_11JUN2019.csv", data.table=F)
+datp3 <- fread("data_release_20190815/INTERVALdata_P3_15AUG2019.csv", data.table=F)
 datp3 <- datp3 %>%
   mutate(p3_mapper = paste0(identifier,attendanceDate_p3)) %>%
   filter(p3_mapper %in% p3mapper) %>%
@@ -134,4 +132,12 @@ out3 <- out2 %>%
   mutate(BMI = round(BMI, 2)) %>%
   select(sample_id:age_RNA, sequencingBatch, intervalPhase:weight, BMI, attendanceDate___RNA, appointmentTime___RNA, processDate___RNA, processTime___RNA, BA_D_10_9_L___RNA:PLT_O_10_9_L___RNA, RBC_10_12_L___RNA:WBC_N_10_9_L___RNA)
 
-write.csv(out3, file = "INTERVAL_RNA_batch1-4_and_6_covariates_release_2019_06_11.csv", row.names = F)
+# Filter out samples which aren't in the sequencing data
+out4 <- out3 %>%
+  filter(!is.na(sequencingBatch)) %>%
+  select(-Sex, -Batch)
+
+write.csv(out4, file = "INTERVAL_RNA_batch1-8_covariates_release_2019_08_15.csv", row.names = F)
+
+
+

@@ -3,11 +3,11 @@ library(dplyr)
 library(data.table)
 setwd("U:/Projects/RNAseq/covariates")
 
-dat <- fread("data_release_20190611/INTERVALdata_11JUN2019.csv", data.table=F)
-ids <- fread("data_release_20190611/omicsMap.csv", data.table=F)
-ids3 <- fread("data_release_20190611/omicsMap_P3.csv", data.table=F)
-ids[which(ids == "", arr.ind=T)] <- NA
-ids3[which(ids3 == "", arr.ind=T)] <- NA
+dat <- fread("data_release_20190815/INTERVALdata_15AUG2019.csv", data.table = F)
+ids <- fread("data_release_20190815/omicsMap.csv", data.table = F)
+ids3 <- fread("data_release_20190815/omicsMap_P3.csv", data.table = F)
+ids[which(ids == "", arr.ind = T)] <- NA
+ids3[which(ids3 == "", arr.ind = T)] <- NA
 allids <- full_join(ids, ids3)
 #dat2 <- full_join(allids, dat)
 
@@ -28,7 +28,7 @@ rnaids <- rnaids %>%
 
 # Make single column for RNA identifier
 RNA_any <- NA
-for(i in 1:nrow(rnaids)){
+for (i in 1:nrow(rnaids)) {
   idsb <- as.character(select(rnaids, -identifier, -attendanceDate_p3)[i,])
   RNA_any[i] <- paste(unique(na.exclude(idsb)), collapse = ",")
 }
@@ -36,9 +36,9 @@ rnaids$RNA_any <- RNA_any
 
 # Check overlap with RNA seq data identifiers
 rnamiss <- which(!rna_seq_ids$RNA_id %in% rnaids$RNA_any)
-phemiss <-which(!rnaids$RNA_any %in% rna_seq_ids$RNA_id )
+phemiss <- which(!rnaids$RNA_any %in% rna_seq_ids$RNA_id )
 
-if(length(rnamiss) == 0){
+if (length(rnamiss) == 0) {
   cat("\n No RNA seq ids missing in phenotype data.")
 } else {
   cat("\n",
@@ -47,7 +47,7 @@ if(length(rnamiss) == 0){
       paste0(rna_seq_ids$RNA_id[rnamiss], collapse = ", "))
 }
 
-if(length(phemiss) == 0){
+if (length(phemiss) == 0) {
   cat("\n No phenotype data ids missing in RNA seq.")
 } else {
   cat("\n",
@@ -72,7 +72,7 @@ rna_id_mapper <- rnaidsPhase %>%
   filter(!is.na(identifier))
 rna_id_mapper <- full_join(rna_id_mapper, rna_seq_ids) #%>%
 #  filter(!is.na(batch)) # Remove this filter to allow unnumbered batch 5 ids through for now
-write.csv(rna_id_mapper, "rna_id_mapper.csv", quote=F, row.names=F)
+write.csv(rna_id_mapper, "rna_id_mapper.csv", quote = F, row.names = F)
 
 
 # Check overlap between batches for different INTERVAL phases for Artika
