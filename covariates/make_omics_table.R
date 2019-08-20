@@ -1,6 +1,6 @@
 # Script to make a table of all INTERVAL participants detailing omics data available on them
 library(dplyr)
-dataRelease <- "11JUN2019"
+dataRelease <- "15AUG2019"
 setwd(paste0("U:/Projects/RNAseq/RNA_sample_selection/", dataRelease))
 ids <- read.csv("omicsMap.csv", stringsAsFactors = F)
 ids3 <- read.csv("omicsMap_P3.csv", stringsAsFactors = F)
