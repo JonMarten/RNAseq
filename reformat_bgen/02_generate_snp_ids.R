@@ -80,7 +80,7 @@ if(nrow(dupes > 0)){
 # For qctool -map-id-data	
 # Update the chromosome, position, IDs and/or alleles of a set of SNPs with new values. 
 newMap <- b %>%
-  mutate(rsid=rsid, alternate_id.b38=cptid.b38,rsid.38=rsid, chromosome.38=CHROM.b38, position.b38=POS.b38,alleleA.b38=alleleA, alleleB.b38=alleleB) %>%
+  mutate(rsid=rsid, alternate_id.b38=cptid.b38,rsid.b38=rsid, chromosome.b38=CHROM.b38, position.b38=POS.b38,alleleA.b38=alleleA, alleleB.b38=alleleB) %>%
   select(alternate_ids, rsid, chromosome, position, alleleA, alleleB, alternate_id.b38, rsid.38, chromosome.38, position.b38, alleleA.b38, alleleB.b38) %>%
   mutate(rsid.38 = ifelse(rsid.38 == ".", alternate_id.b38, rsid.38))
 
@@ -100,7 +100,13 @@ write.table(newMap,
 #--incl-snps	Exclude all SNPs not in the given file(s) from the analysis. The format of this file is the same as that output by the -write-snp-excl-list option. It must have six columns interpreted as SNPID, rsid, chromosome, position, first and second alleles. 
 snplist <- newMap %>%
   select(alternate_id.b38)
-write.table(snplist, row.names = F, col.names = F, quote = F, file = paste0("b37_b38_liftover/c",chr,"_b38_filter_snps.txt"))
+write.table(snplist, row.names = F, col.names = F, quote = F, file = paste0("b37_b38_liftover/snp_inclusion_filters/c",chr,"_b38_filter_snps.txt"))
+
+# snplist not working, try using -incl-variants instead which uses six columns to identify
+varlist <- newMap %>%
+  select(SNPID = alternate_id.b38, rsid = rsid.b38, chromosome = chromosome.b38, position = position.b38, alleleA = alleleA.b38, alleleB = alleleB.b38)
+write.table(varlist, row.names = F, col.names = T, quote = F, file = paste0("b37_b38_liftover/snp_inclusion_filters/c",chr,"_b38_filter_variants.txt"))
+
 
 
 # Alternative for faster filtering: use bgenix. Problem - filters on RSID, not alt_id. Stupid me should have made those the same but I didn't because I thought I was being clever, and I have no compute budget left to do it. So instead of an inclusion filter, I'm going to use an exclusion filter. This might mean some SNPs are lost that would otherwise be retained, but this is better than the reverse. This will remove all remaining SNPs with "." as rsid but that's okay since the SNPs to be retained have had this changed to cptid instead.
@@ -108,6 +114,6 @@ no_b38_df <- snpstats[which(!snpstats$match_id %in% snpsmerge$match_id),]
 filter_rsids <- no_b38_df$rsid %>% unique
 lostsnps <- which(filter_rsids %in% newMap$rsid.38)
 cat("\n",length(lostsnps), "variants will be lost if filtering by rsid in bgenix.")
-write.table(filter_rsids, row.names = F, col.names = F, quote = F, file = paste0("b37_b38_liftover/c",chr,"_b38_rsids_to_remove_bgenix.txt"))
+write.table(filter_rsids, row.names = F, col.names = F, quote = F, file = paste0("b37_b38_liftover/rsid_exclusion_filters/c",chr,"_b38_rsids_to_remove_bgenix.txt"))
 
                   
