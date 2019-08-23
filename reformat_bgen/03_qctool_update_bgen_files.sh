@@ -18,13 +18,12 @@ module purge
 module load rhel7/default-peta4
 module load qctool
 
-# Note that sample file can just be the chr22 file for any chromosome as this does not change.
-# Update position and make new unique identifiers
+# Update position and add new unique identifiers
 qctool\
  -g /home/jm2294/rds/rds-jmmh2-pre_qc_data/interval/affy_ukbiobank_array/raw_data/genetics/imputed/impute_${SLURM_ARRAY_TASK_ID}_interval.bgen\
  -s /home/jm2294/rds/rds-jmmh2-pre_qc_data/interval/affy_ukbiobank_array/raw_data/genetics/imputed/interval.samples\
  -map-id-data /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/INTERVAL_chr${SLURM_ARRAY_TASK_ID}_b37_to_b38_map.txt\
- -og /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/b38_bgen/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_no0.bgen
+ -og /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/b38_bgen/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_no0_tinytest.bgen
 
 end=$(date +%s.%N)
 
