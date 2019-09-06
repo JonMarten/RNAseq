@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -A PETERS-SL3-CPU
 #SBATCH -p skylake-himem
-#SBATCH --mem 200G
+#SBATCH --mem 150G
 #SBATCH --job-name=eqtl_test_no0
 #SBATCH --time=12:0:0
 #SBATCH --output=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/logs/eqtl_test_fullrun_%A_%a.log
@@ -29,7 +29,7 @@ OUTPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing
 mkdir -p $OUTPATH
 
 # Specify files. NOTE THAT GENFILE DOES NOT NEED .bgen SUFFIX
-GENFILE=${GENPATH}/impute_${CHR}_interval_b38_filtered_no0
+GENFILE=${GENPATH}/impute_2_interval_b38_filtered_no0_rnaSeqPhase1
 ANFILE=${PHEPATH}/annotation_file/Feature_Annotation_Ensembl_gene_ids_autosomes_b38.txt
 PHEFILE=${PHEPATH}/phenotype/phenotype_5281-fc-genecounts.txt
 SAMPLEMAPFILE=${PHEPATH}/phenotype/sample_mapping_file_gt_to_phe.txt

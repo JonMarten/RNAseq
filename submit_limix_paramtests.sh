@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH -A PETERS-SL3-CPU
 #SBATCH -p skylake-himem
-#SBATCH --mem 200G
-#SBATCH --job-name=eqtl_test_no0
+#SBATCH --mem 180G
+#SBATCH --job-name=eqtl_test_parameters_fullchrt
 #SBATCH --time=12:0:0
-#SBATCH --output=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/logs/eqtl_test_fullrun_%A_%a.log
+#SBATCH --output=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/logs/eqtl_test_parameters_fullchrt_%A_%a.log
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
 
@@ -23,22 +23,22 @@ source activate limix_qtl
 # Specify file paths. Current config creates a new output directory for every new job submitted
 GENPATH=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/b38_bgen/filtered
 PHEPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing
-OUTPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/results/eqtl_test_fullrun_${SLURM_ARRAY_JOB_ID}
+OUTPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/results/eqtl_test_parameters_fulchrt${SLURM_ARRAY_JOB_ID}
 
 # Create output directory if it doesn't exist
 mkdir -p $OUTPATH
 
 # Specify files. NOTE THAT GENFILE DOES NOT NEED .bgen SUFFIX
-GENFILE=${GENPATH}/impute_${CHR}_interval_b38_filtered_no0
+GENFILE=${GENPATH}/impute_${CHR}_interval_b38_filtered_no0_rnaSeqPhase1
 ANFILE=${PHEPATH}/annotation_file/Feature_Annotation_Ensembl_gene_ids_autosomes_b38.txt
-PHEFILE=${PHEPATH}/phenotype/phenotype_5281-fc-genecounts.txt
-SAMPLEMAPFILE=${PHEPATH}/phenotype/sample_mapping_file_gt_to_phe.txt
-COVFILE=${PHEPATH}/covariates/INTERVAL_RNA_batch1_2_covariates_sex_age.txt
+PHEFILE=${PHEPATH}/phenotype/INTERVAL_RNAseq_phase1_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis.txt
+SAMPLEMAPFILE=${PHEPATH}/phenotype/sample_mapping_file_gt_to_phe_phase1.txt
+COVFILE=${PHEPATH}/covariates/INTERVAL_RNAseq_phase1_covariates.txt
 GR=$(echo ${CHR}:${START}-${END})
-BLOCKSIZE=2000
-WINDOW=500000
-PERMUTATIONS=100
-MAF=0.01
+BLOCKSIZE=2000	
+WINDOW=$1
+PERMUTATIONS=$2
+MAF=$3
 
 # Echo config for log file
 echo Running Limix

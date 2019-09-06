@@ -1,10 +1,10 @@
+#!/bin/bash
 #SBATCH -p skylake-himem
 #SBATCH --mem 10G
 #SBATCH --time=12:0:0
-#SBATCH --output=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/logs/filter_bgen_tinytest_%A_%a.log
+#SBATCH --output=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/logs/make_small_bgen_%A_%a.log
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
-#!/bin/bash
 #SBATCH --job-name=make_small_bgen
 #SBATCH -A PETERS-SL3-CPU
 
@@ -13,18 +13,32 @@ module purge
 module load rhel7/default-peta4
 module load qctool
 
-#qctool\
-# -g /home/jm2294/rds/rds-jmmh2-pre_qc_data/interval/affy_ukbiobank_array/raw_data/genetics/imputed/impute_${SLURM_ARRAY_TASK_ID}_interval.bgen\
-# -s /home/jm2294/rds/rds-jmmh2-pre_qc_data/interval/affy_ukbiobank_array/raw_data/genetics/imputed/interval.samples\
-# -incl-samples /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/rnaseq_affy_ids.txt\
-# -map-id-data /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/INTERVAL_chr${SLURM_ARRAY_TASK_ID}_b37_to_b38_map.txt\
-# -og /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/b38_bgen/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_no0_rnaSeqPhase1.bgen
+CHR=$SLURM_ARRAY_TASK_ID
+GENPATH=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover
+INGEN=/home/jm2294/rds/rds-jmmh2-pre_qc_data/interval/affy_ukbiobank_array/raw_data/genetics/imputed/impute_${CHR}_interval.bgen
+MIDGEN=${GENPATH}/b38_bgen/impute_${CHR}_interval_b38_no0_rnaSeqPhase1.bgen
+OUTGEN=${GENPATH}/b38_bgen/filtered/impute_${CHR}_interval_b38_filtered_no0_rnaSeqPhase1.bgen
+INSAMPLE=/home/jm2294/rds/rds-jmmh2-pre_qc_data/interval/affy_ukbiobank_array/raw_data/genetics/imputed/interval.samples
+MIDSAMPLE=${GENPATH}/b38_bgen/chr${CHR}_rnaSeqPhase1_sample.txt
+MAP=${GENPATH}/INTERVAL_chr${CHR}_b37_to_b38_map.txt
+SAMPLEFILTER=${GENPATH}/rnaseq_affy_ids.txt
+SNPFILTER=${GENPATH}/snp_inclusion_filters/c${CHR}_b38_filter_snps.txt
 
-qctool -g impute_${SLURM_ARRAY_TASK_ID}_interval_b38_no0_rnaSeqPhase1.bgen -os chr${SLURM_ARRAY_TASK_ID}_rnaSeqPhase1_sample.txt
+# Map to b38 and filter to retain only RNA seq samples
+qctool\
+ -g $INGEN\
+ -s $INSAMPLE\
+ -incl-samples $SAMPLEFILTER\
+ -map-id-data $MAP\
+ -og $MIDGEN
+
+# Create new sample file
+qctool\
+ -g $MIDGEN\
+ -os $MIDSAMPLE
 
 qctool\
--g /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/b38_bgen/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_no0_rnaSeqPhase1.bgen\
--incl-snpids /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/snp_inclusion_filters/c${SLURM_ARRAY_TASK_ID}_b38_filter_snps.txt\
--s /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/b38_bgen/chr${SLURM_ARRAY_TASK_ID}_rnaSeqPhase1_sample.txt\
--og /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/b38_bgen/filtered/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_filtered_no0_rnaSeqPhase1.bgen
-
+ -g $MIDGEN\
+ -incl-snpids $SNPFILTER\
+ -s $MIDSAMPLE\
+ -og $OUTGEN
