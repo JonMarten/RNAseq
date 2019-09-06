@@ -56,6 +56,8 @@ fwrite(dat3, quote = F, file = "results_merged_chr22.txt")
 
 rm(files, dat, dat2, rsid, datSplit)
 
+#dat3 <- fread("results_merged_chr22.txt", data.table = F)
+
 #### Multple testing correction
 # Get SNP with minimum corrected (at gene level) p-value for each feature
 tops <- dat3 %>% 
@@ -132,69 +134,41 @@ eSNP_replication %>%
   filter(eQTLgen_Pvalue < 0.05/nrow(eSNP_replication)) %>%
   nrow
 # Count significant SNPs after BH
-eSNP_replication %>%
-  mutate(p_adjusted_BH = p.adjust(eQTLgen_Pvalue, method = "BH")) %>%
-  filter(p_adjusted_BH < 0.05) 
+eSNP_replication <- eSNP_replication %>%
+  mutate(p_adjusted_BH = p.adjust(eQTLgen_Pvalue, method = "BH")) 
  
 eSNP_replication <- eSNP_replication %>%
-  mutate(limix_zscore = limix_beta / limix_beta_se)
+  mutate(limix_zscore = limix_beta / limix_beta_se) %>%
+  mutate(sigRep = ifelse(eQTLgen_Pvalue < 0.05/nrow(eSNP_replication), 1, 0))
 
+# flip z-score signs for SNPs with different effect alleles
+flips <- eSNP_replication$limix_assessed_allele != eSNP_replication$eQTLgen_AssessedAllele
+eSNP_replication <- eSNP_replication %>%
+  mutate(eQTLgen_Zscore_flipped = ifelse(flips, -eQTLgen_Zscore, eQTLgen_Zscore))
 
-ggplot(eSNP_replication, aes(x = abs(limix_zscore), y = abs(eQTLgen_Zscore))) + geom_point()
+cor(eSNP_replication$limix_zscore, eSNP_replication$eQTLgen_Zscore_flipped)
 
-cor(abs(eSNP_replication$limix_zscore), abs(eSNP_replication$eQTLgen_Zscore))
+# Pull genes with mismatched SNP Zscores
+eSNP_replication <- eSNP_replication %>%
+  mutate(signMismatch = ifelse(sign(limix_zscore) != sign(eQTLgen_Zscore_flipped), 1, 0))
 
+mismatchGenes <- eSNP_replication %>%
+  filter(signMismatch == 1) %>%
+  pull(limix_feature_id) %>%
+  unique()
 
+# Plot just mismatched genes
+ggplot(filter(eSNP_replication, limix_feature_id %in% mismatchGenes), aes(x = limix_zscore, y = eQTLgen_Zscore_flipped, colour = limix_feature_id)) + 
+  geom_point() +
+  geom_vline(xintercept = 0) + 
+  geom_hline(yintercept = 0) + 
+  theme(aspect.ratio = 1)
 
+# Plot all, highlight mismatches
+ggplot(eSNP_replication, aes(x = limix_zscore, y = eQTLgen_Zscore_flipped)) + 
+  geom_point(colour = "gray50") +
+  geom_vline(xintercept = 0) + 
+  geom_hline(yintercept = 0) + 
+  geom_point(data = filter(eSNP_replication, limix_feature_id %in% mismatchGenes), aes(x = limix_zscore, y = eQTLgen_Zscore_flipped, colour = limix_feature_id))  +
+  theme(aspect.ratio = 1)
 
-
-
-
-###################
-dat3 <- wba %>%
-  mutate(mergeid = paste0(feature_id, "_", rsid))
-
-
-bonfthresh <- 0.05 / nrow(tops)
-
-sig <- tops %>% filter(empirical_feature_p_value < bonfthresh) %>% arrange(empirical_feature_p_value)
-
-
-
-plotthresh <- -log10(5e-8/nrow(dat3))
-plotsug <- -log10(1e-5/nrow(dat3))
-library(qqman)
-manhattan(filter(dat3, p_value < 0.0001), chr = "snp_chromosome", bp = "snp_position", p = "p_value", suggestiveline = plotsug, genomewideline = plotthresh, snp = "mergeid", highlight = sig$mergeid)
-
-
-# Merge with David's results to compare
-david <- fread("../../../../../v01_188id_preview/davids_calls/20PCs_Removed_eQTLsFDR0.05-SNPLevel.txt", data.table = F)
-
-#remap <- fread("../../../../../GENETIC_DATA/b37_b38_liftover/from_savita_INTERVAL_imputed_liftover_hg38_cleaned/INTERVAL_imputed_liftover_hg38_cleaned_chr22.vcf", data.table=F)
-#names(remap) <- c("chr_b38","pos_b38","matchid", "ref_b38", "alt_b38")
-
-
-
-d2 <- david %>%
-  filter(SNPChr == 22) %>%
-  mutate(mergeid = paste0(ProbeName, "_", SNPName)) 
-
-beta <- str_split_fixed(d2$`Beta (SE)`, "\\(", 2)
-beta[,2] <- substr(beta[,2], 1, nchar(beta[,2]) - 1)
-d2$beta <- as.numeric(beta[,1])
-d2$SE <- as.numeric(beta[,2])
-
-dat3 <- dat2 %>%
-  mutate(mergeid = paste0(feature_id, "_", rsid))
-
-d3 <- inner_join(d2, dat3, by = "mergeid", suffix = c(".david", ".me"))
-
-######
-
-library(ggplot2)
-d3plot <- d3 %>% filter(p_value < 1e-5)
-ggplot(d3plot, aes(x = abs(beta.me), y = abs(beta.david))) +
-  geom_point()
-
-ggplot(d3plot, aes(x = -log10(p_value), y = -log10(PValue))) +
-  geom_point()

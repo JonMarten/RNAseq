@@ -17,6 +17,7 @@
 module purge
 module load rhel7/default-peta4
 module load plink
+module load plink-1.9-gcc-5.4.0-sm3ojoi
 
 # plink files for 5000: autosomes only
 INFILE=/home/jm2294/rds/rds-jmmh2-pre_qc_data/interval/affy_ukbiobank_array/raw_data/genetics/merged/merged_samplecleaned
@@ -73,12 +74,11 @@ plink --bfile ${OUTDIR}rnaseq_phase1.typed.maf1pc.geno3pc.hwe1minus5.complex-reg
 
 # cluster and reaf-genome may be unnecessary ## JCLM: I think it is. PCA alone is all you need.
 
-plink --bfile ${OUTDIR}rnaseq_phase1.typed.maf1pc.geno3pc.hwe1minus5.complex-region-excl.indep-50-5-1.5.pruning \
---read-genome ${OUTDIR}rnaseq_phase1.typed.maf1pc.geno3pc.hwe1minus5.complex-region-excl.indep-50-5-1.5.pruning.genome.genome \
---cluster \
---pca 20 header \
+plink2 --bfile ${OUTDIR}rnaseq_phase1.typed.maf1pc.geno3pc.hwe1minus5.complex-region-excl.indep-50-5-1.5.pruning \
+--pca 20 var-wts 'vcols=+pos' \
+--make-rel 'square' \
 --out ${OUTDIR}rnaseq_phase1.typed.maf1pc.geno3pc.hwe1minus5.complex-region-excl.indep-50-5-1.5.pruning.genome.pca
-
+  
 #Count SNPs in each file for the log
 wc -l ${OUTDIR}rnaseq_phase1.typed.maf1pc.geno3pc.hwe1minus5.complex-region-excl.indep-50-5-1.5.pruning*
   

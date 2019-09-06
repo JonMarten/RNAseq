@@ -1,5 +1,5 @@
 # Script to generate chunking file to run limix on 100-200 genes at a time
-setwd("/home/jm2294/rds/hpc-work/projects/RNAseq/test_run_chunks")
+setwd("/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/annotation_file")
 Packages <- c("dplyr", "data.table","ggplot2")
 lapply(Packages, library, character.only = TRUE)
 

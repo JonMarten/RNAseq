@@ -4,7 +4,7 @@ setwd("/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/
 library(data.table)
 library(dplyr)
 
-a <- fread("zcat mart_export.txt.gz", data.table = F)
+a <- fread("19_9_5_mart_export.txt", data.table = F)
 names(a) <- gsub(" ", "_", names(a))
 b <- a %>%
   select(feature_id = Gene_stable_ID,
