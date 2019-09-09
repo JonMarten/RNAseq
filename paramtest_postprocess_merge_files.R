@@ -11,7 +11,7 @@ jobdf$taskID <- as.character(jobdf$taskID)
 jobdf <- jobdf %>% filter(!is.na(taskID) & Features == "Coding")
 jobids <- jobdf$taskID
 
-for(i in 1:5){
+for(i in 1:length(jobids)){
 
   resdir <- paste0("/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/results/eqtl_test_parameters_fulchrt",jobids[i],"/processed")
   setwd(resdir)
@@ -44,13 +44,14 @@ for(i in 1:5){
     group_by(fail) %>%
     group_split()
   
-  if(length(datSplit) < 1) {
+  if(length(datSplit) > 1) {
     # Save list of dropped features
     print("Filtering variants with alpha < 0.1 or > 10")
     droppedFeatures <- datSplit[[2]] %>% 
-      pull(gene_name) %>% 
+      pull(feature_id) %>% 
       unique
-    write.table(droppedFeatures, row.names = F, col.names = F, quote = F, file = "dropped_features.txt")
+    print(paste0("Dropping: ", paste0(droppedFeatures, collapse = ", "), " due to alpha filter"))
+    write.table(datSplit[[2]], row.names = F, col.names = T, quote = F, file = paste0("/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/test_parameters/results_merged_chr22_window", jobdf$Window[i],"_Perm", jobdf$Permutations[i],"_MAF",jobdf$MAF[i], "_droppedfeatures.txt"))
   } else {
     print("No variants with alpha < 0.1 or > 10")
   }
