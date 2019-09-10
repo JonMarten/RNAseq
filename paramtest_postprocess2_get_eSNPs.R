@@ -30,7 +30,7 @@ jobdf <- jobdf %>%
 
 files <- paste0(jobdf$fileprefix, ".txt")
 
-for(i in c(1:5,8)) {
+for(i in c(1:length(files))) {
 
   c22 <- fread(files[i], data.table = F)
   
@@ -42,11 +42,11 @@ for(i in c(1:5,8)) {
     data.frame() %>%
     mutate(minp_adjusted_BH = p.adjust(minP, method = "BH")) %>%
     mutate(sig = ifelse(minp_adjusted_BH < 0.05, 1, 0))
-  
+
   eGenes.BH <- top_snps_per_gene %>%
     filter(sig == 1) %>%
     pull(feature_id) 
-  
+
   # Identify eSNPs within significant eGenes by selecting all SNPs with locally-adjusted P lower than the p-value threshold that corresponds to a global BH-adjusted P-value of 0.05
     # from https://rdrr.io/bioc/IHW/src/R/helpers.R Function to work out what the theshold is for rejecting a p-value
   get_bh_threshold <- function(pvals, alpha, mtests = length(pvals)){
@@ -58,7 +58,7 @@ for(i in c(1:5,8)) {
   
   eSNPThresh <- get_bh_threshold(top_snps_per_gene$minp_adjusted_BH, 0.05)
   jobdf$eSNP_BH_thresh[i] <- eSNPThresh
-  
+
   eSNPs <- c22 %>% 
     filter(feature_id %in% eGenes.BH & empirical_feature_p_value < eSNPThresh)
   
@@ -127,18 +127,60 @@ for(i in c(1:5,8)) {
     pull(limix_feature_id) %>%
     unique()
   
-  g <- ggplot(eSNP_replication, aes(x = limix_zscore, y = eQTLgen_Zscore_flipped)) + 
-    geom_point(colour = "gray50", cex = 0.5, alpha = 0.8, pch = 20) +
+  eSNP_replication <- eSNP_replication %>%
+    mutate(Significant = ifelse(sigrep_bonf == 1 & sigrep_BH == 0, "Bonf. only", 
+                                ifelse(sigrep_bonf == 0 & sigrep_BH == 1, "BH only", 
+                                       ifelse(sigrep_bonf == 1 & sigrep_BH == 1, "BH & Bonf.", "NS")))) %>%
+    mutate(Significant = factor(Significant, levels = c("NS","BH only", "BH & Bonf.")))
+  
+  g <- ggplot(eSNP_replication, aes(x = limix_zscore, y = eQTLgen_Zscore_flipped, colour = Significant)) + 
+    geom_point(cex = 0.5, alpha = 0.8, pch = 20) +
     geom_vline(xintercept = 0) + 
     geom_hline(yintercept = 0) + 
-    theme(aspect.ratio = 1) +
+    theme(aspect.ratio = 1, legend.position = "bottom") +
     labs(x = "Limix Z-score", y = "eQTLgen Z-score")
   outname_plot <- paste0(jobdf$fileprefix[i], "_eSNPs_eqtlgenReplication_zscoreplot.png")
-  save_plot(file = outname_plot, g)
+  save_plot(file = outname_plot, g, base_height = 7, base_width = 6)
 }
 
-fwrite(jobdf, file = "parameter_comparison_summary.csv")
+mem <- fread("parameter_comparison_joblogs.csv", data.table = F)
+mem <- mem %>% select(-c(Cohort:Permutations)) %>%
+  mutate(taskID = as.character(taskID))
+jobdf2 <- full_join(mem, jobdf)
+
+fwrite(jobdf2, file = "parameter_comparison_summary.csv")
 ####
+
+# Test multiple testing scenarios
+
+mt <- fread("results_merged_chr22_window500000_Perm100_MAF0.01.txt", data.table = F)
+
+mt_topsnps <- mt %>% 
+  group_by(feature_id) %>%
+  summarise(minP = min(empirical_feature_p_value)) %>%
+  data.frame() %>%
+  mutate(minp_adjusted_BH = p.adjust(minP, method = "BH")) %>%
+  mutate(sig.BH = ifelse(minp_adjusted_BH < 0.05, 1, 0))
+mt_topsnps <- mt_topsnps %>%
+  mutate(sig.bonf = ifelse(minP < 0.05/nrow(mt_topsnps),1,0))
+
+eGenes.BH <- mt_topsnps %>% filter(sig.BH == 1) %>% pull(feature_id)
+eGenes.bonf <- mt_topsnps %>% filter(sig.bonf == 1) %>% pull(feature_id)
+
+eSNPs.bonf.bonf <- mt %>% filter(feature_id %in% eGenes.bonf) %>%
+  mutate(sig = ifelse(empirical_feature_p_value < 0.05/length(eGenes.bonf), 1, 0))
+eSNPs.BH.bonf <- mt %>% filter(feature_id %in% eGenes.BH) %>%
+  mutate(sig = ifelse(empirical_feature_p_value < 0.05/length(eGenes.BH), 1, 0))
+
+
+thresh.bh
+
+
+eSNPThresh <- get_bh_threshold(top_snps_per_gene$minp_adjusted_BH, 0.05)
+jobdf$eSNP_BH_thresh[i] <- eSNPThresh
+
+eSNPs <- c22 %>% 
+  filter(feature_id %in% eGenes.BH & empirical_feature_p_value < eSNPThresh)
 
 
 
