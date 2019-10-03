@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -A PETERS-SL3-CPU
 #SBATCH -p skylake-himem
-#SBATCH --mem 180G
+#SBATCH --mem 200G
 #SBATCH --job-name=eqtl_test_parameters_fullchrt
 #SBATCH --time=12:0:0
 #SBATCH --output=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/logs/eqtl_test_parameters_fullchrt_%A_%a.log
