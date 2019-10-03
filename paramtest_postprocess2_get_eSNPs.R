@@ -2,6 +2,7 @@ library(data.table)
 library(dplyr)
 library(ggplot2)
 library(cowplot)
+library(hexbin)
 
 setwd("/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/test_parameters")
 
@@ -111,12 +112,13 @@ for(i in c(1:length(files))) {
   flips <- eSNP_replication$limix_assessed_allele != eSNP_replication$eQTLgen_AssessedAllele
   eSNP_replication <- eSNP_replication %>%
     mutate(limix_zscore = limix_beta / limix_beta_se) %>%
-    mutate(eQTLgen_Zscore_flipped = ifelse(flips, -eQTLgen_Zscore, eQTLgen_Zscore))
+    mutate(eQTLgen_Zscore_flipped = ifelse(flips, -eQTLgen_Zscore, eQTLgen_Zscore),
+           flipped = ifelse(flips, 1, 0))
   jobdf$Zscore_correlation[i] <- cor(eSNP_replication$limix_zscore, eSNP_replication$eQTLgen_Zscore_flipped)
 
   # Write out merged eQTLgen replication
   outname_eqtgen <- paste0(jobdf$fileprefix[i], "_eSNPs_eqtlgenReplication.txt")
-  fwrite(eSNPs, file = outname_eqtgen)
+  fwrite(eSNP_replication, file = outname_eqtgen)
   
   # Pull genes with mismatched SNP Zscores
   eSNP_replication <- eSNP_replication %>%
@@ -133,14 +135,47 @@ for(i in c(1:length(files))) {
                                        ifelse(sigrep_bonf == 1 & sigrep_BH == 1, "BH & Bonf.", "NS")))) %>%
     mutate(Significant = factor(Significant, levels = c("NS","BH only", "BH & Bonf.")))
   
-  g <- ggplot(eSNP_replication, aes(x = limix_zscore, y = eQTLgen_Zscore_flipped, colour = Significant)) + 
-    geom_point(cex = 0.5, alpha = 0.8, pch = 20) +
-    geom_vline(xintercept = 0) + 
-    geom_hline(yintercept = 0) + 
-    theme(aspect.ratio = 1, legend.position = "bottom") +
-    labs(x = "Limix Z-score", y = "eQTLgen Z-score")
+  
+  eSNP_replication$limix_feature_length <- eSNP_replication$limix_feature_end - eSNP_replication$limix_feature_start
+  eSNP_replication <- eSNP_replication %>%
+    mutate(ambig = ifelse(eQTLgen_AssessedAllele == "A" & eQTLgen_OtherAllele == "T" |
+                            eQTLgen_AssessedAllele == "T" & eQTLgen_OtherAllele == "A" |
+                            eQTLgen_AssessedAllele == "C" & eQTLgen_OtherAllele == "G" |
+                            eQTLgen_AssessedAllele == "G" & eQTLgen_OtherAllele == "C", 1, 0)) %>%
+    mutate(veryambig = ifelse(ambig == 1 & limix_maf > 0.45, 1, 0))
+  
+# get list of features with more than one SNP mismatched  
+  flexmismatchGenes <- eSNP_replication %>%
+    filter(signMismatch == 1) %>%
+    group_by(limix_feature_id) %>%
+    summarise(n_mismatched = n()) %>%
+    data.frame %>%
+    filter(n_mismatched > 2) %>%
+    pull(limix_feature_id)
+  
+    g <- ggplot(eSNP_replication, aes(x = limix_zscore, y = eQTLgen_Zscore_flipped, color = eQTLgen_NrSamples)) + 
+      geom_vline(xintercept = 0) + 
+      geom_hline(yintercept = 0) + 
+      geom_point(cex = 0.8, alpha = 1, pch = 20) +
+      theme(aspect.ratio = 1, legend.position = "right") +
+      labs(x = "Limix Z-score", y = "eQTLgen Z-score") 
+    
+    
   outname_plot <- paste0(jobdf$fileprefix[i], "_eSNPs_eqtlgenReplication_zscoreplot.png")
   save_plot(file = outname_plot, g, base_height = 7, base_width = 6)
+  
+
+    # plot mismatches
+    g2 <- ggplot(filter(eSNP_replication, limix_feature_id %in% flexmismatchGenes), 
+                aes(x = limix_zscore, y = eQTLgen_Zscore_flipped, color = eQTLgen_NrSamples)) + 
+      geom_vline(xintercept = 0) + 
+      geom_hline(yintercept = 0) + 
+      geom_point(cex = 0.8, alpha = 1, pch = 20) +
+      theme(aspect.ratio = 1, legend.position = "right") +
+      labs(x = "Limix Z-score", y = "eQTLgen Z-score") +
+      theme_minimal() +
+      scale_color_viridis_c(option = "C") +
+      facet_wrap(. ~ limix_gene_name)  
 }
 
 mem <- fread("parameter_comparison_joblogs.csv", data.table = F)
@@ -149,38 +184,65 @@ mem <- mem %>% select(-c(Cohort:Permutations)) %>%
 jobdf2 <- full_join(mem, jobdf)
 
 fwrite(jobdf2, file = "parameter_comparison_summary.csv")
+
+# Look at TSS distance
+
+w250 <- fread("results_merged_chr22_window250000_Perm100_MAF0.01_eSNPs_eqtlgenReplication.txt", data.table = F)
+w250$window <- "250kb"
+w500 <- fread("results_merged_chr22_window500000_Perm100_MAF0.01_eSNPs_eqtlgenReplication.txt", data.table = F)
+w500$window <- "500kb"
+w1000 <- fread("results_merged_chr22_window1000000_Perm100_MAF0.01_eSNPs_eqtlgenReplication.txt", data.table = F)
+w1000$window <- "1Mb"
+
+
+wAll <- rbind(w250, w500, w1000)
+
+wAll <- wAll %>%
+  mutate(eSNP_distance_from_tss = ifelse(limix_feature_strand == 1, 
+                                         limix_snp_position - limix_feature_start,
+                                         limix_feature_end - limix_snp_position),
+         window = factor(window, levels = c("250kb", "500kb", "1Mb")))
+ggplot(wAll, aes(x = eSNP_distance_from_tss, fill = window)) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(. ~ window, ncol = 1)
+
+
+
+
+
+
 ####
 
 # Test multiple testing scenarios
 
-mt <- fread("results_merged_chr22_window500000_Perm100_MAF0.01.txt", data.table = F)
-
-mt_topsnps <- mt %>% 
-  group_by(feature_id) %>%
-  summarise(minP = min(empirical_feature_p_value)) %>%
-  data.frame() %>%
-  mutate(minp_adjusted_BH = p.adjust(minP, method = "BH")) %>%
-  mutate(sig.BH = ifelse(minp_adjusted_BH < 0.05, 1, 0))
-mt_topsnps <- mt_topsnps %>%
-  mutate(sig.bonf = ifelse(minP < 0.05/nrow(mt_topsnps),1,0))
-
-eGenes.BH <- mt_topsnps %>% filter(sig.BH == 1) %>% pull(feature_id)
-eGenes.bonf <- mt_topsnps %>% filter(sig.bonf == 1) %>% pull(feature_id)
-
-eSNPs.bonf.bonf <- mt %>% filter(feature_id %in% eGenes.bonf) %>%
-  mutate(sig = ifelse(empirical_feature_p_value < 0.05/length(eGenes.bonf), 1, 0))
-eSNPs.BH.bonf <- mt %>% filter(feature_id %in% eGenes.BH) %>%
-  mutate(sig = ifelse(empirical_feature_p_value < 0.05/length(eGenes.BH), 1, 0))
-
-
-thresh.bh
-
-
-eSNPThresh <- get_bh_threshold(top_snps_per_gene$minp_adjusted_BH, 0.05)
-jobdf$eSNP_BH_thresh[i] <- eSNPThresh
-
-eSNPs <- c22 %>% 
-  filter(feature_id %in% eGenes.BH & empirical_feature_p_value < eSNPThresh)
+# mt <- fread("results_merged_chr22_window500000_Perm100_MAF0.01.txt", data.table = F)
+# 
+# mt_topsnps <- mt %>% 
+#   group_by(feature_id) %>%
+#   summarise(minP = min(empirical_feature_p_value)) %>%
+#   data.frame() %>%
+#   mutate(minp_adjusted_BH = p.adjust(minP, method = "BH")) %>%
+#   mutate(sig.BH = ifelse(minp_adjusted_BH < 0.05, 1, 0))
+# mt_topsnps <- mt_topsnps %>%
+#   mutate(sig.bonf = ifelse(minP < 0.05/nrow(mt_topsnps),1,0))
+# 
+# eGenes.BH <- mt_topsnps %>% filter(sig.BH == 1) %>% pull(feature_id)
+# eGenes.bonf <- mt_topsnps %>% filter(sig.bonf == 1) %>% pull(feature_id)
+# 
+# eSNPs.bonf.bonf <- mt %>% filter(feature_id %in% eGenes.bonf) %>%
+#   mutate(sig = ifelse(empirical_feature_p_value < 0.05/length(eGenes.bonf), 1, 0))
+# eSNPs.BH.bonf <- mt %>% filter(feature_id %in% eGenes.BH) %>%
+#   mutate(sig = ifelse(empirical_feature_p_value < 0.05/length(eGenes.BH), 1, 0))
+# 
+# 
+# thresh.bh
+# 
+# 
+# eSNPThresh <- get_bh_threshold(top_snps_per_gene$minp_adjusted_BH, 0.05)
+# jobdf$eSNP_BH_thresh[i] <- eSNPThresh
+# 
+# eSNPs <- c22 %>% 
+#   filter(feature_id %in% eGenes.BH & empirical_feature_p_value < eSNPThresh)
 
 
 
