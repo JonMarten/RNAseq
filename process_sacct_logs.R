@@ -34,7 +34,7 @@ a <- a[-1,] %>%
          Elapsed = chron(times = Elapsed),
          MaxRSS = as.numeric(str_sub(MaxRSS, 1, 5)),
          taskID = "15171908",
-         arrayID = str_sub(JobID, 10, 13))
+         arrayID = str_sub(JobID, 10, str_locate(JobID, "\\.")[,1]-1))
 a <- right_join(jobdf, a)
 logs <- rbind(logs, a) %>%
   filter(State != "CANCELLED")
