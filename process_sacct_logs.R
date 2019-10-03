@@ -6,7 +6,7 @@ setwd("/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/
 
 jobdf <- fread(data.table = F, "job_ids.txt")
 jobdf$taskID <- as.character(jobdf$taskID)
-jobdf <- jobdf %>% filter(!is.na(taskID))
+jobdf <- jobdf %>% filter(!is.na(taskID)& Features == "Coding")
 jobids <- jobdf$taskID
 
 logs <- data.frame()
@@ -25,6 +25,21 @@ for(i in 1:nrow(jobdf)) {
   rm(a)
 }
 
+# add in re-run chunks 1107 and 1099 for 15171908
+system(paste0("sacct -o JobID%24,AllocCPUS,State,Elapsed,MaxRSS --units=G -j 15233831 > temp.txt"))
+a <- fread("temp.txt", data.table = F, fill = T)
+a <- a[-1,] %>%
+  filter(grepl(".batch", JobID)) %>%
+  mutate(AllocCPUS = as.numeric(AllocCPUS),
+         Elapsed = chron(times = Elapsed),
+         MaxRSS = as.numeric(str_sub(MaxRSS, 1, 5)),
+         taskID = "15171908",
+         arrayID = str_sub(JobID, 10, 13))
+a <- right_join(jobdf, a)
+logs <- rbind(logs, a) %>%
+  filter(State != "CANCELLED")
+
+# summarise
 sumtab <- logs %>%
   group_by(taskID) %>%
   summarise(Cohort = unique(Cohort),
@@ -48,6 +63,14 @@ sumtab <- logs %>%
             max_mem = max(MaxRSS, na.rm = T)) %>%
   data.frame()
 
-l2 <- logs  %>% mutate(MAF = as.factor(MAF), Permutations = as.factor(Permutations))
-lm(data = l2 , Elapsed ~ Features + Bgen_size + Window + MAF + Permutations) %>% summary
-lm(data = l2 , MaxRSS ~ Features + Bgen_size + Window + MAF + Permutations) %>% summary
+sumtab <- sumtab %>%
+  mutate(mean_time = as.character(mean_time),
+         med_time = as.character(med_time),
+         sd_time = as.character(sd_time),
+         min_time = as.character(min_time),
+         max_time = as.character(max_time))
+fwrite(sumtab, file = "parameter_comparison_joblogs.csv")
+
+l2 <- logs  %>% mutate(MAF = as.factor(MAF), Permutations = as.factor(Permutations), Window = as.factor(Window))
+lm(data = l2 , Elapsed ~ Window + MAF + Permutations) %>% summary
+lm(data = l2 , MaxRSS ~ Window + MAF + Permutations) %>% summary
