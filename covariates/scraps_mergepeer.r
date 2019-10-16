@@ -8,9 +8,11 @@ peer <- fread("PEER_factors_100Factors_plusCovariates_1000Iterations_AllBatches_
 
 names(peer)[1] <- "sample_id"
 
-pcs <- fread("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/genetic_PCs/rnaseq_phase1.typed.maf1pc.geno3pc.hwe1minus5.complex-region-excl.indep-50-5-1.5.pruning.genome.pca.eigenvec", data.table = F)
+#pcs <- fread("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/genetic_PCs/rnaseq_phase1.typed.maf1pc.geno3pc.hwe1minus5.complex-region-excl.indep-50-5-1.5.pruning.genome.pca.eigenvec", data.table = F)
 namemap <- fread("../phenotype/sample_mapping_file_gt_to_phe_phase1.txt", data.table = F)
-names(namemap)[1] <- "IID"
+names(namemap)[2] <- "sample_id"
+
+
 pcs2 <- inner_join(namemap, pcs)
 names(pcs2)[2] <- "sample_id"
 covs2 <- inner_join(pcs2, covs)
