@@ -1,13 +1,25 @@
 library(dplyr)
 library(data.table)
-setwd("U:/Projects/RNAseq/covariates")
+setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/covariates")
 
-covs <- fread(data.table = F, "INTERVAL_RNA_batch1-8_covariates_release_2019_08_15.csv")
+covs <- fread("INTERVAL_RNA_batch1-8_covariates_release_2019_08_15.csv", data.table = F)
+peer <- fread("PEER_factors_100Factors_plusCovariates_1000Iterations_AllBatches_TransformGenes_18373Genes.csv", data.table = F)
+namemap <- fread("../phenotype/sample_mapping_file_gt_to_phe_phase1.txt", data.table = F)
 
-covout <- covs %>%
-  select(sample_id, Agilent_RINe, age_RNA, sequencingBatch, sex) %>%
-  mutate(Agilent_RINe = as.numeric(Agilent_RINe)) %>%
-  filter(!is.na(Agilent_RINe))
+names(peer)[1] <- "sample_id"
+names(namemap)[2] <- "sample_id"
+covs <- inner_join(namemap, covs)
 
-fwrite(covout, file = "INTERVAL_RNAseq_phase1_covariates.txt", sep = "\t")
+allcovs <- inner_join(covs, select(peer, -age_RNA), by = "sample_id")
+
+covout <- allcovs %>%
+  select(sample_id, RIN, age_RNA, sequencingBatch, sex, PC1:PC10) %>%
+  filter(!is.na(RIN))
+
+covout.peer <- allcovs %>%
+  select(sample_id, RIN, age_RNA, sequencingBatch, sex, PC1:PC10, PEER1:PEER20) %>%
+  filter(!is.na(RIN))
+
+fwrite(covout, file = "INTERVAL_RNAseq_phase1_age_sex_rin_batch_PC10.txt", sep = "\t")
+fwrite(covout, file = "INTERVAL_RNAseq_phase1_age_sex_rin_batch_PC10_PEER20.txt", sep = "\t")
 
