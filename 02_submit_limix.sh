@@ -1,18 +1,18 @@
 #!/bin/bash
 #SBATCH -A PETERS-SL3-CPU
 #SBATCH -p skylake-himem
-#SBATCH --mem 250G
-#SBATCH --job-name=eqtl_test_parameters_fullchrt
+#SBATCH --mem 100G
+#SBATCH --job-name=eqtl_phase1_cis_18373genes_20PEER
 #SBATCH --time=12:0:0
-#SBATCH --output=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/logs/eqtl_test_parameters_fullchrt_%A_%a.log
+#SBATCH --output=/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/logs/eqtl_phase1_cis_18373genes_%A_%a.log
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
 
 # get start time
-#start=$(date +%s)
+start=$(date +%s.%N)
 
 # Get genomic positions for chunk
-CHUNK=$(head /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/chunklist_b38_50genes.txt -n $SLURM_ARRAY_TASK_ID | tail -n 1)
+CHUNK=$(head /rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/annotation_file/chunklist_b38_15genes_filtered.txt -n $SLURM_ARRAY_TASK_ID | tail -n 1)
 CHR=$(echo $CHUNK | cut -d ' ' -f1)
 START=$(echo $CHUNK | cut -d ' ' -f2)
 END=$(echo $CHUNK | cut -d ' ' -f3)
@@ -20,25 +20,28 @@ END=$(echo $CHUNK | cut -d ' ' -f3)
 # Load limix environment
 source activate limix_qtl
 
-# Specify file paths. Current config creates a new output directory for every new job submitted
+# Specify input file paths. Current config creates a new output directory for every new job submitted
 GENPATH=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/b38_bgen/filtered
-PHEPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing
-OUTPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/results/eqtl_test_parameters_fulchrt${SLURM_ARRAY_JOB_ID}
+PHEPATH=/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping
 
-# Create output directory if it doesn't exist
-mkdir -p $OUTPATH
+# Get covariates from sbatch input. Currently can be either age_sex_rin_batch_PC10 or age_sex_rin_batch_PC10_PEER20.
+COVS=$1
 
 # Specify files. NOTE THAT GENFILE DOES NOT NEED .bgen SUFFIX
 GENFILE=${GENPATH}/impute_${CHR}_interval_b38_filtered_no0_rnaSeqPhase1
 ANFILE=${PHEPATH}/annotation_file/Feature_Annotation_Ensembl_gene_ids_autosomes_b38.txt
 PHEFILE=${PHEPATH}/phenotype/INTERVAL_RNAseq_phase1_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis.txt
 SAMPLEMAPFILE=${PHEPATH}/phenotype/sample_mapping_file_gt_to_phe_phase1.txt
-COVFILE=${PHEPATH}/covariates/INTERVAL_RNAseq_phase1_covariates.txt
+COVFILE=${PHEPATH}/covariates/INTERVAL_RNAseq_phase1_${COVS}.txt
 GR=$(echo ${CHR}:${START}-${END})
 BLOCKSIZE=2000	
-WINDOW=$1
-PERMUTATIONS=$2
-MAF=$3
+WINDOW=500000
+PERMUTATIONS=500
+MAF=0.005
+
+# Create output directory if it doesn't exist
+OUTPATH=/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/results/cis_eqtls_18373genes_${COVS}
+mkdir -p $OUTPATH
 
 # Echo config for log file
 echo Running Limix
@@ -76,7 +79,8 @@ python -u /home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/hipsci_pipeline/l
 
 conda deactivate 
  
-#end=$(date +%s)    
-#runtime=$(python -c "print(round((${end} - ${start})/3600,3))")
+end=$(date +%s.%N)
+ 
+runtime=$(python -c "print(${end} - ${start})")
 
 #echo "Runtime was $runtime hours"
