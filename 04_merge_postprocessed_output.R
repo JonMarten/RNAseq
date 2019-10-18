@@ -8,14 +8,13 @@ setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eq
 
 jobids <- c("cis_eqtls_18373genes_age_sex_rin_batch_PC10", "cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20")
 
-for( i in 1:length(jobids)) {
+for ( i in 1:length(jobids)) {
 
-  resdir <- paste0(jobids[i],"/processed")
   setwd(resdir)
   files <- list.files()
   files <- files[grepl("processed_qtl_results", files)]
   
-  # Read in limix results
+  # Read in limix resul   ts
   for (file in files) {
     
     # if the merged dataset doesn't exist, create it
