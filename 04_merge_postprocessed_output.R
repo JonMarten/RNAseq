@@ -1,19 +1,16 @@
-# Merge and filter parameter test results
+# Merge and filter postprocessed limix output
 
 library(data.table)
 library(dplyr)
 library(stringr)
 
-setwd("/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/test_parameters")
+setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/results/")
 
-jobdf <- fread(data.table = F, "job_ids.txt")
-jobdf$taskID <- as.character(jobdf$taskID)
-jobdf <- jobdf %>% filter(!is.na(taskID) & Features == "Coding")
-jobids <- jobdf$taskID
+jobids <- c("cis_eqtls_18373genes_age_sex_rin_batch_PC10", "cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20")
 
-for(i in 1:length(jobids)){
+for( i in 1:length(jobids)) {
 
-  resdir <- paste0("/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/results/eqtl_test_parameters_fulchrt",jobids[i],"/processed")
+  resdir <- paste0(jobids[i],"/processed")
   setwd(resdir)
   files <- list.files()
   files <- files[grepl("processed_qtl_results", files)]
@@ -44,7 +41,7 @@ for(i in 1:length(jobids)){
     group_by(fail) %>%
     group_split()
   
-  if(length(datSplit) > 1) {
+  if( length(datSplit) > 1) {
     # Save list of dropped features
     print("Filtering variants with alpha < 0.1 or > 10")
     droppedFeatures <- datSplit[[2]] %>% 
@@ -61,15 +58,27 @@ for(i in 1:length(jobids)){
     select(-fail) %>%
     data.frame
   
+  # Restore RSID column
   rsid <- str_split_fixed(dat2$snp_id, ":", 2)
   dat2$rsid <- rsid[,2]
+  dat2 <- dat2 %>%
+    mutate(rsid = ifelse(rsid == "", snp_id, rsid))
   
+  # Get column for reference allele
+  dat2$alleles <- str_extract(dat2$snp_id, "[A-Z]_[A-Z]")
+  dat2 <- dat2 %>%
+    mutate(alleles = str_extract(snp_id, "[A-Z]+_[A-Z]+"))
+  almat <-  str_split_fixed(dat2$alleles, "_", 2)  
+  dat2$ref_allele <- ifelse(almat[,1] == dat2$assessed_allele, almat[,2], almat[,1])
+  
+  # Rearrange for saving
   dat3 <- dat2 %>% 
     arrange(feature_id) %>%
-    select(feature_id, feature_chromosome:beta_param, snp_id, rsid, snp_chromosome:hwe_p, beta, beta_se, p_value, empirical_feature_p_value)
-  setwd("/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/test_parameters")
-  fwrite(dat3, quote = F, file = paste0("results_merged_chr22_window", jobdf$Window[i],"_Perm", jobdf$Permutations[i],"_MAF",jobdf$MAF[i], ".txt"))
+    select(feature_id, feature_chromosome:beta_param, snp_id, rsid, snp_chromosome:assessed_allele, ref_allele, call_rate:hwe_p, beta, beta_se, p_value, empirical_feature_p_value)
   
-  dat3$taskID <- jobids[i]
+  # Write out
+  outname <- paste0(jobids[i], "_results_merged.txt")
+  fwrite(dat3, quote = F, file = outname)
+
   rm(files, dat, dat2, rsid, datSplit, dat3, resdir)
 }
