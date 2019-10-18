@@ -20,6 +20,12 @@ covout.peer <- allcovs %>%
   select(sample_id, RIN, age_RNA, sequencingBatch, sex, PC1:PC10, PEER1:PEER20) %>%
   filter(!is.na(RIN))
 
+covout.bloodcells <- allcovs %>%
+  select(sample_id, RIN, age_RNA, sequencingBatch, sex, PC1:PC10, NEUT_PCT___RNA, MONO_PCT___RNA, EO_PCT___RNA, BASO_PCT___RNA) %>%
+  filter(!is.na(RIN))
+
+
 fwrite(covout, file = "INTERVAL_RNAseq_phase1_age_sex_rin_batch_PC10.txt", sep = "\t")
 fwrite(covout, file = "INTERVAL_RNAseq_phase1_age_sex_rin_batch_PC10_PEER20.txt", sep = "\t")
+fwrite(covout, file = "INTERVAL_RNAseq_phase1_age_sex_rin_batch_PC10_NeutPCT_MonoPCT_EoPCT_BasoPCT.txt", sep = "\t")
 
