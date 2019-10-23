@@ -15,7 +15,7 @@ e22 <- fread("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/eQTLgen/cis
 #jobids <- jobdf$taskID
 #jobdf$fileprefix <- paste0("results_merged_chr22_window", jobdf$Window,"_Perm", jobdf$Permutations,"_MAF",jobdf$MAF)
 
-jobdf <- data.frame("job_id" = c("cis_eqtls_18373genes_age_sex_rin_batch_PC10", "cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20"))
+jobdf <- data.frame("job_id" = c("cis_eqtls_18373genes_age_sex_rin_batch_PC10", "cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20", "cis_eqtls_18373genes_age_sex_rin_batch_PC10_NeutPCT_MonoPCT_EoPCT_BasoPCT"))
 
 jobdf <- jobdf %>%
   mutate(num_SNPs_tested = NA,
@@ -183,12 +183,12 @@ for(i in c(1:length(files))) {
     save_plot(file = outname_plot2, g2, base_height = 7, base_width = 12)
 }
 
-mem <- fread("parameter_comparison_joblogs.csv", data.table = F)
-mem <- mem %>% select(-c(Cohort:Permutations)) %>%
-  mutate(taskID = as.character(taskID))
-jobdf2 <- full_join(mem, jobdf)
+#mem <- fread("parameter_comparison_joblogs.csv", data.table = F)
+#mem <- mem %>% select(-c(Cohort:Permutations)) %>%
+#  mutate(taskID = as.character(taskID))
+#jobdf2 <- full_join(mem, jobdf)
 
-fwrite(jobdf2, file = "parameter_comparison_summary.csv")
+fwrite(jobdf, file = "parameter_comparison_summary.csv")
 
 # Look at TSS distance
 

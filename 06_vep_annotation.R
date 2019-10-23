@@ -6,53 +6,54 @@ library(dplyr)
 
 setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/results/")
 
-jobids <- c("cis_eqtls_18373genes_age_sex_rin_batch_PC10", "cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20")
-i <- 1
-resdir <- paste0("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/results/", jobids[i],"/processed")
-setwd(resdir)
-
-c22 <- fread(paste0(jobids[i],"_eSNPs.txt"), data.table=F) %>%
-  distinct()
-# vep lookup including non-rsid snps?
-c22$alleles <- str_extract(c22$snp_id, "[A-Z]_[A-Z]")
-c22 <- c22 %>%
-  mutate(alleles = str_extract(snp_id, "[A-Z]+_[A-Z]+"))
-almat <-  str_split_fixed(c22$alleles, "_", 2)  
-c22$ref_allele <- ifelse(almat[,1] == c22$assessed_allele, almat[,2], almat[,1])
-
-
-c22b <- c22 %>% mutate(type = ifelse(nchar(ref_allele) > nchar(assessed_allele), 
-                             "DEL", 
-                             ifelse(nchar(assessed_allele) > nchar(ref_allele), 
-                                    "INS", 
-                                    ifelse(nchar(assessed_allele) == nchar(ref_allele), 
-                                           "SNP", 
-                                           NA
-                                           )
-                                    )
-                             )
-                       )
-
-
-
-
-vepQuery <- c22 %>%
-  select(chromosome = snp_chromosome, start = snp_position, ref_allele, assessed_allele, strand  = feature_strand, identifier = rsid) %>%
-  mutate(end = start, allele = paste0(ref_allele, "/", assessed_allele)) %>%
-  select(-ref_allele, -assessed_allele) %>%
-  select(chromosome, start, end, allele, strand, identifier) %>%
-  arrange(chromosome, start) %>%
-  filter(!is.na(chromosome) & !is.na(start) & !is.na(end))
-
-fwrite(vepQuery, file = "results_merged_chr22_window500000_Perm100_MAF0.01_eSNPs_vepQuery.txt", sep = "\t", col.names = F)
-
-rsidList <- vepQuery %>% pull(identifier)
-write.table(rsidList, file = "results_merged_chr22_window500000_Perm100_MAF0.01_eSNPs_vepQuery_rsids.txt", sep = "\t", col.names = F, row.name = F, quote = F)
-
-
+jobids <- c("cis_eqtls_18373genes_age_sex_rin_batch_PC10", "cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20", "cis_eqtls_18373genes_age_sex_rin_batch_PC10_NeutPCT_LympPCT_MonoPCT_EoPCT_BasoPCT")
+for (i in 1:length(jobids)) {
+  resdir <- paste0("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/results/", jobids[i],"/processed")
+  setwd(resdir)
+  
+  c22 <- fread(paste0(jobids[i],"_eSNPs.txt"), data.table=F) %>%
+    distinct()
+  
+  # vep lookup including non-rsid snps?
+  #c22$alleles <- str_extract(c22$snp_id, "[A-Z]_[A-Z]")
+  #c22 <- c22 %>%
+  #  mutate(alleles = str_extract(snp_id, "[A-Z]+_[A-Z]+"))
+  #almat <-  str_split_fixed(c22$alleles, "_", 2)  
+  #c22$ref_allele <- ifelse(almat[,1] == c22$assessed_allele, almat[,2], almat[,1])
+  #
+  #
+  #c22b <- c22 %>% mutate(type = ifelse(nchar(ref_allele) > nchar(assessed_allele), 
+  #                             "DEL", 
+  #                             ifelse(nchar(assessed_allele) > nchar(ref_allele), 
+  #                                    "INS", 
+  #                                    ifelse(nchar(assessed_allele) == nchar(ref_allele), 
+  #                                           "SNP", 
+  #                                           NA
+  #                                           )
+  #                                    )
+  #                             )
+  #                       )
+  #
+  #
+  #
+  #
+  vepQuery <- c22 %>%
+    select(chromosome = snp_chromosome, start = snp_position, ref_allele, assessed_allele, strand  = feature_strand, identifier = rsid) %>%
+    mutate(end = start, allele = paste0(ref_allele, "/", assessed_allele)) %>%
+    select(-ref_allele, -assessed_allele) %>%
+    select(chromosome, start, end, allele, strand, identifier) %>%
+    arrange(chromosome, start) %>%
+    filter(!is.na(chromosome) & !is.na(start) & !is.na(end))
+  
+  fwrite(vepQuery, file = paste0(jobids[i],"_eSNPs_vepQuery.txt"), sep = "\t", col.names = F)
+  
+  rsidList <- vepQuery %>% pull(identifier)
+  write.table(rsidList, file = paste0(jobids[i],"_eSNPs_vepQuery_rsids.txt"), sep = "\t", col.names = F, row.name = F, quote = F)
+  rm(resdir, c22, vepQuery, rsidList)
+}
 # Merge in VEP results          
 
-vep <- fread("vep.txt", data.table = F)
+vep <- fread("cis_eqtls_18373genes_age_sex_rin_batch_PC10_eSNPs.txt_vepQuery_rsids_vepOfflineResults.txt", data.table = F)
 names(vep)[1] <- "rsid"         
 
 vep %>% 
