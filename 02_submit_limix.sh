@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -A PETERS-SL3-CPU
+#SBATCH -A PAUL-SL3-CPU
 #SBATCH -p skylake-himem
 #SBATCH --mem 100G
 #SBATCH --job-name=eqtl_phase1_cis_18373genes_20PEER
@@ -24,7 +24,8 @@ source activate limix_qtl
 GENPATH=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/b38_bgen/filtered
 PHEPATH=/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping
 
-# Get covariates from sbatch input. Currently can be either age_sex_rin_batch_PC10 or age_sex_rin_batch_PC10_PEER20.
+# Get covariates from sbatch input. Currently can be either age_sex_rin_batch_PC10, age_sex_rin_batch_PC10_PEER20 or age_sex_rin_batch_PC10_NeutPCT_MonoPCT_EoPCT_BasoPCT
+.
 COVS=$1
 
 # Specify files. NOTE THAT GENFILE DOES NOT NEED .bgen SUFFIX
