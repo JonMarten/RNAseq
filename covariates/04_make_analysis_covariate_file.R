@@ -12,17 +12,19 @@ covs <- inner_join(namemap, covs)
 
 allcovs <- inner_join(covs, select(peer, -age_RNA), by = "sample_id")
 
+allcovs$sex <- gsub(2, 0, allcovs$sex)
+
 covout <- allcovs %>%
-  select(sample_id, RIN, age_RNA, sequencingBatch, sex, PC1:PC10) %>%
+  select(sample_id, RIN, age_RNA, sex, batch1:batch8, PC1:PC10) %>%
   filter(!is.na(RIN))
 
 covout.peer <- allcovs %>%
-  select(sample_id, RIN, age_RNA, sequencingBatch, sex, PC1:PC10, PEER1:PEER20) %>%
+  select(sample_id, RIN, age_RNA, sex, batch1:batch8, PC1:PC10, PEER1:PEER20) %>%
   filter(!is.na(RIN))
 
 covout.bloodcells <- allcovs %>%
-  select(sample_id, RIN, age_RNA, sequencingBatch, sex, PC1:PC10, NEUT_PCT___RNA, LYMPH_PCT___RNA, MONO_PCT___RNA, EO_PCT___RNA, BASO_PCT___RNA) %>%
-  filter(!is.na(RIN))
+  select(sample_id, RIN, age_RNA, sex, batch1:batch8, PC1:PC10, NEUT_PCT___RNA, LYMPH_PCT___RNA, MONO_PCT___RNA, EO_PCT___RNA, BASO_PCT___RNA) %>%
+  filter(!is.na(RIN) & !is.na(BASO_PCT___RNA))
 
 
 fwrite(covout, file = "INTERVAL_RNAseq_phase1_age_sex_rin_batch_PC10.txt", sep = "\t")
