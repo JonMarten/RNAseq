@@ -9,13 +9,7 @@ setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eq
 
 e22 <- fread("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/eQTLgen/cis-eQTLs_chr22.txt", data.table = F)
 
-#jobdf <- fread(data.table = F, "job_ids.txt")
-#jobdf$taskID <- as.character(jobdf$taskID)
-#jobdf <- jobdf %>% filter(!is.na(taskID) & Features == "Coding")
-#jobids <- jobdf$taskID
-#jobdf$fileprefix <- paste0("results_merged_chr22_window", jobdf$Window,"_Perm", jobdf$Permutations,"_MAF",jobdf$MAF)
-
-jobdf <- data.frame("job_id" = c("cis_eqtls_18373genes_age_sex_rin_batch_PC10", "cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20", "cis_eqtls_18373genes_age_sex_rin_batch_PC10_NeutPCT_MonoPCT_EoPCT_BasoPCT"))
+jobdf <- data.frame("job_id" = c("cis_eqtls_18373genes_age_sex_rin_batch_PC10", "cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20", "cis_eqtls_18373genes_age_sex_rin_batch_PC10_NeutPCT_LympPCT_MonoPCT_EoPCT_BasoPCT"))
 
 jobdf <- jobdf %>%
   mutate(num_SNPs_tested = NA,
@@ -183,71 +177,4 @@ for(i in c(1:length(files))) {
     save_plot(file = outname_plot2, g2, base_height = 7, base_width = 12)
 }
 
-#mem <- fread("parameter_comparison_joblogs.csv", data.table = F)
-#mem <- mem %>% select(-c(Cohort:Permutations)) %>%
-#  mutate(taskID = as.character(taskID))
-#jobdf2 <- full_join(mem, jobdf)
-
 fwrite(jobdf, file = "parameter_comparison_summary.csv")
-
-# Look at TSS distance
-
-w250 <- fread("results_merged_chr22_window250000_Perm100_MAF0.01_eSNPs_eqtlgenReplication.txt", data.table = F)
-w250$window <- "250kb"
-w500 <- fread("results_merged_chr22_window500000_Perm100_MAF0.01_eSNPs_eqtlgenReplication.txt", data.table = F)
-w500$window <- "500kb"
-w1000 <- fread("results_merged_chr22_window1000000_Perm100_MAF0.01_eSNPs_eqtlgenReplication.txt", data.table = F)
-w1000$window <- "1Mb"
-
-
-wAll <- rbind(w250, w500, w1000)
-
-wAll <- wAll %>%
-  mutate(eSNP_distance_from_tss = ifelse(limix_feature_strand == 1, 
-                                         limix_snp_position - limix_feature_start,
-                                         limix_feature_end - limix_snp_position),
-         window = factor(window, levels = c("250kb", "500kb", "1Mb")))
-ggplot(wAll, aes(x = eSNP_distance_from_tss, fill = window)) +
-  geom_density(alpha = 0.5) +
-  facet_wrap(. ~ window, ncol = 1)
-
-
-
-
-
-
-####
-
-# Test multiple testing scenarios
-
-# mt <- fread("results_merged_chr22_window500000_Perm100_MAF0.01.txt", data.table = F)
-# 
-# mt_topsnps <- mt %>% 
-#   group_by(feature_id) %>%
-#   summarise(minP = min(empirical_feature_p_value)) %>%
-#   data.frame() %>%
-#   mutate(minp_adjusted_BH = p.adjust(minP, method = "BH")) %>%
-#   mutate(sig.BH = ifelse(minp_adjusted_BH < 0.05, 1, 0))
-# mt_topsnps <- mt_topsnps %>%
-#   mutate(sig.bonf = ifelse(minP < 0.05/nrow(mt_topsnps),1,0))
-# 
-# eGenes.BH <- mt_topsnps %>% filter(sig.BH == 1) %>% pull(feature_id)
-# eGenes.bonf <- mt_topsnps %>% filter(sig.bonf == 1) %>% pull(feature_id)
-# 
-# eSNPs.bonf.bonf <- mt %>% filter(feature_id %in% eGenes.bonf) %>%
-#   mutate(sig = ifelse(empirical_feature_p_value < 0.05/length(eGenes.bonf), 1, 0))
-# eSNPs.BH.bonf <- mt %>% filter(feature_id %in% eGenes.BH) %>%
-#   mutate(sig = ifelse(empirical_feature_p_value < 0.05/length(eGenes.BH), 1, 0))
-# 
-# 
-# thresh.bh
-# 
-# 
-# eSNPThresh <- get_bh_threshold(top_snps_per_gene$minp_adjusted_BH, 0.05)
-# jobdf$eSNP_BH_thresh[i] <- eSNPThresh
-# 
-# eSNPs <- c22 %>% 
-#   filter(feature_id %in% eGenes.BH & empirical_feature_p_value < eSNPThresh)
-
-
-
