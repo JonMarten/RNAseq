@@ -1,16 +1,17 @@
 # Merge and filter postprocessed limix output
-
-library(data.table)
-library(dplyr)
-library(stringr)
+library(data.table, warn.conflicts = FALSE)
+library(dplyr, warn.conflicts = FALSE)
+library(stringr, warn.conflicts = FALSE)
 
 setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/results/")
 
 jobids <- c("cis_eqtls_18373genes_age_sex_rin_batch_PC10", "cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20", "cis_eqtls_18373genes_age_sex_rin_batch_PC10_NeutPCT_LympPCT_MonoPCT_EoPCT_BasoPCT")
 
-for(i in 1:length(jobids)) {
+cat("\nThis script merges postprocessed output from LIMIX into a single file.\nEdit the jobids object in the script to change the directories searched for results.\nMerging results from:\n")  
 
+for(i in 1:length(jobids)) {
   resdir <- paste0("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/results/", jobids[i],"/processed")
+  cat(paste0(resdir,"\n"))
   setwd(resdir)
   files <- list.files()
   files <- files[grepl("processed_qtl_results", files)]
@@ -43,14 +44,14 @@ for(i in 1:length(jobids)) {
   
   if( length(datSplit) > 1) {
     # Save list of dropped features
-    print("Filtering variants with alpha < 0.1 or > 10")
+    cat("Filtering variants with alpha < 0.1 or > 10\n")
     droppedFeatures <- datSplit[[2]] %>% 
       pull(feature_id) %>% 
       unique
     print(paste0("Dropping: ", paste0(droppedFeatures, collapse = ", "), " due to alpha filter"))
     write.table(datSplit[[2]], row.names = F, col.names = T, quote = F, file = paste0("/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/test_parameters/results_merged_chr22_window", jobdf$Window[i],"_Perm", jobdf$Permutations[i],"_MAF",jobdf$MAF[i], "_droppedfeatures.txt"))
   } else {
-    print("No variants with alpha < 0.1 or > 10")
+    print("No variants with alpha < 0.1 or > 10\n")
   }
   
   # Remove dropped features and reformat results
@@ -78,6 +79,7 @@ for(i in 1:length(jobids)) {
   
   # Write out
   outname <- paste0(jobids[i], "_results_merged.txt")
+  cat(paste0("Writing out results to ",outname,"\n"))
   fwrite(dat3, quote = F, file = outname)
 
   rm(files, dat, dat2, rsid, datSplit, dat3, resdir)
