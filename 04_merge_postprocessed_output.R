@@ -49,7 +49,7 @@ for(i in 1:length(jobids)) {
       pull(feature_id) %>% 
       unique
     cat(paste0("Dropping: ", paste0(droppedFeatures, collapse = ", "), " due to alpha filter\n"))
-    write.table(datSplit[[2]], row.names = F, col.names = T, quote = F, file = paste0("/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/00_testing/test_parameters/results_merged_chr22_window", jobdf$Window[i],"_Perm", jobdf$Permutations[i],"_MAF",jobdf$MAF[i], "_droppedfeatures.txt"))
+    write.table(datSplit[[2]], row.names = F, col.names = T, quote = F, file = paste0(jobids[i], "_droppedfeatures.txt"))
   } else {
     cat("No variants with alpha < 0.1 or > 10\n")
   }
