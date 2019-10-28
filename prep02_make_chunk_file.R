@@ -1,4 +1,4 @@
-# Make chunk file for features that pass Artika's expression level filter only. 15 features per chunk.
+# Make chunk file for features that pass Artika's expression level filter only. 5 features per chunk.
 
 setwd("/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/annotation_file")
 
@@ -39,11 +39,11 @@ anno %>%
             nFeatures = n()) %>%
   data.frame
 
-# Assign each feature to a bin of about 15
+# Assign each feature to a bin of about 5
 anno2 <- data.frame()
 for(i in 1:22){
   a <- anno %>% filter(chromosome == i) 
-  numbins <- (length(a$start)/15) %>% floor
+  numbins <- (length(a$start)/5) %>% floor
   b <- cut_number(a$start, n = numbins, labels = F)
   a$bin <- paste0("chr",i,"_",b)
   anno2 <- rbind(anno2,a)
@@ -61,7 +61,7 @@ chunkList <- anno2 %>%
   select(-bin) %>%
   data.frame()
 
-write.table(chunkList, file = "chunklist_b38_15genes_filtered.txt", sep = "\t", row.names = F, col.names =F, quote = F)
+write.table(chunkList, file = "chunklist_b38_5genes_filtered.txt", sep = "\t", row.names = F, col.names =F, quote = F)
 
 # Get chunk ranges for chromosome
 chrTable <- chunkList %>% 
@@ -71,4 +71,4 @@ chrTable <- chunkList %>%
   data.frame %>% 
   mutate(chr = as.numeric(chr)) %>%
   arrange(chr)
-write.table(chrTable, row.names = F, col.names = T, file = "chunks_by_chr_15genes_filtered.txt", quote = F)
+write.table(chrTable, row.names = F, col.names = T, file = "chunks_by_chr_5genes_filtered.txt", quote = F)
