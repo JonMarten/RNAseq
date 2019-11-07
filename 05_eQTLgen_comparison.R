@@ -123,7 +123,8 @@ for(i in c(1:length(files))) {
   
   # Write out merged eQTLgen replication
   outname_eqtgen <- paste0(jobdf$job_id[i],"/processed/",jobdf$job_id[i], "_eSNPs_eqtlgenReplication.txt")
-    fwrite(eSNP_replication, file = outname_eqtgen)
+  fwrite(eSNP_replication, file = outname_eqtgen)
+  # eSNP_replication <- fread("cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20/processed/cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20_eSNPs_eqtlgenReplication.txt" ,data.table = F)
   
   # Pull genes with mismatched SNP Zscores
   mismatchGenes <- eSNP_replication %>%
@@ -212,7 +213,8 @@ for(i in c(1:length(files))) {
     
     outname_plot4 <- paste0(jobdf$job_id[i],"/processed/",jobdf$job_id[i], "_eSNPs_eqtlgenReplication_zscoreplot_mismatch_eQTLnCohorts.png")
     save_plot(file = outname_plot4, g4, base_height = 7, base_width = 12)
-    
-}
+  
+  }
 
 fwrite(jobdf, file = "peer_comparison_summary.csv")
+
