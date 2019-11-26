@@ -11,6 +11,6 @@
 . /etc/profile.d/modules.sh
 module purge
 module load rhel7/default-peta4
-module load R
+module load r-3.6.0-gcc-5.4.0-bzuuksv
 
 Rscript /rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/scripts/RNAseq/04_merge_postprocessed_output.R $1
