@@ -2,8 +2,8 @@
 #SBATCH -A PAUL-SL3-CPU
 #SBATCH -p skylake-himem
 #SBATCH --job-name=eqtl_merge_results
-#SBATCH --time=1:0:0
-#SBATCH --mem 5G
+#SBATCH --time=12:0:0
+#SBATCH --mem 12G
 #SBATCH --output=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/logs/eqtl_merge_results_%A_%a.log
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
