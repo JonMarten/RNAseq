@@ -4,9 +4,12 @@ library(dplyr)
 library(chron) # works with time
 library(stringr)
 library(ggplot2)
+
 setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/slurm")
 #job <- "16526165"
-job <- "17014037"
+#job <- "17014037"
+#job <- "17092259"
+job <- "17092263"
 
 # Get failed jobs from Slurm
 system(paste0("sacct -o JobID%24,AllocCPUS,State,Elapsed,MaxRSS,Start,End --units=G -j ",job," > sacct_temp.txt"))
@@ -87,7 +90,7 @@ findIntRuns <- function(run){
   }), use.names=FALSE)
 }
 
-failstring <- paste(jobFailed$arrayID, collapse = ",")
+failstring <- paste(unique(jobFailed$arrayID), collapse = ",")
 s <- "1,2,3,4,8,9,14,15,16,19"
 s2 <- as.numeric(unlist(strsplit(failstring, ",")))
 
