@@ -7,6 +7,12 @@ library(stringr, warn.conflicts = FALSE)
 args <- commandArgs(trailingOnly = T)
 dir <- args[1]
 
+if(length(args) > 1){
+  outfilename <- args[2]
+} else {
+  outfilename <- "output"
+}
+
 cat("This script merges postprocessed output from LIMIX into a single file.
 Merging results from:
 ")  
@@ -49,7 +55,7 @@ if( length(datSplit) > 1) {
     pull(feature_id) %>% 
     unique
   cat(paste0("Dropping: ", paste0(droppedFeatures, collapse = ", "), " due to alpha filter\n"))
-  write.table(datSplit[[2]], row.names = F, col.names = T, quote = F, file = paste0(jobids[i], "_droppedfeatures.txt"))
+  write.table(datSplit[[2]], row.names = F, col.names = T, quote = F, file = paste0(outfilename, "_droppedfeatures.txt"))
 } else {
   cat("No variants with alpha < 0.1 or > 10\n")
 }
@@ -80,7 +86,7 @@ dat3 <- dat2 %>%
 rm(dat2)
 
 # Write out
-outname <- paste0(jobids[i], "_results_merged.txt")
+outname <- paste0(outfilename, "_results_merged.txt")
 cat(paste0("Writing out results to ",outname,"\n"))
 fwrite(dat3, quote = F, file = outname)
 
