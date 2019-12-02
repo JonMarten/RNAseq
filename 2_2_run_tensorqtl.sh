@@ -15,10 +15,6 @@
 #SBATCH --gres=gpu:4
 #SBATCH -p pascal
 
-#! Number of nodes and tasks per node allocated by SLURM (do not change):
-numnodes=$SLURM_JOB_NUM_NODES
-numtasks=$SLURM_NTASKS
-mpi_tasks_per_node=$(echo "$SLURM_TASKS_PER_NODE" | sed -e  's/^\([0-9][0-9]*\).*$/\1/')
 #! ############################################################
 . /etc/profile.d/modules.sh
 module purge
@@ -35,7 +31,7 @@ PHEPATH=${DIR}/phenotypes/INTERVAL_RNAseq_phase1_filteredSamplesGenes_TMMNormali
 OPATH=${DIR}/results/tqtl_c22_test
 COVPATH=${DIR}/covariates/INTERVAL_RNAseq_phase1_age_sex_rin_batch_PC10_PEER20.txt
 
-python \
+python\
  -m tensorqtl ${GPATH} ${PHEPATH} ${OPATH}\
  --covariates ${COVPATH}\
  --mode cis\
