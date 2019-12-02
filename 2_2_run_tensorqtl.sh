@@ -35,7 +35,7 @@ PHEPATH=${DIR}/phenotypes/INTERVAL_RNAseq_phase1_filteredSamplesGenes_TMMNormali
 OPATH=${DIR}/results/tqtl_c22_test
 COVPATH=${DIR}/covariates/INTERVAL_RNAseq_phase1_age_sex_rin_batch_PC10_PEER20.txt
 
-python3 \
+python \
  -m tensorqtl ${GPATH} ${PHEPATH} ${OPATH}\
  --covariates ${COVPATH}\
  --mode cis\
