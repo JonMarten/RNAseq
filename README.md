@@ -3,7 +3,11 @@ This is a repository of scripts used in the analysis of the RNA seq data from th
 
 ## Data
 ### Phenotype
-Batches 1-4 of seq data have been downloaded from the Sanger server with globus, these are currently stored in `/home/jm2294/projects/RNAseq/globus`. CRAM files have not been downloaded. 
+#### Raw data
+All 8 batches of Phase I data have been downloaded from the Sanger Globus server. These are currently stored in `/rds/project/jmmh2/rds-jmmh2-pre_qc_data/interval/rna_seq/raw_data/globus` in subfolders by batch. Within each subfolder, `.cram` files are stored tar files in the `data` folders and processed gene counts are stored in the `results-study5591-*` folders.
+
+#### Filtered data
+Artika Nath has 
 
 ### Annotation
 Genomic positions of genes are obtained from Ensembl. 58,394 features are mapped in the original RNA seq counts. Of these, 92 are listed with "ERCC" identifiers, which I believe are spike-ins. 382 features are retired in the current release of Ensembl and are not included in the annotation file. In the final annotation file, chromosome and position information is incldued for 57,861 Ensembl genes.
