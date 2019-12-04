@@ -26,9 +26,9 @@ source activate tensorQTL
 
 DIR=/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl
 
-GPATH=/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/b38_bgen/filtered/plink/impute_22_interval_b38_filtered_no0_rnaSeqPhase1
-PHEPATH=${DIR}/phenotypes/INTERVAL_RNAseq_phase1_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis.bed
-OPATH=${DIR}/results/tqtl_c22_test
+GPATH=/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/b38_bgen/filtered/plink/impute_1_interval_b38_filtered_no0_rnaSeqPhase1
+PHEPATH=${DIR}/phenotypes/INTERVAL_RNAseq_phase1_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis.bed.gz
+OPATH=${DIR}/results/tqtl_c1_test
 COVPATH=${DIR}/covariates/INTERVAL_RNAseq_phase1_age_sex_rin_batch_PC10_PEER20.txt
 
 python\

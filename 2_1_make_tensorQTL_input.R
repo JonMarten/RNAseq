@@ -10,6 +10,8 @@ library(dplyr)
 
 setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/phenotypes")
 
+idmap <- fread(data.table = F, "/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/phenotype/sample_mapping_file_gt_to_phe_phase1.txt")
+
 phe <- fread("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/phenotype/INTERVAL_RNAseq_phase1_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis.txt", data.table = F)
 phe <- phe %>%
   rename(feature_id = gene_id)
@@ -21,8 +23,22 @@ bed <- left_join(phe, anno[,1:4]) %>%
   arrange(Chr, start) %>%
   rename("#Chr" = Chr)
 
+# Rename IDs to match genotype file
+namevec <- base::match(names(bed)[5:ncol(bed)], idmap$phenotype_individual_id)
+names(bed)[5:ncol(bed)] <-  as.character(idmap$genotype_individual_id[namevec])
+
+# sort pheno file IDs
+sortedids <- names(bed)[-c(1:4)] %>% sort
+bed <- bed %>%
+  select("#Chr", start, end, ID, sortedids)
+
 fwrite(bed, sep = "\t", file = "INTERVAL_RNAseq_phase1_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis.bed")
-  
+###########################################
+## NOTE: The bed file must be compressed and indexed with the commands below:
+# module load ceuadmin/tabix/0.2.6
+# bgzip INTERVAL_RNAseq_phase1_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis.bed && tabix -p bed INTERVAL_RNAseq_phase1_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis.bed.gz
+############################################
+
 # Make Covariate file
 #id UNR1 UNR2 UNR3 UNR4
 #PC1 -0.02 0.14 0.16 -0.02
@@ -31,10 +47,15 @@ fwrite(bed, sep = "\t", file = "INTERVAL_RNAseq_phase1_filteredSamplesGenes_TMMN
 #BIN 1 0 0 1
 
 cov <- fread("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/covariates/INTERVAL_RNAseq_phase1_age_sex_rin_batch_PC10_PEER20.txt", data.table = F)
+cov <- cov %>%
+  mutate(sample_id =  as.character(idmap$genotype_individual_id[base::match(sample_id, idmap$phenotype_individual_id)]))
 tcov <- transpose(cov)
 names(tcov) <- tcov[1,] 
 tcov <- tcov[-1,]
 tcov$id <- names(cov)[-1]
-tcov <- select(tcov, id, INT_RNA7711053:INT_RNA7878943)
+tcov <- select(tcov, id, sortedids) 
+# remove IDs missing in phenotype file
+remIDs <- names(tcov)[which(!names(tcov) %in% names(bed))][-1]
+tcov <- select(tcov, -remIDs)
 
 fwrite(tcov, file = "/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/covariates/INTERVAL_RNAseq_phase1_age_sex_rin_batch_PC10_PEER20.txt", sep = "\t")
