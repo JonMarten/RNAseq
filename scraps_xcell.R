@@ -41,15 +41,21 @@ merge <- full_join(phenos, predCells.df)
 merge.m <- merge %>%
   select(-sample_id) %>%
   as.matrix()
+
+fwrite(merge, file = "sysmex_xcell_comparison.csv")
+
 library(Hmisc)
+
+## Calculate correlations
 cormat <- rcorr(merge.m, type = "spearman")
 sysmex.vec <- grep("___RNA", colnames(cormat$r))
 halfcormat <- cormat$r[sysmex.vec, -sysmex.vec] 
 halfpmat <- cormat$p[sysmex.vec, -sysmex.vec] 
+
+
 corrplot(halfcormat, tl.col = "black", tl.cex = 0.55, tl.srt = 40, p.mat = halfpmat, sig.level = 0.05, insig = "blank")
 
-
-#
+# Plot densities for predicted cell types
 library(tidyr)
 library(cowplot)
 theme_set(theme_cowplot())
@@ -82,7 +88,7 @@ plotpmat <- halfpmat[vec,]
 
 col<- colorRampPalette(c("navy", "white", "darkred"))(30)
 
-png("corplot.png", height = 10, width = 10, units = "in")
-corrplot(plotcormat, tl.col = "black", tl.cex = 0.7, tl.srt = 40, p.mat = plotpmat, sig.level = 0.05, insig = "blank", col=col)
+png("corplot.png", height = 1000, width = 1000, type = "cairo")
+  corrplot(plotcormat, tl.col = "black", tl.cex = 0.7, tl.srt = 40, p.mat = plotpmat, sig.level = 0.05, insig = "blank", col=col)
 dev.off()
 
