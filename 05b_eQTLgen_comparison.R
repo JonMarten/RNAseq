@@ -14,7 +14,7 @@ eQTLgen <- fread("zcat /rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/eQ
 eQTLgen <- eQTLgen %>%
   mutate(matchID = paste0(Gene, ":", SNP)) %>%
   select(matchID, Zscore.eqtlgen = Zscore, assessed_allele.eqtlgen = AssessedAllele, ref_allele.eqtlgen = OtherAllele, Ncohorts.eqtlgen = NrCohorts, N.eqtlgen = NrSamples, P.eqtlgen = Pvalue, FDR.eqtlgen = FDR)
-         
+
 eSNPs <- eSNPs %>%
   mutate(matchID = paste0(feature_id, ":", rsid))
 merge <- left_join(eSNPs, eQTLgen)
@@ -29,7 +29,7 @@ merge <- merge %>%
 
 # Write out merged results
 fwrite(merge, file = "cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20_eSNPs_eQTLgenReplication.txt")
-  
+
 # check which of our eGenes are significant in eqtlgen
 eGenes.rep <- merge %>% 
   filter(!is.na(FDR.eqtlgen)) %>%
@@ -40,105 +40,105 @@ eGenes.rep <- merge %>%
   mutate(significant = ifelse(minP.eQTLgen < 0.05 / length(n()), 1, 0))
 
 # Check which of our eSNPs are signficant in eqtlgen
-  eSNP_replication <- merge %>%
-    filter(!is.na(FDR.eqtlgen)) %>%
-    mutate(P.BH.eqtlgen = p.adjust(P.eqtlgen, method = "BH")) %>%
-    mutate(sigrep = ifelse(P.BH.eqtlgen < 0.05 & signMismatch == 0, 1, 0))
+eSNP_replication <- merge %>%
+  filter(!is.na(FDR.eqtlgen)) %>%
+  mutate(P.BH.eqtlgen = p.adjust(P.eqtlgen, method = "BH")) %>%
+  mutate(sigrep = ifelse(P.BH.eqtlgen < 0.05 & signMismatch == 0, 1, 0))
 # correlate Z-scores
-  cor(eSNP_replication$zscore, eSNP_replication$Zscore.eqtlgen.flipped)
-  cor(eSNP_replication$zscore[eSNP_replication$sigrep == 1], eSNP_replication$Zscore.eqtlgen.flipped[eSNP_replication$sigrep == 1])
-  
+cor(eSNP_replication$zscore, eSNP_replication$Zscore.eqtlgen.flipped)
+cor(eSNP_replication$zscore[eSNP_replication$sigrep == 1], eSNP_replication$Zscore.eqtlgen.flipped[eSNP_replication$sigrep == 1])
+
 # Write out merged eQTLgen replication
-  fwrite(eSNP_replication, file = "cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20_eSNPs_eQTLgenReplication_reponly.txt")
+fwrite(eSNP_replication, file = "cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20_eSNPs_eQTLgenReplication_reponly.txt")
 
 # Pull genes with mismatched SNP Zscores
-  mismatchGenes <- eSNP_replication %>%
-    filter(signMismatch == 1) %>%
-    pull(feature_id) %>%
-    unique()
-  # Classify replication type
-  eSNP_replication <- eSNP_replication %>%
-    mutate(Significant = ifelse(sig_bonf_sign == 1, "Bonf. & direction match", 
-                                ifelse(sigrep_bonf == 1 & sig_bonf_sign == 0, "Bonf. & direction mismatch",
-                                       "NS"))) %>%
-    mutate(Significant = factor(Significant, levels = c("NS","Bonf. & direction mismatch", "Bonf. & direction match")))
-  
-  # Classify SNPs as strand-ambiguous
-  eSNP_replication$feature_length <- eSNP_replication$feature_end - eSNP_replication$feature_start
-  eSNP_replication <- eSNP_replication %>%
-    mutate(ambig = ifelse(eQTLgen_AssessedAllele == "A" & eQTLgen_OtherAllele == "T" |
-                            eQTLgen_AssessedAllele == "T" & eQTLgen_OtherAllele == "A" |
-                            eQTLgen_AssessedAllele == "C" & eQTLgen_OtherAllele == "G" |
-                            eQTLgen_AssessedAllele == "G" & eQTLgen_OtherAllele == "C", 1, 0)) %>%
-    mutate(veryambig = ifelse(ambig == 1 & maf > 0.45, 1, 0))
-  
-# get list of features with more than one significant SNPs mismatched  
-  flexmismatchGenes <- eSNP_replication %>%
-    filter(Significant  == "Bonf. & direction mismatch") %>%
-    group_by(feature_id) %>%
-    summarise(n_mismatched = n()) %>%
-    data.frame %>%
-    filter(n_mismatched > 1) %>%
-    pull(feature_id)
-  
-  #Plot Z scores
-  g <- ggplot(eSNP_replication, aes(x = zscore, y = eQTLgen_Zscore_flipped, color = Significant)) + 
-    geom_point(cex = 0.8, alpha = 0.5, pch = 20) +
-    theme(aspect.ratio = 1, legend.position = "right") +
-    scale_colour_manual(values = c("gray75", "orangered", "chartreuse3")) +
-    geom_vline(xintercept = 0) + 
-    geom_hline(yintercept = 0) + 
-    labs(x = "Limix Z-score", y = "eQTLgen Z-score") 
-  
-  outname_plot <- paste0(jobdf$job_id[i],"/processed/",jobdf$job_id[i], "_eSNPs_eqtlgenReplication_zscoreplot.png")
-  save_plot(file = outname_plot, g, base_height = 10, base_width = 10)
-  
+mismatchGenes <- eSNP_replication %>%
+  filter(signMismatch == 1) %>%
+  pull(feature_id) %>%
+  unique()
+# Classify replication type
+eSNP_replication <- eSNP_replication %>%
+  mutate(Significant = ifelse(sig_bonf_sign == 1, "Bonf. & direction match", 
+                              ifelse(sigrep_bonf == 1 & sig_bonf_sign == 0, "Bonf. & direction mismatch",
+                                     "NS"))) %>%
+  mutate(Significant = factor(Significant, levels = c("NS","Bonf. & direction mismatch", "Bonf. & direction match")))
 
-    # plot mismatches coloured by significance 
-    g2 <- ggplot(filter(eSNP_replication, feature_id %in% flexmismatchGenes), 
-                aes(x = zscore, y = eQTLgen_Zscore_flipped, color = Significant)) + 
-      geom_vline(xintercept = 0) + 
-      geom_hline(yintercept = 0) + 
-      geom_point(cex = 0.8, alpha = 1, pch = 20) +
-      theme(aspect.ratio = 1, legend.position = "right") +
-      labs(x = "Limix Z-score", y = "eQTLgen Z-score") +
-      theme_minimal() +
-      scale_colour_manual(values = c("gray75", "orangered", "chartreuse3")) +
-      facet_wrap(. ~ gene_name)  
-    
-    outname_plot2 <- paste0(jobdf$job_id[i],"/processed/",jobdf$job_id[i], "_eSNPs_eqtlgenReplication_zscoreplot_mismatch.png")
-    save_plot(file = outname_plot2, g2, base_height = 7, base_width = 12)
-    
-    # Plot mistmatches coloured by strand-ambiguity
-    g3 <- ggplot(filter(eSNP_replication, feature_id %in% flexmismatchGenes), 
-                 aes(x = zscore, y = eQTLgen_Zscore_flipped, color = as.factor(ambig))) + 
-      geom_vline(xintercept = 0) + 
-      geom_hline(yintercept = 0) + 
-      geom_point(cex = 0.8, alpha = 1, pch = 20) +
-      theme(aspect.ratio = 1, legend.position = "right") +
-      labs(x = "Limix Z-score", y = "eQTLgen Z-score") +
-      theme_minimal() +
-      scale_colour_manual(values = c("gray75", "orangered", "chartreuse3")) +
-      facet_wrap(. ~ gene_name)  
-    
-    outname_plot3 <- paste0(jobdf$job_id[i],"/processed/",jobdf$job_id[i], "_eSNPs_eqtlgenReplication_zscoreplot_mismatch_ambig.png")
-    save_plot(file = outname_plot3, g3, base_height = 7, base_width = 12)
-    
-    # Plot mismatches coloured by eQTLgen number of cohorts size
-    g4<- ggplot(filter(eSNP_replication, feature_id %in% flexmismatchGenes), 
-                 aes(x = zscore, y = eQTLgen_Zscore_flipped, color = eQTLgen_NrCohorts)) + 
-      geom_vline(xintercept = 0) + 
-      geom_hline(yintercept = 0) + 
-      geom_point(cex = 0.8, alpha = 1, pch = 20) +
-      theme(aspect.ratio = 1, legend.position = "right") +
-      labs(x = "Limix Z-score", y = "eQTLgen Z-score") +
-      theme_minimal() +
-      scale_colour_viridis_c() +
-      facet_wrap(. ~ gene_name)  
-    
-    outname_plot4 <- paste0(jobdf$job_id[i],"/processed/",jobdf$job_id[i], "_eSNPs_eqtlgenReplication_zscoreplot_mismatch_eQTLnCohorts.png")
-    save_plot(file = outname_plot4, g4, base_height = 7, base_width = 12)
-  
+# Classify SNPs as strand-ambiguous
+eSNP_replication$feature_length <- eSNP_replication$feature_end - eSNP_replication$feature_start
+eSNP_replication <- eSNP_replication %>%
+  mutate(ambig = ifelse(eQTLgen_AssessedAllele == "A" & eQTLgen_OtherAllele == "T" |
+                          eQTLgen_AssessedAllele == "T" & eQTLgen_OtherAllele == "A" |
+                          eQTLgen_AssessedAllele == "C" & eQTLgen_OtherAllele == "G" |
+                          eQTLgen_AssessedAllele == "G" & eQTLgen_OtherAllele == "C", 1, 0)) %>%
+  mutate(veryambig = ifelse(ambig == 1 & maf > 0.45, 1, 0))
+
+# get list of features with more than one significant SNPs mismatched  
+flexmismatchGenes <- eSNP_replication %>%
+  filter(Significant  == "Bonf. & direction mismatch") %>%
+  group_by(feature_id) %>%
+  summarise(n_mismatched = n()) %>%
+  data.frame %>%
+  filter(n_mismatched > 1) %>%
+  pull(feature_id)
+
+#Plot Z scores
+g <- ggplot(eSNP_replication, aes(x = zscore, y = eQTLgen_Zscore_flipped, color = Significant)) + 
+  geom_point(cex = 0.8, alpha = 0.5, pch = 20) +
+  theme(aspect.ratio = 1, legend.position = "right") +
+  scale_colour_manual(values = c("gray75", "orangered", "chartreuse3")) +
+  geom_vline(xintercept = 0) + 
+  geom_hline(yintercept = 0) + 
+  labs(x = "Limix Z-score", y = "eQTLgen Z-score") 
+
+outname_plot <- paste0(jobdf$job_id[i],"/processed/",jobdf$job_id[i], "_eSNPs_eqtlgenReplication_zscoreplot.png")
+save_plot(file = outname_plot, g, base_height = 10, base_width = 10)
+
+
+# plot mismatches coloured by significance 
+g2 <- ggplot(filter(eSNP_replication, feature_id %in% flexmismatchGenes), 
+             aes(x = zscore, y = eQTLgen_Zscore_flipped, color = Significant)) + 
+  geom_vline(xintercept = 0) + 
+  geom_hline(yintercept = 0) + 
+  geom_point(cex = 0.8, alpha = 1, pch = 20) +
+  theme(aspect.ratio = 1, legend.position = "right") +
+  labs(x = "Limix Z-score", y = "eQTLgen Z-score") +
+  theme_minimal() +
+  scale_colour_manual(values = c("gray75", "orangered", "chartreuse3")) +
+  facet_wrap(. ~ gene_name)  
+
+outname_plot2 <- paste0(jobdf$job_id[i],"/processed/",jobdf$job_id[i], "_eSNPs_eqtlgenReplication_zscoreplot_mismatch.png")
+save_plot(file = outname_plot2, g2, base_height = 7, base_width = 12)
+
+# Plot mistmatches coloured by strand-ambiguity
+g3 <- ggplot(filter(eSNP_replication, feature_id %in% flexmismatchGenes), 
+             aes(x = zscore, y = eQTLgen_Zscore_flipped, color = as.factor(ambig))) + 
+  geom_vline(xintercept = 0) + 
+  geom_hline(yintercept = 0) + 
+  geom_point(cex = 0.8, alpha = 1, pch = 20) +
+  theme(aspect.ratio = 1, legend.position = "right") +
+  labs(x = "Limix Z-score", y = "eQTLgen Z-score") +
+  theme_minimal() +
+  scale_colour_manual(values = c("gray75", "orangered", "chartreuse3")) +
+  facet_wrap(. ~ gene_name)  
+
+outname_plot3 <- paste0(jobdf$job_id[i],"/processed/",jobdf$job_id[i], "_eSNPs_eqtlgenReplication_zscoreplot_mismatch_ambig.png")
+save_plot(file = outname_plot3, g3, base_height = 7, base_width = 12)
+
+# Plot mismatches coloured by eQTLgen number of cohorts size
+g4<- ggplot(filter(eSNP_replication, feature_id %in% flexmismatchGenes), 
+            aes(x = zscore, y = eQTLgen_Zscore_flipped, color = eQTLgen_NrCohorts)) + 
+  geom_vline(xintercept = 0) + 
+  geom_hline(yintercept = 0) + 
+  geom_point(cex = 0.8, alpha = 1, pch = 20) +
+  theme(aspect.ratio = 1, legend.position = "right") +
+  labs(x = "Limix Z-score", y = "eQTLgen Z-score") +
+  theme_minimal() +
+  scale_colour_viridis_c() +
+  facet_wrap(. ~ gene_name)  
+
+outname_plot4 <- paste0(jobdf$job_id[i],"/processed/",jobdf$job_id[i], "_eSNPs_eqtlgenReplication_zscoreplot_mismatch_eQTLnCohorts.png")
+save_plot(file = outname_plot4, g4, base_height = 7, base_width = 12)
+
 
 fwrite(jobdf, file = "peer_comparison_summary.csv")
 
