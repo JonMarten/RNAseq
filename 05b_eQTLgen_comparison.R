@@ -98,7 +98,7 @@ save_plot(file = outname_plot, g, base_height = 10, base_width = 10)
 
 # plot single gene
 onegene <- ggplot(filter(eSNP_replication, feature_id == "ENSG00000229391"), 
-             aes(x = zscore, y = eQTLgen_Zscore_flipped, color = Significant)) + 
+             aes(x = zscore, y = Zscore.eqtlgen.flipped, color = as.factor(signif))) + 
   geom_vline(xintercept = 0) + 
   geom_hline(yintercept = 0) + 
   geom_point(cex = 0.8, alpha = 1, pch = 20) +
