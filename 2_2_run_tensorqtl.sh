@@ -35,4 +35,4 @@ python\
  -m tensorqtl ${GPATH} ${PHEPATH} ${OPATH}\
  --covariates ${COVPATH}\
  --mode cis\
- --maf_threshold 0.05
+ --maf_threshold 0.05 
