@@ -21,6 +21,7 @@ anno <- fread("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/0
 bed <- left_join(phe, anno[,1:4]) %>%
   select(Chr = chromosome, start, end, ID = feature_id, INT_RNA7427205:INT_RNA7959012) %>%
   arrange(Chr, start) %>%
+  filter(!is.na(Chr)) %>%
   rename("#Chr" = Chr)
 
 # Rename IDs to match genotype file
