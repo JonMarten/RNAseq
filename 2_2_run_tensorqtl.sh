@@ -34,5 +34,5 @@ COVPATH=${DIR}/covariates/INTERVAL_RNAseq_phase1_age_sex_rin_batch_PC10_PEER20.t
 python\
  -m tensorqtl ${GPATH} ${PHEPATH} ${OPATH}\
  --covariates ${COVPATH}\
- --mode cis\
+ --mode cis_nominal\
  --maf_threshold 0.05 
