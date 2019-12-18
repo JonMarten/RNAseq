@@ -35,4 +35,6 @@ python\
  -m tensorqtl ${GPATH} ${PHEPATH} ${OPATH}\
  --covariates ${COVPATH}\
  --mode trans\
+ --return_dense\
+ --output_text\
  --maf_threshold 0.05 
