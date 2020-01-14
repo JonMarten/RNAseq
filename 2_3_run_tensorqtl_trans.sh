@@ -7,7 +7,7 @@
 #SBATCH --time=12:00:00
 
 #! How many whole nodes should be allocated?
-#SBATCH --nodes=2
+#SBATCH --nodes=3
 #! How many (MPI) tasks will there be in total? (Note probably this should not exceed the total number of GPUs in use.)
 #SBATCH --ntasks=4
 #! Specify the number of GPUs per node (between 1 and 4; must be 4 if nodes>1).

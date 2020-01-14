@@ -19,7 +19,7 @@ plink\
  --memory 191000\
  --bfile INTERVAL_b38_autosomes_RNAseqPhase1_biallelic_all\
  --make-bed\
- --maf 0.01\
- --out INTERVAL_b38_autosomes_RNAseqPhase1_biallelic_all_MAF0.01\
+ --maf 0.005\
+ --out INTERVAL_b38_autosomes_RNAseqPhase1_biallelic_all_MAF0.005\
  --hwe 1e-6
 
