@@ -32,7 +32,14 @@ OPATH=${DIR}/results/tensorqtl_cis_MAF0.005
 COVPATH=${DIR}/covariates/INTERVAL_RNAseq_phase1_age_sex_rin_batch_PC10_PEER20.txt
 
 python\
- -m tensorqtl ${GPATH} ${PHEPATH} ${OPATH}\
+ -m tensorqtl ${GPATH} ${PHEPATH} ${OPATH}_cis\
+ --covariates ${COVPATH}\
+ --mode cis\
+ --return_dense\
+ --output_text
+ 
+ python\
+ -m tensorqtl ${GPATH} ${PHEPATH} ${OPATH}_cisnominal\
  --covariates ${COVPATH}\
  --mode cis_nominal\
  --return_dense\
