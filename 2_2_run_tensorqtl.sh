@@ -38,9 +38,9 @@ python\
  --return_dense\
  --output_text
  
- python\
- -m tensorqtl ${GPATH} ${PHEPATH} ${OPATH}_cisnominal\
- --covariates ${COVPATH}\
- --mode cis_nominal\
- --return_dense\
- --output_text
+# python\
+# -m tensorqtl ${GPATH} ${PHEPATH} ${OPATH}_cisnominal\
+# --covariates ${COVPATH}\
+# --mode cis_nominal\
+# --return_dense\
+# --output_text
