@@ -40,6 +40,16 @@ eSNPs <- dat %>%
 outname.eSNP <- paste0(prefix, "_eSNPs.txt")
 fwrite(eSNPs, file = outname.eSNP)
 
+# Output rsids for VEP (50kb file limit)
+vepRS <- eSNPs %>% select(rsid)
+midpoint <- round(nrow(vepRS)/2)
+v1 <- vepRS[1:midpoint,1] %>% data.frame
+v2 <- vepRS[(midpoint + 1):nrow(vepRS),1] %>% data.frame
+
+fwrite(v1, file = paste0(prefix, "_eSNPs_rsidsForVEP_part1.txt"), col.names = F)
+fwrite(v2, file = paste0(prefix, "_eSNPs_rsidsForVEP_part2.txt"), col.names = F)
+
+
 # Plot results
 library(qqman)
 manhattan(eSNPs, chr = "snp_chromosome", bp = "snp_position", p = "empirical_feature_p_value")
