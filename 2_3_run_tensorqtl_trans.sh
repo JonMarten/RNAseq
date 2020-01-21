@@ -26,9 +26,9 @@ source activate tensorQTL
 
 DIR=/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl
 
-GPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/genotypes/INTERVAL_b38_autosomes_RNAseqPhase1_biallelic_all_MAF0.005
+GPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/genotypes/INTERVAL_b38_autosomes_RNAseqPhase1_biallelic_all_MAF0.05
 PHEPATH=${DIR}/phenotypes/INTERVAL_RNAseq_phase1_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis.bed.gz
-OPATH=${DIR}/results/tensorqtl_trans_MAF0.005
+OPATH=${DIR}/results/tensorqtl_trans_MAF0.05
 COVPATH=${DIR}/covariates/INTERVAL_RNAseq_phase1_age_sex_rin_batch_PC10_PEER20.txt
 
 python\
@@ -36,4 +36,5 @@ python\
  --covariates ${COVPATH}\
  --mode trans\
  --return_dense\
- --output_text
+ --output_text\
+ --batch 10000
