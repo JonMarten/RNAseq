@@ -4,6 +4,9 @@
 library(data.table)
 library(stringr)
 library(dplyr)
+library(ggplot2)
+library(cowplot)
+theme_set(theme_cowplot())
 
 setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/results/cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20_5GenesPerChunk/processed")
 prefix <- "cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20"
@@ -24,9 +27,34 @@ vepTrim2 <- vep %>%
   filter(row_number() == 1) %>%
   data.frame
 
+
 # Merge in VEP results          
 
 m <- left_join(eSNPs, vepTrim2, by = "rsid")
+fwrite(m, file = "cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20_eSNPs_VEPannotated.csv")
+
+# Significant eSNPs per eGene
+eSNPs <- eSNPs %>%
+  mutate(geneLength = feature_end - feature_start,
+         TSSdist = snp_position - feature_start)
+  
+
+
+snpCount <- eSNPs %>%
+  group_by(feature_id) %>%
+  summarise(nSNPs_significant = n(),
+            nSNPs_perlength = n() / unique(geneLength)) %>%
+  data.frame()
+
+# Density plot of number of significant eSNPs per gene
+g1 <- ggplot(snpCount, aes(x = nSNPs_significant)) +
+  geom_density()
+
+# Density plot of number of significant eSNPs per gene normalised by gene length
+g2 <- ggplot(snpCount, aes(x = nSNPs_perlength)) +
+  geom_density()
+
+plot_grid(g1, g2, ncol = 1)
 
 m %>% 
   group_by(rsid) %>%
