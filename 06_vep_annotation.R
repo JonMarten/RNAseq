@@ -15,14 +15,18 @@ vep2 <- fread("cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20_eSNPs_rsidsFor
 
 vep <- rbind(vep1, vep2)
 names(vep)[1] <- "rsid"
-m <- left_join(eSNPs, vep, by = "rsid")
+#m <- left_join(eSNPs, vep, by = "rsid")
+
+vepTrim2 <- vep %>%
+ # mutate(IMPACT = factor(IMPACT, levels = c("HIGH", "MODERATE","LOW","MODIFIER","-"))) %>%
+  group_by(rsid) %>%
+  arrange(Feature) %>%
+  filter(row_number() == 1) %>%
+  data.frame
 
 # Merge in VEP results          
 
-vep <- fread("cis_eqtls_18373genes_age_sex_rin_batch_PC10_eSNPs.txt_vepQuery_rsids_vepOfflineResults.txt", data.table = F)
-names(vep)[1] <- "rsid"         
-vepTrim <- vep[duplicated(vep$rsid),]
-m <- left_join(eSNPs, vepTrim, by = "rsid")
+m <- left_join(eSNPs, vepTrim2, by = "rsid")
 
 m %>% 
   group_by(rsid) %>%
