@@ -6,6 +6,7 @@ library(stringr)
 library(dplyr)
 library(ggplot2)
 library(cowplot)
+library(UpSetR)
 theme_set(theme_cowplot())
 
 setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/results/cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20_5GenesPerChunk/processed")
@@ -32,29 +33,84 @@ vepTrim2 <- vep %>%
 
 m <- left_join(eSNPs, vepTrim2, by = "rsid")
 fwrite(m, file = "cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20_eSNPs_VEPannotated.csv")
+# m <- fread(data.table = F, "cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20_eSNPs_VEPannotated.csv")
 
 # Significant eSNPs per eGene
 eSNPs <- eSNPs %>%
   mutate(geneLength = feature_end - feature_start,
-         TSSdist = snp_position - feature_start)
+         TSSdist = snp_position - feature_start,
+         positionAlongGene = (snp_position - feature_start)/geneLength)
+
+eSNPs$HLA <- grepl("HLA", eSNPs$gene_name)
   
-
-
 snpCount <- eSNPs %>%
   group_by(feature_id) %>%
-  summarise(nSNPs_significant = n(),
-            nSNPs_perlength = n() / unique(geneLength)) %>%
+  summarise(geneLength = unique(geneLength),
+            nSNPs_significant = n(),
+            nSNPs_perlength = n() / unique(geneLength),
+            HLA = unique(HLA)) %>%
   data.frame()
+
+ggplot(snpCount, aes(x = geneLength, y = nSNPs_significant, colour = HLA)) + 
+  geom_point() +
+  labs(x = "Gene length", y = "Number of significant eSNPs") 
 
 # Density plot of number of significant eSNPs per gene
 g1 <- ggplot(snpCount, aes(x = nSNPs_significant)) +
   geom_density()
 
 # Density plot of number of significant eSNPs per gene normalised by gene length
-g2 <- ggplot(snpCount, aes(x = nSNPs_perlength)) +
+g2 <- ggplot(filter(snpCount, nSNPs_perlength < 1), aes(x = nSNPs_perlength)) +
   geom_density()
 
 plot_grid(g1, g2, ncol = 1)
+
+# Density plot of number of TSS distance
+g3 <- ggplot(eSNPs, aes(x = TSSdist)) +
+  geom_density()
+
+# Density plot of number of position of SNP along gene
+g4 <- ggplot(eSNPs, aes(x = positionAlongGene)) +
+  geom_density()
+
+ggplot(eSNPs, aes(x = BIOTYPE)) + geom_bar()
+
+plot_grid(g3, g4, ncol = 1)
+
+b <- m %>% 
+  group_by(Consequence) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n)) %>%
+  mutate(Consequence = factor(Consequence, levels = unique(Consequence))) 
+
+
+  ggplot(b[-1,], aes(x = Consequence, y = n, fill = Consequence)) + 
+    geom_bar(stat="identity") +
+    coord_flip() +
+    theme(legend.position = "none")
+  
+  tab <- m %>%
+    group_by(Consequence) %>%
+    summarise(count = n()) %>%
+    data.frame() %>%
+    mutate(Consequence = as.factor(Consequence)) %>% 
+    arrange(desc(count))
+  
+  tab$Consequence <- gsub(pattern = ",", "&", tab$Consequence)
+  
+  # Make upset plot for consequences 
+  a <- c(tab$count)
+  names(a) <- tab$Consequence
+ 
+   upset(fromExpression(a), 
+        nsets = 15,
+        order.by = "freq",
+        mb.ratio = c(0.60, 0.40),
+        text.scale = 1.5)
+  
+  
+  
+
 
 m %>% 
   group_by(rsid) %>%
