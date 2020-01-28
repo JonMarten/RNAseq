@@ -34,5 +34,5 @@ COVPATH=${DIR}/covariates/INTERVAL_RNAseq_phase1_age_sex_rin_batch_PC10_PEER20.t
 python\
  -m tensorqtl ${GPATH} ${PHEPATH} ${OPATH}_cis_independent\
  --covariates ${COVPATH}\
- --cis_results ${OPATH}_cis
+ --cis_results ${OPATH}_cis\
  --mode cis_independent

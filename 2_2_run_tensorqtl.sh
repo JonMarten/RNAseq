@@ -21,6 +21,7 @@ module purge
 module load rhel7/default-gpu
 module load miniconda3-4.5.4-gcc-5.4.0-hivczbz 
 module load cuda/9.2
+module load r-3.6.0-gcc-5.4.0-bzuuksv
 
 source activate tensorQTL
 
