@@ -3,8 +3,8 @@ library(data.table)
 library(ggplot2)
 library(cowplot)
 theme_set(theme_cowplot())
-
-a <- fread("tensorqtl_cis_test.cis_qtl_pairs.22.csv", data.table = F)
+setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/results")
+a <- fread("tensorqtl_cis_MAF0.005_cisnominal.cis_qtl_pairs.22.csv", data.table = F)
 
 limix22 <- fread("../../01_cis_eqtl_mapping/results/cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20_5GenesPerChunk/processed/cis_eqtls_18373genes_age_sex_rin_batch_PC10_PEER20_eSNPs_eQTLgenReplication.txt", data.table = F)
 
