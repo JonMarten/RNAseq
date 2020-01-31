@@ -35,4 +35,4 @@ python\
  -m tensorqtl ${GPATH} ${PHEPATH} ${OPATH}_cis_sexIntr\
  --covariates ${COVPATH}\
  --interaction sex\
- --mode cis_independent
+ --mode cis

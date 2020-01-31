@@ -34,5 +34,5 @@ COVPATH=${DIR}/covariates/INTERVAL_RNAseq_phase1_age_sex_rin_batch_PC10_PEER20.t
 python\
  -m tensorqtl ${GPATH} ${PHEPATH} ${OPATH}_cis_independent\
  --covariates ${COVPATH}\
- --cis_results ${OPATH}_cis\
+ --cis_output /rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/results/tensorqtl_cis_MAF0.005_cisnominal.tensorQTL.cis_nominal_manualPython.parquet\
  --mode cis_independent
