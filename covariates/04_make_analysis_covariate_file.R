@@ -34,6 +34,6 @@ fwrite(covout.bloodcells, file = "INTERVAL_RNAseq_phase1_age_sex_rin_batch_readD
 # Make GxE interaction covariate file
 gxeOut <- allcovs %>%
   select(sample_id, NEUT_PCT___RNA)
-fwrite(gxeOut, file = "/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/covariates/INTERVAL_RNAseq_phase1_GxE_neutPCT.txt", sep = "\t")
+fwrite(gxeOut, file = "INTERVAL_RNAseq_phase1_GxE_neutPCT.txt", sep = "\t")
 
 

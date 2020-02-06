@@ -10,6 +10,8 @@ plink_prefix_path = "/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analys
 phenotype_df, phenotype_pos_df = tensorqtl.read_phenotype_bed(phenotype_bed_file)
 covariates_df = pd.read_csv(covariates_file, sep='\t', index_col=0).T  # samples x covariates
 
+interaction_df = pd.read_csv("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/covariates/INTERVAL_RNAseq_phase1_GxE_neutPCT.txt", sep = "\t", index_col=0, squeeze = True).T
+
 # subset phenotype db
 #phe_df = phenotype_df.iloc[0:10]
 
@@ -22,5 +24,6 @@ genotype_df = pd.DataFrame(pr.get_all_genotypes(), index=pr.bim['snp'], columns=
 variant_df = pr.bim.set_index('snp')[['chrom', 'pos']]
 
 # cis mapping
+cisnom_df = cis.map_nominal(genotype_df, variant_df, phenotype_df, phenotype_pos_df, covariates_df, prefix="Test_gxe", interaction_s=interaction_df)
 cis_df = cis.map_cis(genotype_df, variant_df, phenotype_df, phenotype_pos_df, covariates_df)
 tensorqtl.calculate_qvalues(cis_df, qvalue_lambda=0.85)

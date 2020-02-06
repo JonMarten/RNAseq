@@ -35,4 +35,4 @@ python\
  -m tensorqtl ${GPATH} ${PHEPATH} ${OPATH}_cis_sexIntr\
  --covariates ${COVPATH}\
  --interaction /rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/covariates/INTERVAL_RNAseq_phase1_GxE_neutPCT.txt\
- --mode cis
+ --mode cis_nominal
