@@ -28,9 +28,9 @@ cis_df.to_csv(outdir + "tensorqtl_cis_MAF0.005_cisPerGene.csv", index=True, inde
 #cisnom_df = cis.map_nominal(genotype_df, variant_df, phenotype_df, phenotype_pos_df, covariates_df, prefix=outdir + "tensorqtl_cis_MAF0.005_cisNominal")
 
 # Conditional analysis
-#indep_df = cis.map_independent(genotype_df, variant_df, cis_df, phenotype_df, phenotype_pos_df, covariates_df)
-#indep_df.to_csv(outdir + "tensorqtl_cis_MAF0.005_cisIndependent.csv", index=True, index_label = "Phenotype")
+indep_df = cis.map_independent(genotype_df, variant_df, cis_df, phenotype_df, phenotype_pos_df, covariates_df)
+indep_df.to_csv(outdir + "tensorqtl_cis_MAF0.005_cisIndependent.csv", index=True, index_label = "Phenotype")
 
 # GxE
-#cisGxE_df = cis.map_nominal(genotype_df, variant_df, phenotype_df, phenotype_pos_df, covariates_df, prefix="Test_gxe", interaction_s=interaction_df)
-#cis.map_nominal(genotype_df, variant_df, phenotype_df, phenotype_pos_df, covariates_df, prefix="tensorqtl_cis_MAF0.005_cisGxE",interaction_s=interaction_s, maf_threshold_interaction=0.05,group_s=None, run_eigenmt=True, output_dir=outdir)
+cisGxE_df = cis.map_nominal(genotype_df, variant_df, phenotype_df, phenotype_pos_df, covariates_df, prefix="Test_gxe", interaction_s=interaction_df)
+cis.map_nominal(genotype_df, variant_df, phenotype_df, phenotype_pos_df, covariates_df, prefix="tensorqtl_cis_MAF0.005_cisGxE",interaction_s=interaction_s, maf_threshold_interaction=0.05,group_s=None, run_eigenmt=True, output_dir=outdir)
