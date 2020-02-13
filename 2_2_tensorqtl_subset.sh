@@ -3,8 +3,8 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
 #SBATCH -J TensorQTL_pythonmodule_test
-#SBATCH -A PAUL-SL3-GPU
-#SBATCH --time=12:00:00
+#SBATCH -A INOUYE-SL2-GPU
+#SBATCH --time=4:00:00
 #SBATCH --nodes=2
 #SBATCH --ntasks=4
 #SBATCH --gres=gpu:4
