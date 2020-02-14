@@ -1,10 +1,10 @@
 #!/bin/bash
-#SBATCH --output=/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/logs/tensorqtl_test_%A.log
+#SBATCH --output=/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/logs/TensorQTL_trans_%A.log
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
-#SBATCH -J TensorQTL_test
-#SBATCH -A PAUL-SL3-GPU
-#SBATCH --time=12:00:00
+#SBATCH -J TensorQTL_trans
+#SBATCH -A INOUYE-SL2-GPU
+#SBATCH --time=36:00:00
 
 #! How many whole nodes should be allocated?
 #SBATCH --nodes=3
@@ -26,9 +26,9 @@ source activate tensorQTL
 
 DIR=/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl
 
-GPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/genotypes/INTERVAL_b38_autosomes_RNAseqPhase1_biallelic_all_MAF0.05
+GPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/genotypes/INTERVAL_b38_autosomes_RNAseqPhase1_biallelic_all_MAF0.005
 PHEPATH=${DIR}/phenotypes/INTERVAL_RNAseq_phase1_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis.bed.gz
-OPATH=${DIR}/results/tensorqtl_trans_MAF0.05
+OPATH=${DIR}/results/tensorqtl_trans_MAF0.005
 COVPATH=${DIR}/covariates/INTERVAL_RNAseq_phase1_age_sex_rin_batch_PC10_PEER20.txt
 
 python\
@@ -36,5 +36,4 @@ python\
  --covariates ${COVPATH}\
  --mode trans\
  --return_dense\
- --output_text\
  --batch 10000
