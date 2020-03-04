@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --output=/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/logs/TensorQTL_trans_%A.log
+#SBATCH --output=/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/logs/TensorQTL_trans_%A_%a.log
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
 #SBATCH -J TensorQTL_trans
@@ -7,7 +7,7 @@
 #SBATCH --time=36:00:00
 
 #! How many whole nodes should be allocated?
-#SBATCH --nodes=3
+#SBATCH --nodes=1
 #! How many (MPI) tasks will there be in total? (Note probably this should not exceed the total number of GPUs in use.)
 #SBATCH --ntasks=4
 #! Specify the number of GPUs per node (between 1 and 4; must be 4 if nodes>1).
@@ -25,10 +25,11 @@ module load cuda/9.2
 source activate tensorQTL
 
 DIR=/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl
+CHR=$SLURM_ARRAY_TASK_ID
 
-GPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/genotypes/INTERVAL_b38_autosomes_RNAseqPhase1_biallelic_all_MAF0.005
+GPATH=/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/genotypes/INTERVAL_b38_autosomes_RNAseqPhase1_biallelic_chr${CHR}_MAF0.005
 PHEPATH=${DIR}/phenotypes/INTERVAL_RNAseq_phase1_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis.bed.gz
-OPATH=${DIR}/results/tensorqtl_trans_MAF0.005
+OPATH=${DIR}/results/tensorqtl_trans_MAF0.005_chr${CHR}
 COVPATH=${DIR}/covariates/INTERVAL_RNAseq_phase1_age_sex_rin_batch_PC10_PEER20.txt
 
 python\
