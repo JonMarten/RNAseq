@@ -39,6 +39,7 @@ cis <- all %>%
 trans <- all %>%
   filter(abs(snpDistFromStart) > 500000 & abs(snpDistFromEnd) > 500000)
 fwrite(trans, file = "results/python_module_method/tensorqtl_transSNPs_MAF0.005_merged_annotated.csv", sep = ",")
+#trans <- fread("results/python_module_method/tensorqtl_transSNPs_MAF0.005_merged_annotated.csv", data.table = F)
 
 # gene level FDR
 topSNPs <- trans %>%
@@ -46,6 +47,9 @@ topSNPs <- trans %>%
   summarise(nSNPs = n(), minP = min(pval, na.rm = T)) %>%
   data.frame() %>%
   mutate(minP_GWadj = minP * 10^6)
+
+nphenos <- 17674 # There are this many phenotypes being tested
+nmiss <- nphenos - nrow(topSNPs)
 
 # Test dummmy p-value assumption - VALIDATED
 ##dumTest <- topSNPs %>%
@@ -55,8 +59,6 @@ topSNPs <- trans %>%
 ##         p.1 = minP) %>%
 ##  select(-minP)
 ##
-##nphenos <- 17674 # There are this many phenotypes being tested
-##nmiss <- nphenos - nrow(topSNPs)
 ##dumP.unif <- runif(nmiss, min = 1e-5, max = 1)
 ##dumP.unifBig <- runif(nmiss, min = 0.5, max = 1)
 ##dumP.1 <- rep(1, nmiss)
@@ -95,7 +97,12 @@ eGenes.BH <- topSNPs %>%
   filter(sig == 1) %>%
   pull(phenotype_id)
 
-sigThresh <- 5e-8 / length(eGenes.BH)
+#sigThresh <- 5e-8 / length(eGenes.BH)
+# Use largest uncorrected p-value for a significant eGene as threshold 
+sigThresh <- topSNPs %>%
+  filter(sig == 1) %>%
+  pull(minP) %>%
+  max
 
 eSNPs.BH <- trans %>%
   filter(phenotype_id %in% eGenes.BH) %>%
@@ -110,22 +117,28 @@ eGenes.BH.summary <- eSNPs.BH %>%
 # Group SNPs by loci
 sentinels <- list()
 for(i in seq_along(eGenes.BH)){
-  loop <- eSNPs.BH %>% filter(phenotype_id == eGenes.BH[i])
-  
+  cat(paste0("\nFeature ",i))
+  loop <- eSNPs.BH %>% 
+    filter(phenotype_id == eGenes.BH[i]) %>%
+    arrange(pval)
+  j = 1
+  while(nrow(loop) > 0){
+    cat(paste0("\n\tLocus ",j))
+    row <- loop[1,]
+    snpchr <- loop$snp_chr[1]
+    maxpos <- loop$snp_bp[1] + 500000
+    minpos <- loop$snp_bp[1] - 500000
+    locus <- loop %>%
+      filter((snp_chr == snpchr & snp_bp > minpos & snp_bp < maxpos))
+    row$locus_size = nrow(locus)
+    sentinels <- rbind(sentinels, row)
+    loop <- loop %>% filter(!variant_id %in% locus$variant_id)
+    rm(snpchr, maxpos, minpos, row)
+    j = j + 1
+  }
+}
 
-loop <- eSNPs.BH()
-while(nrow(loop) > 0){
-  
+fwrite(sentinels, file = "results/python_module_method/tensorqtl_transSNPs_MAF0.005_merged_annotated_sentinels.csv")
 
-
-
-trans <- trans %>%
-  mutate(sig_bonf = ifelse(pval < 5e-8/nrow(trans), 1, 0))
-
-eGenes_bonf <- trans %>%
-  filter(sig_bonf == 1) %>%
-  group_by(gene_name) %>%
-  summarise(n = n()) %>%
-  data.frame()
               
               
