@@ -140,5 +140,8 @@ for(i in seq_along(eGenes.BH)){
 
 fwrite(sentinels, file = "results/python_module_method/tensorqtl_transSNPs_MAF0.005_merged_annotated_sentinels.csv")
 
-              
+sentinels <- sentinels %>%
+  mutate(pval = ifelse(pval ==0, sentinels$pval[which(sentinels$pval != 0)] %>% min, pval))
+
+
               
