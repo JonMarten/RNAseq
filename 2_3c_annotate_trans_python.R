@@ -115,13 +115,15 @@ eGenes.BH.summary <- eSNPs.BH %>%
   data.frame
 
 # Group SNPs by loci
-sentinels <- list()
+sentinels <- data.frame()
 for(i in seq_along(eGenes.BH)){
-  cat(paste0("\nFeature ",i))
+  geneSentinels <- data.frame()
+  cat(paste0("\nFeature ",i, ": ", eGenes.BH[i]))
   loop <- eSNPs.BH %>% 
     filter(phenotype_id == eGenes.BH[i]) %>%
     arrange(pval)
   j = 1
+  # select one top SNP per 1Mb window
   while(nrow(loop) > 0){
     cat(paste0("\n\tLocus ",j))
     row <- loop[1,]
@@ -131,11 +133,38 @@ for(i in seq_along(eGenes.BH)){
     locus <- loop %>%
       filter((snp_chr == snpchr & snp_bp > minpos & snp_bp < maxpos))
     row$locus_size = nrow(locus)
-    sentinels <- rbind(sentinels, row)
+    row$locus_start = minpos
+    row$locus_end = maxpos
+    geneSentinels <- rbind(geneSentinels, row)
     loop <- loop %>% filter(!variant_id %in% locus$variant_id)
     rm(snpchr, maxpos, minpos, row)
     j = j + 1
   }
+  # Merge sentinels with overlapping windows
+  if(nrow(geneSentinels) > 1){
+    superSentinels <- data.frame()
+    while(nrow(geneSentinels) > 1){
+      row <- geneSentinels[1,]
+      locus <- geneSentinels %>%
+        filter((snp_chr == row$snp_chr[1] & snp_bp > row$snp_bp - 1000000 & snp_bp < row$snp_bp + 1000000))
+      if(nrow(locus) > 1) {
+        row$locus_size <- sum(locus$locus_size)
+        row$locus_start <- min(locus$locus_start)
+        row$locus_end <- max(locus$locus_end)
+        superSentinels <- rbind(superSentinels, row)
+      } else {
+        superSentinels <- rbind(superSentinels, locus)
+      }
+      geneSentinels <- geneSentinels %>% filter(!variant_id %in% locus$variant_id)
+      
+      cat("\n\t\t Merging ", nrow(locus), " sentinels with overlapping windows: ", paste0(locus$variant_id, collapse = ", "))
+      
+      rm(row, locus)
+    }
+    sentinels <- rbind(sentinels, superSentinels)
+  } 
+  sentinels <- rbind(sentinels, geneSentinels)
+  
 }
 
 fwrite(sentinels, file = "results/python_module_method/tensorqtl_transSNPs_MAF0.005_merged_annotated_sentinels.csv")
