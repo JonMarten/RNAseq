@@ -47,19 +47,29 @@ fwrite(bed, sep = "\t", file = "INTERVAL_RNAseq_phase1_filteredSamplesGenes_TMMN
 #PC3 0.03 0.05 0.08 0.07
 #BIN 1 0 0 1
 
-cov <- fread("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/covariates/INTERVAL_RNAseq_phase1_age_sex_rin_batch_readDepth_PC10.txt", data.table = F)
-cov <- cov %>%
-  mutate(sample_id =  as.character(idmap$genotype_individual_id[base::match(sample_id, idmap$phenotype_individual_id)]))
-tcov <- transpose(cov)
-names(tcov) <- tcov[1,] 
-tcov <- tcov[-1,]
-tcov$id <- names(cov)[-1]
-tcov <- select(tcov, id, sortedids) 
-# remove IDs missing in phenotype file
-remIDs <- names(tcov)[which(!names(tcov) %in% names(bed))][-1]
-tcov <- select(tcov, -remIDs)
+# Function to reformat covariate files for TensorQTL
+makeCov <- function(file, idmap, bed) {
+  cov <- fread(file, data.table = F)
+  cov <- cov %>%
+    mutate(sample_id =  as.character(idmap$genotype_individual_id[base::match(sample_id, idmap$phenotype_individual_id)]))
+  tcov <- transpose(cov)
+  names(tcov) <- tcov[1,] 
+  tcov <- tcov[-1,]
+  tcov$id <- names(cov)[-1]
+  # remove IDs missing in phenotype file
+  remIDs <- names(tcov)[which(!names(tcov) %in% names(bed))][-1]
+  tcov <- select(tcov, -remIDs)
+  tcov <- select(tcov, id, sortedids) 
+}
 
-fwrite(tcov, file = "/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/covariates/INTERVAL_RNAseq_phase1_age_sex_rin_batch_PC10_PEER20.txt", sep = "\t")
+
+covMinimal <- makeCov("../../01_cis_eqtl_mapping/covariates/INTERVAL_RNAseq_phase1_age_sex_rin_batch_readDepth_PC10.txt", idmap, bed)
+covPEER <- makeCov("../../01_cis_eqtl_mapping/covariates/INTERVAL_RNAseq_phase1_age_sex_rin_batch_readDepth_PC10_PEER20.txt", idmap, bed)
+covCellPct <- makeCov("../../01_cis_eqtl_mapping/covariates/INTERVAL_RNAseq_phase1_age_sex_rin_batch_readDepth_PC10_NeutPCT_LympPCT_MonoPCT_EoPCT_BasoPCT.txt", idmap, bed)
+
+fwrite(covMinimal, file = "../covariates/INTERVAL_RNAseq_phase1_age_sex_rin_batch_readDepth_PC10.txt", sep = "\t")
+fwrite(covPEER, file = "../covariates/INTERVAL_RNAseq_phase1_age_sex_rin_batch_readDepth_PC10_PEER20.txt", sep = "\t")
+fwrite(covCellPct, file = "../covariates/INTERVAL_RNAseq_phase1_age_sex_rin_batch_readDepth_PC10_NeutPCT_LympPCT_MonoPCT_EoPCT_BasoPCT.txt", sep = "\t")
 
 # GxE file
 # currently replcaed NAs with the median, just to see if these are screwing up the GxE
