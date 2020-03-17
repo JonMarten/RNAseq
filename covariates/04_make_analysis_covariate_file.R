@@ -24,8 +24,13 @@ covout.peer <- allcovs %>%
 
 covout.bloodcells <- allcovs %>%
   select(sample_id, RIN, age_RNA, sex, ReadDepth, batch1:batch8, PC1:PC10, NEUT_PCT___RNA, LYMPH_PCT___RNA, MONO_PCT___RNA, EO_PCT___RNA, BASO_PCT___RNA) %>%
-  filter(!is.na(RIN) & !is.na(BASO_PCT___RNA))
+  filter(!is.na(RIN)) 
 
+covout.bloodcells$NEUT_PCT___RNA[which(is.na(covout.bloodcells$NEUT_PCT___RNA))] <- median(covout.bloodcells$NEUT_PCT___RNA, na.rm = T)
+covout.bloodcells$LYMPH_PCT___RNA[which(is.na(covout.bloodcells$LYMPH_PCT___RNA))] <- median(covout.bloodcells$LYMPH_PCT___RNA, na.rm = T)
+covout.bloodcells$MONO_PCT___RNA[which(is.na(covout.bloodcells$MONO_PCT___RNA))] <- median(covout.bloodcells$MONO_PCT___RNA, na.rm = T)
+covout.bloodcells$EO_PCT___RNA[which(is.na(covout.bloodcells$EO_PCT___RNA))] <- median(covout.bloodcells$EO_PCT___RNA, na.rm = T)
+covout.bloodcells$BASO_PCT___RNA[which(is.na(covout.bloodcells$BASO_PCT___RNA))] <- median(covout.bloodcells$BASO_PCT___RNA, na.rm = T)
 
 fwrite(covout, file = "INTERVAL_RNAseq_phase1_age_sex_rin_batch_readDepth_PC10.txt", sep = "\t")
 fwrite(covout.peer, file = "INTERVAL_RNAseq_phase1_age_sex_rin_batch_readDepth_PC10_PEER20.txt", sep = "\t")
