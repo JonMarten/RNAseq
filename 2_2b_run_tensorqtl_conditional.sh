@@ -3,7 +3,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
 #SBATCH -J TensorQTL_test
-#SBATCH -A PAUL-SL3-GPU
+#SBATCH -A PAUL-SL2-GPU
 #SBATCH --time=12:00:00
 
 #! How many whole nodes should be allocated?
