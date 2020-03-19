@@ -5,9 +5,9 @@
 #SBATCH -J TensorQTL_pythonmodule_test
 #SBATCH -A INOUYE-SL2-GPU
 #SBATCH --time=36:00:00
-#SBATCH --nodes=2
+#SBATCH --nodes=1
 #SBATCH --ntasks=4
-#SBATCH --gres=gpu:4
+#SBATCH --gres=gpu:1
 #SBATCH -p pascal
 
 #! ############################################################
