@@ -34,6 +34,17 @@ bed <- bed %>%
   select("#Chr", start, end, ID, sortedids)
 
 fwrite(bed, sep = "\t", file = "INTERVAL_RNAseq_phase1_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis.bed")
+
+for(i in 1:22) {
+  bedChr <- bed %>%
+    rename(Chr = "#Chr") %>%
+    filter(Chr == i)%>%
+    rename("#Chr" = Chr)
+  
+  fwrite(bedChr, sep = "\t", file = paste0("INTERVAL_RNAseq_phase1_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis_chr",i,".bed"))
+  rm(bedChr)
+}
+
 ###########################################
 ## NOTE: The bed file must be compressed and indexed with the commands below:
 # module load ceuadmin/tabix/0.2.6
