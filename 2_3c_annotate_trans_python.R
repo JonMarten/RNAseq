@@ -1,11 +1,18 @@
+# Script to aggregate trans results and call significant eGenes and eSNPs. Call with Rscript and trailing arguments for file prefix, with chr replaced with "XX" because I was an idiot when I named my files and this bodge is the best we can do for now.
 library(data.table)
 library(dplyr)
+mainpath <- "/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/"
+setwd(mainpath)
 
-setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/")
+#args = c("results/python_module_method/tensorqtl_trans_MAF0.005_chrXX_age_sex_rin_batch_readDepth_PC10_NeutPCT_LympPCT_MonoPCT_EoPCT_BasoPCT")
+args = commandArgs(trailingOnly=TRUE)
+prefix = args[1]
+outprefix <- gsub("_chrXX_", "_", prefix)
 
 byChr <- list()
 for (i in 1:22){
-  byChr[[i]] <- fread(paste0("results/python_module_method/tensorqtl_trans_MAF0.005_chr",i, ".csv"), data.table = F)
+  file <- paste0(gsub("XX",i, prefix), ".csv")
+  byChr[[i]] <- fread(file, data.table = F)
 }
 
 all <- bind_rows(byChr)
@@ -25,7 +32,7 @@ all <- all %>% select(-snp_morgan)
 
 all <- all %>% arrange(feat_chr, feat_start, snp_chr, snp_bp)
 
-fwrite(all, file = "results/python_module_method/tensorqtl_allSNPs_MAF0.005_merged_annotated.csv", sep = ",")
+fwrite(all, file = paste0(outprefix, "_merged_annotated.csv"), sep = ",")
 
 # check snp position is actually trans
 all <- all %>%
@@ -38,7 +45,7 @@ cis <- all %>%
 
 trans <- all %>%
   filter(abs(snpDistFromStart) > 500000 & abs(snpDistFromEnd) > 500000)
-fwrite(trans, file = "results/python_module_method/tensorqtl_transSNPs_MAF0.005_merged_annotated.csv", sep = ",")
+fwrite(trans, file = paste0(outprefix, "_merged_annotated_transSNPs.csv"), sep = ",")
 #trans <- fread("results/python_module_method/tensorqtl_transSNPs_MAF0.005_merged_annotated.csv", data.table = F)
 
 # gene level FDR
@@ -108,6 +115,9 @@ eSNPs.BH <- trans %>%
   filter(phenotype_id %in% eGenes.BH) %>%
   filter(pval < sigThresh)
 
+fwrite(eSNPs.BH, file = paste0(outprefix, "_merged_annotated_transSNPs_eSNPs.csv"), sep = ",")
+     
+  
 eGenes.BH.summary <- eSNPs.BH %>%
   group_by(gene_name) %>%
   summarise(nSNPs = n(),
@@ -166,11 +176,4 @@ for(i in seq_along(eGenes.BH)){
   sentinels <- rbind(sentinels, geneSentinels)
   
 }
-
-fwrite(sentinels, file = "results/python_module_method/tensorqtl_transSNPs_MAF0.005_merged_annotated_sentinels.csv")
-
-sentinels <- sentinels %>%
-  mutate(pval = ifelse(pval ==0, sentinels$pval[which(sentinels$pval != 0)] %>% min, pval))
-
-
-              
+fwrite(sentinels, file = paste0(outprefix, "_merged_annotated_transSNPs_eSNPs_sentinels.csv"), sep = ",")
