@@ -1,4 +1,7 @@
 # Script to aggregate trans results and call significant eGenes and eSNPs. Call with Rscript and trailing arguments for file prefix, with chr replaced with "XX" because I was an idiot when I named my files and this bodge is the best we can do for now.
+#Rscript 2_3c_annotate_trans_python.R results/python_module_method/tensorqtl_trans_MAF0.005_chrXX_age_sex_rin_batch_readDepth_PC10
+#Rscript 2_3c_annotate_trans_python.R results/python_module_method/tensorqtl_trans_MAF0.005_chrXX_age_sex_rin_batch_readDepth_PC10_PEER20
+#Rscript 2_3c_annotate_trans_python.R results/python_module_method/tensorqtl_trans_MAF0.005_chrXX_age_sex_rin_batch_readDepth_PC10_NeutPCT_LympPCT_MonoPCT_EoPCT_BasoPCT
 library(data.table)
 library(dplyr)
 mainpath <- "/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/"
