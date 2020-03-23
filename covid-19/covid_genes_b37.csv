@@ -1,0 +1,6 @@
+gene_name,ensembl_id,build_37,uniprot_id,protein_name,somamer_id,soma_crossreactivity,olink_panel,
+ACE2,ENSG00000130234,"Chromosome X: 15,579,156-15,620,271",Q9BYF1,Angiotensin-converting enzyme 2,2805-6_2,no comparable  binding to ACE,CVD2,"QMDiab, KORA, Malmo"
+TMPRSS2,ENSG00000184012,"Chromosome 21: 42,836,478-42,903,043",O15393,Transmembrane protease serine 2,NA,NA,NA,
+CTSL,ENSG00000135047,"Chromosome 9: 90,340,434-90,346,308",P07711,Cathepsin L1,NA,NA,CVD2,
+CTSB,ENSG00000164733,"Chromosome 8: 11,700,033-11,726,957",P07858,Cathepsin B,8007-19,no comparable binding to several other proteins,NA,
+,,,,,3061-61_2,,,"QMDiab, KORA, Malmo"
