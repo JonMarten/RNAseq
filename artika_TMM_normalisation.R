@@ -10,6 +10,7 @@
 library(edgeR)
 library(limma)
 library(data.table)
+library(dplyr)
 
 
 # ----------------------
@@ -42,8 +43,16 @@ batch8 <- fread(paste0(path, "batch8/results-study5591-tic364/combined/study5591
 annotation <- fread("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/annotation_file/Feature_Annotation_Ensembl_gene_ids_autosomes_b38.txt", data.table = F)
 annotation <- annotation %>%
   mutate(gene_length = end - start)
+ACE2 <- data.frame("feature_id" = "ENSG00000130234",
+                   "chromosome" = 23,
+                   "start" = 15579156,
+                   "end" = 15620271,
+                   "feature_strand" = -1,
+                   "gene_name" = "ACE2",
+                   "gene_length" = 41115)
+annotation <- rbind(annotation, ACE2)
 
-#----------------------------------------------------------------
+#---------------------------------------------------------------- 
 # Combine the batches together 
 #----------------------------------------------------------------
 exp <- list(batch1, batch2[, -1], batch3[, -1], batch4[,-1], batch5[,-1], batch6[, -1], batch7[, -1], batch8[,-1])
