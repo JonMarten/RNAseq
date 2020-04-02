@@ -79,10 +79,10 @@ remove_RIN_Less4 <- as.character(metadata$sample_id[which(metadata$RIN < 4)])
 #Remove samples with ReadDepth Less than 10
 # There are N=5 individuals
 ReadDepth <- colSums(counts[,12:ncol(counts)])
-remove_ReadDepth_lessthan_10Million <- names(ReadDepth)[which(ReadDepth < 10000000)]
+#remove_ReadDepth_lessthan_10Million <- names(ReadDepth)[which(ReadDepth < 10000000)]
 
 # Total remove N=28 individuals
-remove_ind <- c(remove_batch2, remove_RIN_Less4, remove_ReadDepth_lessthan_10Million)
+remove_ind <- c(remove_batch2, remove_RIN_Less4)
 
 # -----------------------------------------------------------------------------
 # Create DGEList object y and remove outlier genes, using the FC data
