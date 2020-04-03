@@ -1,15 +1,15 @@
 # Reformat covariates for LIMIX pipeline
 library(dplyr)
 library(data.table)
-setwd("C:/Users/Jonathan/Documents/INTERVAL_covars")
+setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/covariates")
 rna_id_mapper <- fread("rna_id_mapper.csv", data.table=F) 
-techCov <- fread("INTERVAL_RNA_technical_covariates_batch1-12_20200402.csv", data.table = F)
+techCov <- fread("processed/INTERVAL_RNA_technical_covariates_batch1-12_20200402.csv", data.table = F)
 
 techCov <- techCov %>% 
   rename(sample_id = INT_ID) %>%
   mutate(Extraction_Date = as.Date(Extraction_Date, "%d/%m/%Y"))
 
-dat <- fread("INTERVALdata_02APR2020.csv", data.table=F)
+dat <- fread("raw/INTERVALdata_02APR2020.csv", data.table=F)
 
 # Filter phase 3 data to get the correct timepoint to match sample used for RNA seq data
 p3mapper <- rna_id_mapper %>%
@@ -17,7 +17,7 @@ p3mapper <- rna_id_mapper %>%
   mutate(p3_mapper = paste0(identifier,attendanceDate_p3)) %>%
   pull(p3_mapper)
 
-datp3 <- fread("INTERVALdata_P3_02APR2020.csv", data.table=F)
+datp3 <- fread("raw/INTERVALdata_P3_02APR2020.csv", data.table=F)
 datp3 <- datp3 %>%
   mutate(p3_mapper = paste0(identifier,attendanceDate_p3)) %>%
   filter(p3_mapper %in% p3mapper) %>%
@@ -127,4 +127,4 @@ out4 <- out3 %>%
   filter(!is.na(sequencingBatch)) %>%
   select(-Sex, -Batch)
 
-write.csv(out4, file = "INTERVAL_RNA_batch1-12_covariates_release_2020_04_02.csv", row.names = F)
+write.csv(out4, file = "processed/INTERVAL_RNA_batch1-12_master_covariates_release_2020_04_02.csv", row.names = F)

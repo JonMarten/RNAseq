@@ -1,18 +1,18 @@
 # Reformat covariates for LIMIX pipeline
 library(dplyr)
 library(data.table)
-setwd("C:/Users/Jonathan/Documents/INTERVAL_covars")
+setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/covariates")
 
 #dat <- fread("data_release_20190815/INTERVALdata_15AUG2019.csv", data.table = F)
-ids <- fread("omicsMap.csv", data.table = F)
-ids3 <- fread("omicsMap_P3.csv", data.table = F)
+ids <- fread("raw/omicsMap.csv", data.table = F)
+ids3 <- fread("raw/omicsMap_P3.csv", data.table = F)
 ids[which(ids == "", arr.ind = T)] <- NA
 ids3[which(ids3 == "", arr.ind = T)] <- NA
 allids <- full_join(ids, ids3)
 #dat2 <- full_join(allids, dat)
 
 # Read in ids from RNA seq data
-rna_seq_ids <- fread("INTERVAL_RNA_technical_covariates_batch1-12_20200402.csv", data.table = F) %>%
+rna_seq_ids <- fread("processed/INTERVAL_RNA_technical_covariates_batch1-12_20200402.csv", data.table = F) %>%
   select(RNA_id = INT_ID, Batch)
 
 # filter to just RNA id columns and rows with an RNA id
@@ -52,4 +52,4 @@ rna_id_mapper <- rnaidsPhase %>%
 
 rna_id_mapper <- full_join(rna_id_mapper, rna_seq_ids) #%>%
 #  filter(!is.na(batch)) # Remove this filter to allow unnumbered batch 5 ids through for now
-write.csv(rna_id_mapper, "rna_id_mapper.csv", quote = F, row.names = F)
+write.csv(rna_id_mapper, "processed/rna_id_mapper.csv", quote = F, row.names = F)
