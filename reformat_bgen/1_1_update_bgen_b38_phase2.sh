@@ -28,19 +28,19 @@ SNPFILTER=${GENPATH}/snp_inclusion_filters/c${CHR}_b38_filter_snps.txt
 
 # Map to b38 and filter to retain only RNA seq samples
 qctool\
--g $INGEN\
--s $INSAMPLE\
--incl-samples $SAMPLEFILTER\
--map-id-data $MAP\
--og $MIDGEN
+ -g $INGEN\
+ -s $INSAMPLE\
+ -incl-samples $SAMPLEFILTER\
+ -map-id-data $MAP\
+ -og $MIDGEN
 
 # Create new sample file
 qctool\
--g $MIDGEN\
--os $MIDSAMPLE
+ -g $MIDGEN\
+ -os $MIDSAMPLE
 
 qctool\
--g $MIDGEN\
--incl-snpids $SNPFILTER\
--s $MIDSAMPLE\
--og $OUTGEN
+ -g $MIDGEN\
+ -incl-snpids $SNPFILTER\
+ -s $MIDSAMPLE\
+ -og $OUTGEN
