@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -A PETERS-SL3-CPU
+#SBATCH -A PAUL-SL3-CPU
 #SBATCH -p skylake-himem
 #SBATCH --mem 20G
 #SBATCH --job-name=plink_convert_b38
