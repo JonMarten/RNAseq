@@ -27,18 +27,19 @@ SAMPLEFILTER=${GENPATH}/rna_seq_phase1-2_affy_ids.txt
 SNPFILTER=/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/snp_inclusion_filters/c${CHR}_b38_filter_snps.txt
 
 # Map to b38 and filter to retain only RNA seq samples
-qctool\
- -g $INGEN\
- -s $INSAMPLE\
- -incl-samples $SAMPLEFILTER\
- -map-id-data $MAP\
- -og $MIDGEN
+#qctool\
+# -g $INGEN\
+# -s $INSAMPLE\
+# -incl-samples $SAMPLEFILTER\
+# -map-id-data $MAP\
+# -og $MIDGEN
+#
+## Create new sample file
+#qctool\
+# -g $MIDGEN\
+# -os $MIDSAMPLE
 
-# Create new sample file
-qctool\
- -g $MIDGEN\
- -os $MIDSAMPLE
-
+# Filter SNPs to include only non-duplicated SNPs mapped to b38
 qctool\
  -g $MIDGEN\
  -incl-snpids $SNPFILTER\
