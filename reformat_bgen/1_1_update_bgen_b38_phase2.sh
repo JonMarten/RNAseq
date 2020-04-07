@@ -24,7 +24,7 @@ INSAMPLE=/home/jm2294/rds/rds-jmmh2-pre_qc_data/interval/affy_ukbiobank_array/ra
 MIDSAMPLE=${GENPATH}/b38_bgen/chr${CHR}_rnaSeqPhase1_2_sample.txt
 MAP=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/INTERVAL_chr${CHR}_b37_to_b38_map.txt
 SAMPLEFILTER=${GENPATH}/rna_seq_phase1-2_affy_ids.txt
-SNPFILTER=${GENPATH}/snp_inclusion_filters/c${CHR}_b38_filter_snps.txt
+SNPFILTER=/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/GENETIC_DATA/b37_b38_liftover/snp_inclusion_filters/c${CHR}_b38_filter_snps.txt
 
 # Map to b38 and filter to retain only RNA seq samples
 qctool\
