@@ -16,6 +16,6 @@ module load ceuadmin/plink/2.0_09_09_18
 cd /rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/genotypes
 
 plink2 \
- --bgen processing/b38_bgen/filtered/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_filtered_no0_rnaSeqPhase1.bgen\
+ --bgen processing/b38_bgen/filtered/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_filtered_no0_rnaSeqPhase1_2.bgen\
  --make-bed\
  --out INTERVAL_chr${SLURM_ARRAY_TASK_ID}_imputed_b38_filtered_rnaSeq
