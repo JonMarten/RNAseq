@@ -11,11 +11,11 @@
 . /etc/profile.d/modules.sh     
 module purge                  
 module load rhel7/default-peta4
-module load plink-1.9-gcc-5.4.0-sm3ojoi
+module load ceuadmin/plink/2.0_09_09_18
 
 cd /rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/genotypes
 
-plink\
+plink2\
  --bgen processing/b38_bgen/filtered/impute_${SLURM_ARRAY_TASK_ID}_interval_b38_filtered_no0_rnaSeqPhase1_2.bgen\
  --make-bed\
  --maf 0.005\
