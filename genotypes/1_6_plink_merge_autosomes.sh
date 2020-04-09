@@ -11,11 +11,11 @@
 . /etc/profile.d/modules.sh     
 module purge                  
 module load rhel7/default-peta4
-module load ceuadmin/plink/2.0_09_09_18
+module load plink-1.9-gcc-5.4.0-sm3ojoi
 
 cd /rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/genotypes
 
-plink2\
+plink\
  --merge-list /rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/scripts/RNAseq/genotypes/plink_autosomes_file_list.txt\
  --make-bed\
  --memory 191000\
