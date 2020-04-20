@@ -72,3 +72,7 @@ for i in [8,9,21]:
 # trans
 trans_peer_df = trans.map_trans(genotype_df, pheno_df_noACE2, covariates_peer_df, return_sparse=True, maf_threshold = 0.005)
 trans_peer_df.to_csv(outdir + "tensorqtl_trans_MAF0.005_all_age_sex_rin_batch_readDepth_PC10_PEER20_COVID19.csv")
+
+
+# chrX
+

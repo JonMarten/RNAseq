@@ -2,7 +2,7 @@
 library(dplyr)
 library(data.table)
 setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/covariates")
-rna_id_mapper <- fread("rna_id_mapper.csv", data.table=F) 
+rna_id_mapper <- fread("processed/rna_id_mapper.csv", data.table=F) 
 techCov <- fread("processed/INTERVAL_RNA_technical_covariates_batch1-12_20200402.csv", data.table = F)
 
 techCov <- techCov %>% 
@@ -81,17 +81,17 @@ identical(
 
 phe24 <- pheAll %>% 
   filter(phase == "24m") %>%
-  select(all_of(otherCols), all_of(m24Cols)) %>%
+  select(otherCols, m24Cols) %>%
   rename_at(vars(m24Cols), funs(gsub("_24m","___RNA",.)))
 
 phe48 <- pheAll %>% 
   filter(phase == "48m") %>%
-  select(all_of(otherCols), all_of(m48Cols)) %>%
+  select(otherCols, m48Cols) %>%
   rename_at(vars(m48Cols), funs(gsub("_48m","___RNA",.)))
 
 phep3 <- pheAll %>% 
   filter(phase == "p3") %>%
-  select(all_of(otherCols), all_of(p3Cols)) %>%
+  select(otherCols, p3Cols) %>%
   rename_at(vars(p3Cols), funs(gsub("_p3","___RNA",.)))
 
 pheRNA <- rbind(phe24, phe48, phep3) %>%
@@ -127,4 +127,11 @@ out4 <- out3 %>%
   filter(!is.na(sequencingBatch)) %>%
   select(-Sex, -Batch)
 
-write.csv(out4, file = "processed/INTERVAL_RNA_batch1-12_master_covariates_release_2020_04_02.csv", row.names = F)
+# Add in Affy ID
+omictable <- fread("processed/INTERVAL_omics_table_02APR2020.csv", data.table = F) %>%
+  select(sample_id = RNA_ID, affymetrix_ID) %>% 
+  filter(!is.na(sample_id))
+
+out5 <- right_join(omictable, out4)
+  
+write.csv(out5, file = "processed/INTERVAL_RNA_batch1-12_master_covariates_release_2020_04_02.csv", row.names = F)
