@@ -20,7 +20,10 @@ cov <- left_join(cov, PCs)
 cov2 <- cov %>%
   mutate(affymetrix_ID = as.character(affymetrix_ID)) %>%
   filter(affymetrix_ID %in% names(phe)) %>%
-  select(id = affymetrix_ID, age_RNA, sex, Agilent_RINe, sequencingBatch, PC1:PC10) 
+  select(id = affymetrix_ID, age_RNA, sex, Agilent_RINe, sequencingBatch, PC1:PC10) %>%
+  mutate(sex = as.numeric(gsub(2, 0, sex)),
+         RIN = as.numeric(ifelse(Agilent_RINe == "", NA, Agilent_RINe))) %>%
+  filter(!is.na(RIN))
 
 # convert batch to dummy variables
 library(varhandle)
@@ -30,7 +33,11 @@ names(batch) <- gsub("\\.", "", names(batch))
 cov2 <- cbind(cov2, batch)
 
 covOut <- cov2 %>%
-  select(id:Agilent_RINe, paste0("batch", 1:12), PC1:PC10) %>%
-  t
+  select(id:sex, RIN, paste0("batch", 1:12), PC1:PC10)
 
-write.table(covOut, sep = "\t", quote = F, col.names = F, row.names = T, file = "INTERVAL_RNAseq_phase1-2_age_sex_rin_batch_PC10.txt")
+covOut.t <- covOut %>%
+  t %>%
+  data.frame(stringsAsFactors = F)
+
+
+write.table(covOut.t, sep = "\t", quote = F, col.names = F, row.names = T, file = "INTERVAL_RNAseq_phase1-2_age_sex_rin_batch_PC10.txt")
