@@ -100,37 +100,72 @@ covariates_df = pd.read_csv(covariates_file, sep='\t', index_col=0).T  # samples
 ace2_covariates_df = pd.read_csv(covariates_file_ace2, sep='\t', index_col=0).T  # samples x covariates
 
 # Read genotypes
-plink_prefix_path = "/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/covid19/genotypes/merged_cleaned_chrx_RNAseq_phase1-2"
+plink_prefix_path = "/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/covid19/genotypes/INTERVAL_chrX_merged_cleaned_RNAseq_phase1-2_deduplicated_MAF0.005"
 pr = genotypeio.PlinkReader(plink_prefix_path)
 genotype_df = pd.DataFrame(pr.get_all_genotypes(), index=pr.bim['snp'], columns=pr.fam['iid'])
 variant_df = pr.bim.set_index('snp')[['chrom', 'pos']]
 
+ace2_plink_prefix_path = "/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/covid19/genotypes/INTERVAL_chrX_merged_cleaned_RNAseq_phase1-2_deduplicated_MAF0.005_ACE2nonzero"
+ace2_pr = genotypeio.PlinkReader(ace2_plink_prefix_path)
+ace2_genotype_df = pd.DataFrame(ace2_pr.get_all_genotypes(), index=ace2_pr.bim['snp'], columns=ace2_pr.fam['iid'])
+ace2_variant_df = ace2_pr.bim.set_index('snp')[['chrom', 'pos']]
+
 # Cis gene-level mapping
 cis_df = cis.map_cis(genotype_df, variant_df, phenotype_df, phenotype_pos_df, covariates_df)
-cis_no0_df = cis.map_cis(genotype_df, variant_df, ace2_phenotype_df, ace2_phenotype_pos_df, ace2_covariates_df)
-tensorqtl.calculate_qvalues(cis_df, qvalue_lambda=0)
-cis_df.to_csv(outdir + "tensorqtl_cis_MAF0.005_cisPerGene_chr1.csv", index=True, index_label = "Phenotype")
+cis_df.to_csv(covdir + "/results/INTERVAL_ACE2_MAF0.005_cis.csv", index=True, index_label = "Phenotype")
+
+ace2_cis_df = cis.map_cis(ace2_genotype_df, ace2_variant_df, ace2_phenotype_df, ace2_phenotype_pos_df, ace2_covariates_df)
+ace2_cis_df.to_csv(covdir + "/results/INTERVAL_ACE2_nonzeros_MAF0.005_cis.csv", index=True, index_label = "Phenotype")
 
 # Cis nominal mapping
-cisnom_df = cis.map_nominal(genotype_df, variant_df, pheno_df_noACE2, phenopos_df_noACE2, covariates_peer_df, prefix= covdir + "tensorqtl_cis_MAF0.005_cisNominal_covid19")
+cisnom_df = cis.map_nominal(genotype_df, variant_df, phenotype_df, phenotype_pos_df, covariates_df, prefix = covdir + "/results/INTERVAL_ACE2_MAF0.005_cisNominal")
+cisnom_df = pd.read_parquet(covdir + "/results/INTERVAL_ACE2_MAF0.005_cisNominal.cis_qtl_pairs.23.parquet")
+cisnom_df.to_csv(covdir + "/results/INTERVAL_ACE2_MAF0.005_cisNominal.cis_qtl_pairs.23.csv", index=False)
+
+ace2_cisnom_df = cis.map_nominal(ace2_genotype_df, ace2_variant_df, ace2_phenotype_df, ace2_phenotype_pos_df, ace2_covariates_df, prefix = covdir + "/results/INTERVAL_ACE2_nonzeros_MAF0.005_cisNominal")
+ace2_cisnom_df = pd.read_parquet(covdir + "/results/INTERVAL_ACE2_nonzeros_MAF0.005_cisNominal.cis_qtl_pairs.23.parquet")
+ace2_cisnom_df.to_csv(covdir + "/results/INTERVAL_ACE2_nonzeros_MAF0.005_cisNominal.cis_qtl_pairs.23.csv", index=False)
+
 
 # Conditional analysis
-indep_df = cis.map_independent(genotype_df, variant_df, cis_df, pheno_df_noACE2, phenopos_df_noACE2, covariates_peer_df)
-indep_df.to_csv(covdir + "tensorqtl_cis_MAF0.005_cisIndependent_covid19.csv", index=True, index_label = "Phenotype")
+# Add qval column manually to avoid breaking funtion (not intended for use on a single phenotype)
+qval = cis_df['pval']
+cis_df['qval'] = cis_df['pval_perm']
+indep_df = cis.map_independent(genotype_df, variant_df, cis_df, phenotype_df, phenotype_pos_df, covariates_df)
+indep_df.to_csv(covdir + "/results/INTERVAL_ACE2_MAF0.005_cisNominal.cis_qtl_pairs.23.csv", index=True, index_label = "Phenotype")
+
+qval = ace2_cis_df['pval']
+ace2_cis_df['qval'] = ace2_cis_df['pval_perm']
+ace2_indep_df = cis.map_independent(ace2_genotype_df, ace2_variant_df, ace2_cis_df, ace2_phenotype_df, ace2_phenotype_pos_df, ace2_covariates_df)
+ace2_indep_df.to_csv(covdir + "/results/INTERVAL_ACE2_nonzeros_MAF0.005_cisNominal.cis_qtl_pairs.23.csv", index=True, index_label = "Phenotype")
+
+
+# trans
+trans_df = trans.map_trans(genotype_df, phenotype_df, covariates_df, return_sparse=True, maf_threshold = 0.03)
+trans_peer_df.to_csv(outdir + "tensorqtl_trans_MAF0.03_all_age_sex_rin_batch_readDepth_PC10_PEER20_COVID19.csv")
+
+
+
+
+
+gw_plink_prefix_path = "/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/genotypes/INTERVAL_b38_autosomes_RNAseqPhase1_biallelic_all_MAF0.005"
+gw_pr = genotypeio.PlinkReader(gw_plink_prefix_path)
+gw_genotype_df = pd.DataFrame(gw_pr.get_all_genotypes(), index=gw_pr.bim['snp'], columns=gw_pr.fam['iid'])
+gw_variant_df = gw_pr.bim.set_index('snp')[['chrom', 'pos']]
+
+gw_trans_df = trans.map_trans(gw_genotype_df, phenotype_df, covariates_df, return_sparse=True, maf_threshold = 0.03)
+
+
+
+
+
+
+
+
 
 # GxE
 cisGxE_df = cis.map_nominal(genotype_df, variant_df, pheno_df_noACE2, phenopos_df_noACE2, covariates_peer_df, prefix= covdir + "Test_gxe", interaction_s=interaction_s)
 cis.map_nominal(genotype_df, variant_df, pheno_df_noACE2, phenopos_df_noACE2, covariates_peer_df, prefix="tensorqtl_cis_MAF0.005_cisGxE_covid19",interaction_s=interaction_s, maf_threshold_interaction=0.005,group_s=None, run_eigenmt=True, output_dir=covdir)
-
-for i in [8,9,21]:
-  df = pd.read_parquet(covdir + "tensorqtl_cis_MAF0.005_cisGxE_covid19.cis_qtl_pairs." + str(i) + ".parquet")
-  df.to_csv(covdir + "tensorqtl_cis_MAF0.005_cisGxE_covid19.cis_qtl_pairs." + str(i) + ".csv", index=False)
-
-# trans
-trans_df = trans.map_trans(genotype_df, phenotype_ace2_df, covtest, return_sparse=True, maf_threshold = 0.005)
-trans_peer_df.to_csv(outdir + "tensorqtl_trans_MAF0.005_all_age_sex_rin_batch_readDepth_PC10_PEER20_COVID19.csv")
-
-
 trans_peer_df = trans.map_trans(genotype_df, phenotype_df, covariates_peer_df, return_sparse=True, maf_threshold = 0.005, pval_threshold = 0.05)
 trans_peer_df.to_csv(outdir + "results/tensorqtl_trans_MAF0.005_chrx_age_sex_rin_batch_readDepth_PC10_PEER20_COVID19_phase1.csv")
 p = phenotype_df.drop(phenotype_df.index[[0,1,2]])

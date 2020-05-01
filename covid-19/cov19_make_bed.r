@@ -9,7 +9,7 @@ library(data.table)
 library(dplyr)
 
 #setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/covid19/phenotypes")
-setwd("/home/jm2294/covid/phenotypes/")
+setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/covid19/phenotypes")
 
 # Create mapping file to match phenotype to genotype
 omictable <- fread("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/covariates/processed/INTERVAL_omics_table_02APR2020.csv", data.table = F)
@@ -34,12 +34,16 @@ names(bed)[5:ncol(bed)] <-  as.character(idmap$genotype_individual_id[namevec])
 missvec <- which(is.na(names(bed)))
 bed <- bed[,-missvec]
 
-# Remove IDs not in covariate file
+# Remove IDs not in covariate file/genotype file
 covariates <- fread("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/covariates/INTERVAL_RNAseq_phase1-2_age_sex_rin_batch_PC10.txt", data.table = F)
 covarids <- covariates[1,-1] %>% as.character()
 bedids <- names(bed[5:ncol(bed)])
 
+genoids <- fread("../genotypes/INTERVAL_chrX_merged_cleaned_RNAseq_phase1-2.fam", data.table = F)
+genoids <- genoids$V1 %>% as.character
+
 keepids <- intersect(covarids, bedids)
+keepids <- intersect(keepids, genoids)
 
 bed2 <- bed %>%
   select("#Chr", start, end, ID, keepids)
@@ -47,7 +51,7 @@ covkeep <- c(1,which(covariates[1,] %in% keepids))
 cov2 <- covariates[,covkeep]
 
 cov19 <- fread("/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/scripts/RNAseq/covid-19/covid_genes_b37.csv", data.table = F)
-bedcov19 <- bed2 %>% filter(ID %in% cov19$ensembl_id)
+bedcov19 <- bed2 %>% filter(ID %in% cov19$ensembl_id[-5])
 
 
 fwrite(bedcov19, sep = "\t", file = "/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/covid19/phenotypes/INTERVAL_RNAseq_phase1-2_UNfilteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis_COVID19.bed")
@@ -73,6 +77,10 @@ fwrite(ace2.no0 , sep = "\t", file = "/rds/project/jmmh2/rds-jmmh2-projects/inte
 write.table(cov.ace2, quote = F, row.names = F, col.names = F, sep = "\t", file = "/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/covid19/covariates/INTERVAL_RNAseq_COVID19_covariates_ACE2_no_zeros.txt")
 # module load ceuadmin/tabix/0.2.6
 # bgzip INTERVAL_RNAseq_phase1-2_UNfilteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis_ACE2_no_zeros.bed && tabix -p bed INTERVAL_RNAseq_phase1-2_UNfilteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis_ACE2_no_zeros.bed.gz
+
+# Output list of individuals with non-zero ACE2 to filter plink genotypes
+plinkout <- data.frame("FID" = ace2ids, "IID" = ace2ids)
+write.table(plinkout, sep = "\t", quote = F, col.names = F, row.names = F, file = "/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/covid19/genotypes/ace2_nonzero_ids.txt")
 
 
 # GxE
