@@ -44,10 +44,10 @@ all <- all %>%
 
 # Remove cis SNPs
 cis <- all %>%
-  filter(abs(snpDistFromStart) <= 500000 & abs(snpDistFromEnd) <= 500000)
+  filter(abs(snpDistFromStart) <= 1000000 & abs(snpDistFromEnd) <= 1000000)
 
 trans <- all %>%
-  filter(abs(snpDistFromStart) > 500000 & abs(snpDistFromEnd) > 500000)
+  filter((abs(snpDistFromStart) > 1000000 & abs(snpDistFromEnd) > 1000000) | is.na(snpDistFromStart))
 fwrite(trans, file = paste0(outprefix, "_merged_annotated_transSNPs.csv"), sep = ",")
 #trans <- fread("results/python_module_method/tensorqtl_transSNPs_MAF0.005_merged_annotated.csv", data.table = F)
 
