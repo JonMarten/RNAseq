@@ -1,9 +1,9 @@
 # Script to make a table of all INTERVAL participants detailing omics data available on them
 library(dplyr)
-dataRelease <- "02APR2020"
+dataRelease <- "14MAY2020"
 setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis")
-ids <- read.csv("covariates/raw/omicsMap.csv", stringsAsFactors = F)
-ids3 <- read.csv("covariates/raw/omicsMap_P3.csv", stringsAsFactors = F)
+ids <- read.csv("covariates/raw/INTERVAL_OmicsMap_20200514.csv", stringsAsFactors = F)
+ids3 <- read.csv("covariates/raw/INTERVAL_OmicsMap_p3_20200514.csv", stringsAsFactors = F)
 RNApick <- read.csv("covariates/raw/RNAPick.csv", stringsAsFactors = F)
 agesex <- read.csv(paste0("covariates/raw/INTERVALdata_", dataRelease, ".csv"), stringsAsFactors = F)
 
@@ -75,3 +75,23 @@ out <- dat3 %>%
 
 write.csv(out, row.names = F, quote = T, file = paste0("covariates/processed/INTERVAL_omics_table_",dataRelease,".csv"))
 apply(out, MARGIN = 2, FUN = function(x){length(which(!is.na(x)))}) #list numbers of non-missing ids
+
+library(UpSetR)
+
+binary <- function(x){ifelse(is.na(x),0,1)}
+
+upset.df <- out %>%
+  filter(!is.na(RNA_ID)) %>%
+  select("NIHR Consent" = NIHRConsent, 
+         "WES" = WES_ID, 
+         "WGS" = WGS_ID, 
+         "Brainshake" = brainshake_ID, 
+         "Metabolon" = metabolon_ID, 
+         "Somalogic" = soma_ID, 
+         "Olink" = olink_ID, 
+         "RNA seq" = RNA_ID)
+upset.df.bin <-apply(upset.df, MAR = 2, FUN = binary) %>% data.frame
+
+upset(upset.df.bin, sets = c("WES","WGS","Metabolon", "Somalogic","Olink","RNA.seq"), order.by = "freq")
+
+
