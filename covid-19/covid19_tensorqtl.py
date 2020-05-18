@@ -31,17 +31,6 @@ pr = genotypeio.PlinkReader(plink_prefix_path)
 genotype_df = pd.DataFrame(pr.get_all_genotypes(), index=pr.bim['snp'], columns=pr.fam['iid'])
 variant_df = pr.bim.set_index('snp')[['chrom', 'pos']]
 
-#for i in range(1,23):
-#  print(i)
-#  plink_prefix_path = "/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/genotypes/INTERVAL_b38_autosomes_RNAseqPhase1_biallelic_chr" + str(i) + "_MAF0.005"
-#  print(plink_prefix_path)
-#  pr = genotypeio.PlinkReader(plink_prefix_path)
-#  genotype_df = pd.DataFrame(pr.get_all_genotypes(), index=pr.bim['snp'], columns=pr.fam['iid'])
-#  variant_df = pr.bim.set_index('snp')[['chrom', 'pos']]
-#  
-#  trans_peer_df = trans.map_trans(genotype_df, phenotype_df, covariates_peer_df, return_sparse=True, maf_threshold = 0.005)
-#  trans_peer_df.to_csv(outdir + "tensorqtl_trans_MAF0.005_chr" + str(i) + "_age_sex_rin_batch_readDepth_PC10_PEER20_COVID19.csv")
-  
 # cis
 # Cis gene-level mapping
 pheno_df_noACE2 = phenotype_df.drop("ENSG00000130234")
@@ -79,6 +68,15 @@ import pandas as pd
 import tensorqtl
 from tensorqtl import genotypeio, cis, trans
 
+# Function to re-add RSids as these are no longer in the vcf file
+def add_rsid(data_df, rsid_df):
+  data_df['pheno_id'] = data_df.index
+  out = pd.merge(data_df, rsid_df, on = 'variant_id', how = 'left')
+  return out
+
+rsid = pd.read_csv("~/rds/rds-jmmh2-projects/covid/ace2/interval_genetic_data/interval_imputed_data/INTERVAL_imp_rsIDs.txt", sep=" ")
+rsid.columns = ['variant_id', "rsid"]
+
 covdir = "/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/covid19"
 
 phenotype_file =  covdir + "/phenotypes/INTERVAL_RNAseq_phase1-2_UNfilteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis_COVID19.bed.gz"
@@ -112,54 +110,88 @@ ace2_variant_df = ace2_pr.bim.set_index('snp')[['chrom', 'pos']]
 
 # Cis gene-level mapping
 cis_df = cis.map_cis(genotype_df, variant_df, phenotype_df, phenotype_pos_df, covariates_df)
-cis_df.to_csv(covdir + "/results/INTERVAL_ACE2_MAF0.005_cis.csv", index=True, index_label = "Phenotype")
+cis_df_out = add_rsid(cis_df, rsid)
+cis_df_out.to_csv(covdir + "/results/INTERVAL_ACE2_MAF0.005_cis.csv", index=True, index_label = "Phenotype")
 
 ace2_cis_df = cis.map_cis(ace2_genotype_df, ace2_variant_df, ace2_phenotype_df, ace2_phenotype_pos_df, ace2_covariates_df)
-ace2_cis_df.to_csv(covdir + "/results/INTERVAL_ACE2_nonzeros_MAF0.005_cis.csv", index=True, index_label = "Phenotype")
+ace2_cis_df_out = add_rsid(ace2_cis_df, rsid)
+ace2_cis_df_out.to_csv(covdir + "/results/INTERVAL_ACE2_nonzeros_MAF0.005_cis.csv", index=True, index_label = "Phenotype")
 
 # Cis nominal mapping
 cisnom_df = cis.map_nominal(genotype_df, variant_df, phenotype_df, phenotype_pos_df, covariates_df, prefix = covdir + "/results/INTERVAL_ACE2_MAF0.005_cisNominal")
-cisnom_df = pd.read_parquet(covdir + "/results/INTERVAL_ACE2_MAF0.005_cisNominal.cis_qtl_pairs.23.parquet")
+cisnom_df = pd.read_parquet(covdir + "/results/INTERVAL_ACE2_MAF0.005_cisNominal.cis_qtl_pairs.23.parquet", )
+cisnom_df = add_rsid(cisnom_df, rsid)
 cisnom_df.to_csv(covdir + "/results/INTERVAL_ACE2_MAF0.005_cisNominal.cis_qtl_pairs.23.csv", index=False)
 
 ace2_cisnom_df = cis.map_nominal(ace2_genotype_df, ace2_variant_df, ace2_phenotype_df, ace2_phenotype_pos_df, ace2_covariates_df, prefix = covdir + "/results/INTERVAL_ACE2_nonzeros_MAF0.005_cisNominal")
 ace2_cisnom_df = pd.read_parquet(covdir + "/results/INTERVAL_ACE2_nonzeros_MAF0.005_cisNominal.cis_qtl_pairs.23.parquet")
+ace2_cisnom_df = add_rsid(ace2_cisnom_df, rsid)
 ace2_cisnom_df.to_csv(covdir + "/results/INTERVAL_ACE2_nonzeros_MAF0.005_cisNominal.cis_qtl_pairs.23.csv", index=False)
 
 
-# Conditional analysis
+# Conditional analysis (can't run on ace2 nonzeros as no significant P-values
 # Add qval column manually to avoid breaking funtion (not intended for use on a single phenotype)
-qval = cis_df['pval']
 cis_df['qval'] = cis_df['pval_perm']
 indep_df = cis.map_independent(genotype_df, variant_df, cis_df, phenotype_df, phenotype_pos_df, covariates_df)
-indep_df.to_csv(covdir + "/results/INTERVAL_ACE2_MAF0.005_cisNominal.cis_qtl_pairs.23.csv", index=True, index_label = "Phenotype")
-
-qval = ace2_cis_df['pval']
-ace2_cis_df['qval'] = ace2_cis_df['pval_perm']
-ace2_indep_df = cis.map_independent(ace2_genotype_df, ace2_variant_df, ace2_cis_df, ace2_phenotype_df, ace2_phenotype_pos_df, ace2_covariates_df)
-ace2_indep_df.to_csv(covdir + "/results/INTERVAL_ACE2_nonzeros_MAF0.005_cisNominal.cis_qtl_pairs.23.csv", index=True, index_label = "Phenotype")
-
+indep_df = add_rsid(indep_df, rsid)
+indep_df.to_csv(covdir + "/results/INTERVAL_ACE2_MAF0.005_cisConditional.csv", index=True, index_label = "Phenotype")
 
 # trans
 trans_df = trans.map_trans(genotype_df, phenotype_df, covariates_df, return_sparse=True, maf_threshold = 0.03)
-trans_peer_df.to_csv(outdir + "tensorqtl_trans_MAF0.03_all_age_sex_rin_batch_readDepth_PC10_PEER20_COVID19.csv")
+trans_peer_df.to_csv(outdir + "tensorqtl_trans_MAF0.03_all_age_sex_rin_batch_readDepth_PC10_PEER20_COVID19_CHRX.csv")
+
+# split by sex
+male = covariates_df["sex"] == 1
+maleids = pd.Series(covariates_df[male].index)
+male_cis_df = cis.map_cis(genotype_df[maleids], variant_df, phenotype_df[maleids], phenotype_pos_df, covariates_df[male])
+male_cis_df = add_rsid(male_cis_df, rsid)
+male_cis_df.to_csv(covdir + "/results/INTERVAL_ACE2_MAF0.005_cis_male.csv", index=True, index_label = "Phenotype")
+
+male_cisnom_df = cis.map_nominal(genotype_df[maleids], variant_df, phenotype_df[maleids], phenotype_pos_df, covariates_df[male], prefix = covdir + "/results/INTERVAL_ACE2_MAF0.005_cisNominal_male")
+male_cisnom_df = pd.read_parquet(covdir + "/results/INTERVAL_ACE2_MAF0.005_cisNominal_male.cis_qtl_pairs.23.parquet", )
+male_cisnom_df = add_rsid(male_cisnom_df, rsid)
+male_cisnom_df.to_csv(covdir + "/results/INTERVAL_ACE2_MAF0.005_cisNominal_male.cis_qtl_pairs.23.csv", index=False)
+
+
+female = covariates_df["sex"] == 0
+femaleids = pd.Series(covariates_df[female].index)
+female_cis_df = cis.map_cis(genotype_df[femaleids], variant_df, phenotype_df[femaleids], phenotype_pos_df, covariates_df[female])
+female_cis_df = add_rsid(female_cis_df, rsid)
+female_cis_df.to_csv(covdir + "/results/INTERVAL_ACE2_MAF0.005_cis_female.csv", index=True, index_label = "Phenotype")
+
+female_cisnom_df = cis.map_nominal(genotype_df[femaleids], variant_df, phenotype_df[femaleids], phenotype_pos_df, covariates_df[female], prefix = covdir + "/results/INTERVAL_ACE2_MAF0.005_cisNominal_female")
+female_cisnom_df = pd.read_parquet(covdir + "/results/INTERVAL_ACE2_MAF0.005_cisNominal_female.cis_qtl_pairs.23.parquet", )
+female_cisnom_df = add_rsid(female_cisnom_df, rsid)
+female_cisnom_df.to_csv(covdir + "/results/INTERVAL_ACE2_MAF0.005_cisNominal_female.cis_qtl_pairs.23.csv", index=False)
 
 
 
+# genome-wide trans
 
 
-gw_plink_prefix_path = "/rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/genotypes/INTERVAL_b38_autosomes_RNAseqPhase1_biallelic_all_MAF0.005"
-gw_pr = genotypeio.PlinkReader(gw_plink_prefix_path)
-gw_genotype_df = pd.DataFrame(gw_pr.get_all_genotypes(), index=gw_pr.bim['snp'], columns=gw_pr.fam['iid'])
-gw_variant_df = gw_pr.bim.set_index('snp')[['chrom', 'pos']]
-
-gw_trans_df = trans.map_trans(gw_genotype_df, phenotype_df, covariates_df, return_sparse=True, maf_threshold = 0.03)
-
-
+#gw_plink_prefix_path = "/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/genotypes/INTERVAL_RNAseq_Phase1-2_imputed_b38_biallelic_MAF0.005_AllAutosomes"
+#gw_pr = genotypeio.PlinkReader(gw_plink_prefix_path)
+#gw_genotype_df = pd.DataFrame(gw_pr.get_all_genotypes(), index=gw_pr.bim['snp'], columns=gw_pr.fam['iid'])
+#gw_variant_df = gw_pr.bim.set_index('snp')[['chrom', 'pos']]
+#
+#gw_trans_df = trans.map_trans(gw_genotype_df, phenotype_df, covariates_df, return_sparse=True, maf_threshold = 0.03)
 
 
+for i in range(1,23):
+  print(i)
+  plink_prefix_path = "/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/genotypes/INTERVAL_RNAseq_Phase1-2_imputed_b38_biallelic_MAF0.005_chr" + str(i)
+  print(plink_prefix_path)
+  gw_pr = genotypeio.PlinkReader(plink_prefix_path)
+  gw_genotype_df = pd.DataFrame(gw_pr.get_all_genotypes(), index=gw_pr.bim['snp'], columns=gw_pr.fam['iid'])
+  gw_variant_df = gw_pr.bim.set_index('snp')[['chrom', 'pos']]
+  
+  gw_trans_df = trans.map_trans(gw_genotype_df, phenotype_df, covariates_df, return_sparse=True, maf_threshold = 0.03)
+  gw_trans_min_df.to_csv(outdir + "tensorqtl_trans_MAF0.03_all_age_sex_rin_batch_readDepth_PC10_PEER20_COVID19_CHR" + str(i) + ".csv")
+  
+  
 
-
+gw_genotype_df.to_csv("genotype_df.csv")
+gw_variant_df.to_csv("variant_df.csv")
 
 
 
