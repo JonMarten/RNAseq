@@ -3,13 +3,13 @@ library(dplyr)
 library(data.table)
 setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/covariates")
 rna_id_mapper <- fread("processed/rna_id_mapper.csv", data.table=F) 
-techCov <- fread("processed/INTERVAL_RNA_technical_covariates_batch1-12_20200402.csv", data.table = F)
+techCov <- fread("processed/INTERVAL_RNA_technical_covariates_batch1-12_20200416.csv", data.table = F)
 
 techCov <- techCov %>% 
   rename(sample_id = INT_ID) %>%
   mutate(Extraction_Date = as.Date(Extraction_Date, "%d/%m/%Y"))
 
-dat <- fread("raw/INTERVALdata_02APR2020.csv", data.table=F)
+dat <- fread("raw/INTERVALdata_14MAY2020.csv", data.table=F)
 
 # Filter phase 3 data to get the correct timepoint to match sample used for RNA seq data
 p3mapper <- rna_id_mapper %>%
@@ -17,7 +17,7 @@ p3mapper <- rna_id_mapper %>%
   mutate(p3_mapper = paste0(identifier,attendanceDate_p3)) %>%
   pull(p3_mapper)
 
-datp3 <- fread("raw/INTERVALdata_P3_02APR2020.csv", data.table=F)
+datp3 <- fread("raw/INTERVALdata_P3_14MAY2020.csv", data.table=F)
 datp3 <- datp3 %>%
   mutate(p3_mapper = paste0(identifier,attendanceDate_p3)) %>%
   filter(p3_mapper %in% p3mapper) %>%
@@ -37,7 +37,7 @@ calcAge <- function(dob, testDate){
 }
 
 dat2 <- dat %>%
-  select(sample_id = RNA_id, Batch, phase, sexPulse, agePulse, monthPulse, yearPulse, attendanceDate, attendanceDate_24m, attendanceDate_48m, attendanceDate_p3) %>% 
+  select(sample_id = RNA_id, inFeatureCounts, Batch, phase, sexPulse, agePulse, monthPulse, yearPulse, attendanceDate, attendanceDate_24m, attendanceDate_48m, attendanceDate_p3) %>% 
   mutate_at(vars(attendanceDate:attendanceDate_p3), funs(as.Date(x = .,format = "%d%b%Y"))) %>%
   mutate(dob = paste0("15-",monthPulse, "-", yearPulse) %>% as.Date(format = "%d-%m-%Y")) %>%
   mutate(age1 = calcAge(dob, attendanceDate),
@@ -54,7 +54,7 @@ dat3 <- dat2 %>%
 
 ## Generate phenotype file that only includes cell count data from the same phase as the RNA sample
 pheAll <- dat3 %>%
-  select(sample_id, age_RNA)
+  select(sample_id, age_RNA, inFeatureCounts)
 dat <- rename(dat, 
               sample_id = RNA_id,
               height = ht_bl,
@@ -104,7 +104,9 @@ pheRNA$appointmentTime___RNA[which(pheRNA$appointmentTime___RNA == "")] <- NA # 
 # merge in technical covariates
 out <- full_join(techCov, pheRNA, by = "sample_id") %>%
   mutate(attendanceDate___RNA = as.Date(attendanceDate___RNA, format = "%d%b%Y"),
-         processDate___RNA = as.Date(processDate___RNA, format = "%d%b%Y"))
+         processDate___RNA = as.Date(processDate___RNA, format = "%d%b%Y")) %>%
+  select(-sequencingBatch) %>%
+  rename(sequencingBatch = Batch)
 
 # Bodgy hack to re-add sequencing batch for samples that have RNA seq data but haven't been added to the phenotype database yet. 
 fullbatch <- rna_id_mapper %>%
@@ -113,19 +115,20 @@ out2 <- full_join(out, fullbatch) %>%
   select(-sequencingBatch) %>%
   rename(sequencingBatch = fullbatch)
 
-# Process weight data to replace 777 with 190, remove unfeasibly large numbers of significant figures (weight assumed accurate to .1 kg and height to 1cm) and calculate BMI, then reorder columns for saving.
-out3 <- out2 %>%
+# Process weight data to replace 777 with 190, remove unfeasibly large numbers of significant figures (weight assumed accurate to .1 kg and height to 1cm) and calculate BMI. Add in column for sample collection month, then reorder columns for saving.
+out3 <- out %>%
   mutate(weight = ifelse(weight==777, 190, weight)) %>%
   mutate(weight = round(weight,1),
          height = round(height,2)) %>%
   mutate(BMI = weight / height ^2) %>%
   mutate(BMI = round(BMI, 2)) %>%
-  select(sample_id:age_RNA, sequencingBatch, intervalPhase:weight, BMI, attendanceDate___RNA, appointmentTime___RNA, processDate___RNA, processTime___RNA, BA_D_10_9_L___RNA:PLT_O_10_9_L___RNA, RBC_10_12_L___RNA:WBC_N_10_9_L___RNA)
+  mutate(RNA_sample_month = substr(attendanceDate___RNA,6,7)) %>%
+  select(sample_id:age_RNA, inFeatureCounts, sequencingBatch, RNA_sample_month, intervalPhase:weight, BMI, attendanceDate___RNA, appointmentTime___RNA, processDate___RNA, processTime___RNA, BA_D_10_9_L___RNA:PLT_O_10_9_L___RNA, RBC_10_12_L___RNA:WBC_N_10_9_L___RNA)
 
 # Filter out samples which aren't in the sequencing data
 out4 <- out3 %>%
-  filter(!is.na(sequencingBatch)) %>%
-  select(-Sex, -Batch)
+  filter(inFeatureCounts == 1) %>%
+  select(-Sex, -inFeatureCounts)
 
 # Add in Affy ID
 omictable <- fread("processed/INTERVAL_omics_table_02APR2020.csv", data.table = F) %>%
@@ -134,4 +137,4 @@ omictable <- fread("processed/INTERVAL_omics_table_02APR2020.csv", data.table = 
 
 out5 <- right_join(omictable, out4)
   
-write.csv(out5, file = "processed/INTERVAL_RNA_batch1-12_master_covariates_release_2020_04_02.csv", row.names = F)
+write.csv(out5, file = "processed/INTERVAL_RNA_batch1-12_master_covariates_release_2020_05_18.csv", row.names = F)
