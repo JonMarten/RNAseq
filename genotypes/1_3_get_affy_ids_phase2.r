@@ -2,7 +2,7 @@
 setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/")
 library(data.table)
 library(dplyr)
-dat <- fread("covariates/processed/INTERVAL_omics_table_02APR2020.csv", data.table = F)
+dat <- fread("covariates/processed/INTERVAL_omics_table_14MAY2020.csv", data.table = F)
 out <- dat %>% 
   filter(!is.na(RNA_ID)) %>%
   select(affymetrix_ID)
