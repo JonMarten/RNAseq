@@ -92,6 +92,11 @@ upset.df <- out %>%
          "RNA seq" = RNA_ID)
 upset.df.bin <-apply(upset.df, MAR = 2, FUN = binary) %>% data.frame
 
-upset(upset.df.bin, sets = c("WES","WGS","Metabolon", "Somalogic","Olink","RNA.seq"), order.by = "freq")
+upset(upset.df.bin, sets = c("WES","WGS","Metabolon", "Somalogic","Olink","RNA.seq"), order.by = "freq", nintersects = 7,text.scale = 2)
 
-
+library(VennDiagram)
+out2 <- out %>% filter(!is.na(RNA_ID))
+vennDat <- list("Somalogic" = out2$RNA_ID[which(!is.na(out2$soma_ID))],
+                "Olink" = out2$RNA_ID[which(!is.na(out2$olink_ID))],
+                "RNA-seq" = out2$RNA_ID[which(!is.na(out2$RNA_ID))])
+venn.diagram(vennDat, file = "covariates/omicVenn.png")
