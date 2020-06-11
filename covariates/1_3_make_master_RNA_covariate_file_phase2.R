@@ -115,9 +115,9 @@ out2 <- full_join(out, fullbatch) %>%
   select(-sequencingBatch) %>%
   rename(sequencingBatch = fullbatch)
 
-# Process weight data to replace 777 with 190, remove unfeasibly large numbers of significant figures (weight assumed accurate to .1 kg and height to 1cm) and calculate BMI. Add in column for sample collection month, then reorder columns for saving.
+# Process weight data to replace 777 with median, remove unfeasibly large numbers of significant figures (weight assumed accurate to .1 kg and height to 1cm) and calculate BMI. Add in column for sample collection month, then reorder columns for saving.
 out3 <- out %>%
-  mutate(weight = ifelse(weight==777, 190, weight)) %>%
+  mutate(weight = ifelse(weight==777, median(out$weight[-which(out$weight == 777)], na.rm = T), weight)) %>%
   mutate(weight = round(weight,1),
          height = round(height,2)) %>%
   mutate(BMI = weight / height ^2) %>%
@@ -137,4 +137,4 @@ omictable <- fread("processed/INTERVAL_omics_table_02APR2020.csv", data.table = 
 
 out5 <- right_join(omictable, out4)
   
-write.csv(out5, file = "processed/INTERVAL_RNA_batch1-12_master_covariates_release_2020_05_18.csv", row.names = F)
+write.csv(out5, file = "processed/INTERVAL_RNA_batch1-12_master_covariates_release_2020_06_11.csv", row.names = F)
