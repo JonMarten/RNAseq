@@ -185,7 +185,7 @@ for i in range(1,23):
   gw_genotype_df = pd.DataFrame(gw_pr.get_all_genotypes(), index=gw_pr.bim['snp'], columns=gw_pr.fam['iid'])
   gw_variant_df = gw_pr.bim.set_index('snp')[['chrom', 'pos']]
   
-  gw_trans_df = trans.map_trans(gw_genotype_df, phenotype_df, covariates_df, return_sparse=True, maf_threshold = 0.03)
+  gw_trans_df = trans.map_trans(gw_genotype_df, phenotype_df, covariates_df, return_sparse=True, maf_threshold = 0.1)
   gw_trans_min_df.to_csv(outdir + "tensorqtl_trans_MAF0.03_all_age_sex_rin_batch_readDepth_PC10_PEER20_COVID19_CHR" + str(i) + ".csv")
   
   
