@@ -1,3 +1,5 @@
+###pip install git+https://github.com/broadinstitute/tensorqtl.git#egg=tensorqtl
+
 #stty kill ^U
 #stty erase ^H
 #. /etc/profile.d/modules.sh
@@ -49,7 +51,7 @@ for i in range(1,23):
   plink_prefix_path = rootpath + 'genotypes/INTERVAL_RNAseq_Phase1-2_imputed_b38_biallelic_MAF0.005_chr' + str(i)
   print(plink_prefix_path)
   gw_pr = genotypeio.PlinkReader(plink_prefix_path)
-  gw_genotype_df = pd.DataFrame(gw_pr.get_all_genotypes(), index=gw_pr.bim['snp'], columns=gw_pr.fam['iid'])
+  gw_genotype_df = pd.DataFrame(gw_pr.load_genotypes(), index=gw_pr.bim['snp'], columns=gw_pr.fam['iid'])
   gw_variant_df = gw_pr.bim.set_index('snp')[['chrom', 'pos']]
   MAF_filter = 0.005
   gw_trans_df = trans.map_trans(gw_genotype_df, phenotype_df, covariates_df, return_sparse = True, return_r2=True, maf_threshold = MAF_filter, batch_size = gw_variant_df.shape[0])
@@ -58,10 +60,10 @@ for i in range(1,23):
 # chrX trans
 plink_prefix_path_x = "/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/covid19/genotypes/INTERVAL_chrX_merged_cleaned_RNAseq_phase1-2_deduplicated_MAF0.005"
 x_pr = genotypeio.PlinkReader(plink_prefix_path_x)
-x_genotype_df = pd.DataFrame(x_pr.get_all_genotypes(), index=x_pr.bim['snp'], columns=x_pr.fam['iid'])
+x_genotype_df = pd.DataFrame(x_pr.load_genotypes(), index=x_pr.bim['snp'], columns=x_pr.fam['iid'])
 x_variant_df = x_pr.bim.set_index('snp')[['chrom', 'pos']]
 MAF_filter = 0.005
-x_trans_df = trans.map_trans(x_genotype_df, phenotype_df, covariates_df, return_sparse = False, return_r2=True, maf_threshold = MAF_filter, batch_size = x_variant_df.shape[0])
+x_trans_df = trans.map_trans(x_genotype_df, phenotype_df, covariates_df, return_sparse = True, return_r2=True, maf_threshold = MAF_filter, batch_size = x_variant_df.shape[0])
 x_trans_df.to_csv(outdir + "/tensorqtl_trans_MAF" + str(MAF_filter) + "_all_age_sex_rin_batch_readDepth_PC10_PEER20_COVID19_CHRX.csv")
   
   
