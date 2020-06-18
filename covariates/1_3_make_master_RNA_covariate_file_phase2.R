@@ -115,12 +115,44 @@ out2 <- full_join(out, fullbatch) %>%
   select(-sequencingBatch) %>%
   rename(sequencingBatch = fullbatch)
 
-# Process weight data to replace 777 with median, remove unfeasibly large numbers of significant figures (weight assumed accurate to .1 kg and height to 1cm) and calculate BMI. Add in column for sample collection month, then reorder columns for saving.
+# Process height asd weight data to remove unlikely values and significant figures and calculate BMI. Add in column for sample collection month, then reorder columns for saving.
+
+# function to set anyone more than 3 SD away from the mean to the median.
+fixExtremes <- function(x) {
+  minx = mean(x, na.rm = T) - 3 * sd(x, na.rm = T)
+  maxx = mean(x, na.rm = T) + 3 * sd(x, na.rm = T)
+  medx = median(x[which(x > minx & x < maxx)])
+  y <- x
+  y[which(y < minx)] <- medx
+  y[which(y > maxx)] <- medx
+  return(y)
+}
+
+# function to report numbers of people outside these extremes
+diagExtremes <- function(x, n) {
+  print(paste0("Threshold: ", n, " SDs away from the mean"))
+  minx = mean(x, na.rm = T) - n * sd(x, na.rm = T)
+  maxx = mean(x, na.rm = T) + n * sd(x, na.rm = T)
+  medx = median(x[which(x > minx & x < maxx)])
+  print(paste0("Trimmed median: ", round(medx,2)))
+  y <- x
+  toolow <- which(x < minx)
+  toohigh <- which(x > maxx)
+  print(paste0(length(toolow)," people with value < ",round(minx,2)))
+  print(paste0(length(toohigh)," people with value > ",round(maxx,2)))
+}
+diagExtremes(out$height, 2)
+diagExtremes(out$height, 3)
+diagExtremes(out$weight, 2)
+diagExtremes(out$weight, 3)
+
+medheight <- median(out$height[which(out$height > 1.5 & out$height < 2)])
 out3 <- out %>%
-  mutate(weight = ifelse(weight==777, median(out$weight[-which(out$weight == 777)], na.rm = T), weight)) %>%
-  mutate(weight = round(weight,1),
+  mutate(weight = fixExtremes(weight), 
+         height = fixExtremes(height)) %>%
+  mutate(weight = round(weight,1), 
          height = round(height,2)) %>%
-  mutate(BMI = weight / height ^2) %>%
+  mutate(BMI = round(weight / height ^2,2)) %>%
   mutate(BMI = round(BMI, 2)) %>%
   mutate(RNA_sample_month = substr(attendanceDate___RNA,6,7)) %>%
   select(sample_id:age_RNA, inFeatureCounts, sequencingBatch, RNA_sample_month, intervalPhase:weight, BMI, attendanceDate___RNA, appointmentTime___RNA, processDate___RNA, processTime___RNA, BA_D_10_9_L___RNA:PLT_O_10_9_L___RNA, RBC_10_12_L___RNA:WBC_N_10_9_L___RNA)
