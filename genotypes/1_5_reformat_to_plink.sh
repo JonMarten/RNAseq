@@ -20,5 +20,6 @@ plink2\
  --make-bed\
  --maf 0.005\
  --hwe 1e-6\
+ --geno 0.05\
  --exclude processing/snp_inclusion_filters/plink_multiallelic_filter_SNPs.txt\
  --out INTERVAL_RNAseq_Phase1-2_imputed_b38_biallelic_MAF0.005_chr${SLURM_ARRAY_TASK_ID}
