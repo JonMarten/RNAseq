@@ -146,7 +146,7 @@ diagExtremes(out$height, 3)
 diagExtremes(out$weight, 2)
 diagExtremes(out$weight, 3)
 
-medheight <- median(out$height[which(out$height > 1.5 & out$height < 2)])
+#medheight <- median(out$height[which(out$height > 1.5 & out$height < 2)])
 out3 <- out %>%
   mutate(weight = fixExtremes(weight), 
          height = fixExtremes(height)) %>%
@@ -163,10 +163,10 @@ out4 <- out3 %>%
   select(-Sex, -inFeatureCounts)
 
 # Add in Affy ID
-omictable <- fread("processed/INTERVAL_omics_table_02APR2020.csv", data.table = F) %>%
+omictable <- fread("processed/INTERVAL_omics_table_14MAY2020.csv", data.table = F) %>%
   select(sample_id = RNA_ID, affymetrix_ID) %>% 
   filter(!is.na(sample_id))
 
 out5 <- right_join(omictable, out4)
   
-write.csv(out5, file = "processed/INTERVAL_RNA_batch1-12_master_covariates_release_2020_06_11.csv", row.names = F)
+write.csv(out5, file = "processed/INTERVAL_RNA_batch1-12_master_covariates_release_2020_07_01.csv", row.names = F)
