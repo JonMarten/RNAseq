@@ -6,9 +6,6 @@ This is a repository of scripts used in the analysis of the RNA seq data from th
 #### Raw data
 All 8 batches of Phase I data have been downloaded from the Sanger Globus server. These are currently stored in `/rds/project/jmmh2/rds-jmmh2-pre_qc_data/interval/rna_seq/raw_data/globus` in subfolders by batch. Within each subfolder, `.cram` files are stored tar files in the `data` folders and processed gene counts are stored in the `results-study5591-*` folders.
 
-#### Filtered data
-Artika Nath has 
-
 ### Annotation
 Genomic positions of genes are obtained from Ensembl. 58,394 features are mapped in the original RNA seq counts. Of these, 92 are listed with "ERCC" identifiers, which I believe are spike-ins. 382 features are retired in the current release of Ensembl and are not included in the annotation file. In the final annotation file, chromosome and position information is incldued for 57,861 Ensembl genes.
 
@@ -38,4 +35,3 @@ The file limix_install.txt is mostly adapted from a file contained within the Go
 6. If using snakemake, install with `pip install snakemake==4.5.0` (the current version of snakemake cannot be installed due to problems with the `datrie` depedent package. 
 
 Limix can now be called directly from the command line, but Marc's pipeline is implemented in a series of python scripts. QTLs are called with `hipsci_pipeline/limix_QTL_pipeline\run_QTL_analysis.py`. His implementation uses a **snakemake** file to manage the workflow and chunk the file into manageable pieces. This is currently being investigated.
-adding a line
