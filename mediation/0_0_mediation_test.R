@@ -146,5 +146,46 @@ pullProt <- function(gene){
 }
 
 ltbr <- pullProt("ENSG00000111321")
-ggplot(ltbr, aes(x = ENSG00000111321, y = olink__cvd3_ltbr___p36941))
+#ggplot(ltbr, aes(x = ENSG00000111321, y = olink__cvd3_ltbr___p36941))
+
+covs <- fread("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/covariates/processed/INTERVAL_RNA_batch1-12_master_covariates_release_2020_07_01.csv", data.table = F)
+
+covs2 <- covs %>%
+  select(affyID = affymetrix_ID, NEUT_PCT___RNA, MONO_PCT___RNA, sex) %>%
+  mutate(affyID = as.character(affyID))
+  
+library(tidyr)
+library(mediation)
+a <- full_join(ltbr, covs2) %>%
+  drop_na()
+
+# Cell count as mediator
+model.0 <- lm(olink__cvd3_ltbr___p36941 ~ ENSG00000111321, a)
+model.M <- lm(NEUT_PCT___RNA ~ ENSG00000111321  , a)
+model.Y <- lm(olink__cvd3_ltbr___p36941 ~ ENSG00000111321 + NEUT_PCT___RNA, a)
+
+results <- mediate(model.M, model.Y, treat = "ENSG00000111321",  mediator = "NEUT_PCT___RNA", boot=TRUE, sims=500)
+summary(results)
+
+model.M_mono <- lm(MONO_PCT___RNA ~ ENSG00000111321, a)
+model.Y_mono<- lm(olink__cvd3_ltbr___p36941 ~ ENSG00000111321 + MONO_PCT___RNA, a)
+
+results_mono <- mediate(model.M_mono, model.Y_mono, treat = "ENSG00000111321",  mediator = "MONO_PCT___RNA",boot=TRUE, sims=500)
+summary(results_mono)
+
+
+## RNA as mediator
+model.0 <- lm(olink__cvd3_ltbr___p36941 ~ NEUT_PCT___RNA, a)
+model.M <- lm(ENSG00000111321 ~ NEUT_PCT___RNA, a)
+model.Y <- lm(olink__cvd3_ltbr___p36941 ~ ENSG00000111321 + NEUT_PCT___RNA, a)
+
+results <- mediate(model.M, model.Y, treat = "NEUT_PCT___RNA",  mediator = "ENSG00000111321", boot=TRUE, sims=500)
+summary(results)
+
+model.0_mono <- lm(olink__cvd3_ltbr___p36941 ~ MONO_PCT___RNA, a)
+model.M_mono <- lm(MONO_PCT___RNA ~ ENSG00000111321, a)
+model.Y_mono<- lm(olink__cvd3_ltbr___p36941 ~ ENSG00000111321 + MONO_PCT___RNA, a)
+
+results_mono <- mediate(model.M_mono, model.Y_mono, treat = "MONO_PCT___RNA",  mediator = "ENSG00000111321",boot=TRUE, sims=500)
+summary(results_mono)
 
