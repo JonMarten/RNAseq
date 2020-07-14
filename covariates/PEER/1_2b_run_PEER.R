@@ -11,9 +11,9 @@
 #MCHC_g_dL___RNA, MCV_fL___RNA, RBC_10_12_L___RNA, RDW_SD_fL___RNA, MPV_fL___RNA, PCT_PCT___RNA, PDW_fL___RNA, PLT_F_10_9_L___RNA
 
 library(peer)
-setwd("/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/peer_factors")
-gene_expr <- read.csv("peer_InputFiles/PEER_Proceesed/GeneExpr_PEER_TmmInvRankNormalised_swapsSwapped_mismatchRemoved.csv", row.names = 1)
-covariates <-read.csv("peer_InputFiles/PEER_Proceesed/Covariates_for_PEER.csv", row.names = 1)
+setwd("~/rds/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/peer_factors")
+gene_expr <- read.csv("peer_InputFiles/GeneExpr_PEER_TmmInvRankNormalised_swapsSwapped_mismatchRemoved.csv", row.names = 1)
+covariates <-read.csv("peer_InputFiles/Covariates_for_PEER.csv", row.names = 1)
 
 table(rownames(gene_expr) == rownames(covariates))
 
