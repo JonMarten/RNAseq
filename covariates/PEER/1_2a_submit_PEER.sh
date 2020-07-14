@@ -6,7 +6,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
 #SBATCH --job-name=runPEER
-#SBATCH -A INOUYE-SL2-CPU
+#SBATCH -A PAUL-SL2-CPU
 
 #!/bin/bash
 module load miniconda3-4.5.4-gcc-5.4.0-hivczbz 
