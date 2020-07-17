@@ -13,7 +13,7 @@
 library(peer)
 setwd("~/rds/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/peer_factors")
 gene_expr <- read.csv("peer_InputFiles/GeneExpr_PEER_TmmInvRankNormalised_swapsSwapped_mismatchRemoved.csv", row.names = 1)
-covariates <-read.csv("peer_InputFiles/Covariates_for_PEER.csv", row.names = 1)
+covariates <-read.csv("peer_InputFiles/Covariates_for_PEER_mismatchRemoved.csv", row.names = 1)
 
 table(rownames(gene_expr) == rownames(covariates))
 
