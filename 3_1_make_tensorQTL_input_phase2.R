@@ -5,32 +5,35 @@
 #chr1 685395 685396 ENSG456 -1.13 1.18 -0.03 0.11
 #chr1 700304 700305 ENSG789 -1.18 1.32 -0.36 1.26
 
+###########################################
+## NOTE: Once created, the bed files must be compressed and indexed with 3_2_index_bed.sh
+############################################
+
+
 library(data.table)
 library(dplyr)
 
 setwd("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/phenotypes")
 
 # Create mapping file to match phenotype to genotype
-omictable <- fread("../covariates/processed/INTERVAL_omics_table_02APR2020.csv", data.table = F)
+omictable <- fread("../covariates/processed/INTERVAL_omics_table_14MAY2020.csv", data.table = F)
 idmap <- omictable %>%
   select(genotype_individual_id = affymetrix_ID, phenotype_individual_id = RNA_ID) %>%
   filter(!is.na(phenotype_individual_id))
 
 # Read in TMM normalised FPKM feature counts
-phe <- fread("processed/filteredSamplesGenes_TMMNormalised_FPKM_Counts_Phase1-2_initialcalling.csv", data.table = F)
+phe <- fread("/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/peer_factors/peer_InputFiles/GeneExpr_PEER_TmmInvRankNormalised_swapsSwapped_mismatchRemoved.csv", data.table = F)
+pheT <- phe %>% select(-V1) %>% t %>% data.frame
+names(pheT) <- phe$V1
+pheT$feature_id <- rownames(pheT)
 
-anno <- fread("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/01_cis_eqtl_mapping/annotation_file/Feature_Annotation_Ensembl_gene_ids_autosomes_b38.txt", data.table = F)
+anno <- fread("/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/annotation_file/Feature_Annotation_Ensembl_gene_ids_autosomesPlusChrX_b38.txt", data.table = F)
 
-bed <- left_join(phe, anno[,1:4]) %>%
-  select(Chr = chromosome, start, end, ID = feature_id, INT_RNA7427205:INT_RNA7960548) %>%
+bed <- left_join(pheT, anno[,1:4]) %>%
+  select(Chr = chromosome, start, end, ID = feature_id, everything()) %>%
   arrange(Chr, start) %>%
   filter(!is.na(Chr)) %>%
   rename("#Chr" = Chr)
-
-# Identify missing IDs
-missingIDs <- names(bed)[which(!names(bed) %in% idmap$phenotype_individual_id)][-c(1:4)]
-cov <- fread("../covariates/processed/INTERVAL_RNA_batch1-12_master_covariates_release_2020_04_02.csv", data.table = F)
-write.table(missingIDs, file = "RNAseq_phase1-2_missing_phenotype_IDs.txt", quote = F, col.names = F, row.names = F)
 
 # Rename IDs to match genotype file
 namevec <- base::match(names(bed)[5:ncol(bed)], idmap$phenotype_individual_id)
@@ -41,7 +44,8 @@ sortedids <- names(bed)[-c(1:4)] %>% sort
 bed2 <- bed %>%
   select("#Chr", start, end, ID, sortedids)
 
-fwrite(bed, sep = "\t", file = "INTERVAL_RNAseq_phase1-2_filteredSamplesGenes_TMMNormalised_FPKM_Counts_initialcalling_foranalysis.bed")
+fwrite(bed, sep = "\t", file = "INTERVAL_RNAseq_phase1-2_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis.bed")
+
 
 for(i in 1:22) {
   bedChr <- bed %>%
@@ -49,15 +53,11 @@ for(i in 1:22) {
     filter(Chr == i)%>%
     rename("#Chr" = Chr)
   
-  fwrite(bedChr, sep = "\t", file = paste0("INTERVAL_RNAseq_phase1_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis_chr",i,".bed"))
+  fwrite(bedChr, sep = "\t", file = paste0("INTERVAL_RNAseq_phase1-2_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis_chr",i,".bed"))
   rm(bedChr)
 }
 
 ###########################################
-## NOTE: The bed file must be compressed and indexed with the commands below:
-# module load ceuadmin/tabix/0.2.6
-# bgzip INTERVAL_RNAseq_phase1_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis.bed && tabix -p bed INTERVAL_RNAseq_phase1_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis.bed.gz
-############################################
 
 # Make Covariate file
 #id UNR1 UNR2 UNR3 UNR4
