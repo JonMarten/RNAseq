@@ -40,7 +40,7 @@ dim(PEER_getCovariates(model))
 # For automatic factor selection the PEER Nature Protocols paper recommends 
 # setting the number of factors to 25% of the sample size to a maximum of 100.
 # We can then select the appropriate number of factors by looking at their variance.
-nK <- min(30, round(nrow(gene_expr)/4))
+nK <- min(20, round(nrow(gene_expr)/4))
 nK
 PEER_setNk(model, nK)
 PEER_getNk(model)

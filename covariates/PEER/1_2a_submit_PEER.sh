@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -p skylake-himem
-#SBATCH --mem 30G
+#SBATCH --mem 10G
 #SBATCH --time=36:0:0
 #SBATCH --output=/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/logs/runPEER_%A_%a.log
 #SBATCH --mail-type=ALL
