@@ -40,7 +40,7 @@ cov <- cov %>%
 
 cov <- cbind(cov, batchCols[,-1])
 
-# Select analysis covariates
+# Select analysis covariates. Set missing RIN values to the median
 cov2 <- cov %>%
   mutate(affymetrix_ID = as.character(affymetrix_ID)) %>%
   filter(affymetrix_ID %in% names(phe)) %>%
@@ -76,7 +76,7 @@ cov2 <- cov %>%
          ) %>%
   mutate(sex = as.numeric(gsub(2, 0, sex)),
          RIN = as.numeric(ifelse(Agilent_RINe == "", NA, Agilent_RINe))) %>%
-  filter(!is.na(RIN))
+  mutate(RIN = ifelse(is.na(RIN), median(RIN, na.rm = T), RIN))
 
 covOut.t <- cov2 %>%
   t %>%
