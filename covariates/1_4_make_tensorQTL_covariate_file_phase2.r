@@ -76,7 +76,8 @@ cov2 <- cov %>%
          ) %>%
   mutate(sex = as.numeric(gsub(2, 0, sex)),
          RIN = as.numeric(ifelse(Agilent_RINe == "", NA, Agilent_RINe))) %>%
-  mutate(RIN = ifelse(is.na(RIN), median(RIN, na.rm = T), RIN))
+  mutate(RIN = ifelse(is.na(RIN), median(RIN, na.rm = T), RIN)) %>%
+  select(-Agilent_RINe)
 
 # Remove NAs. Oh yuck, I'm going to do it with a loop, but it's quick
 naToMedian <- function(x) {
