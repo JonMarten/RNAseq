@@ -78,6 +78,11 @@ cov2 <- cov %>%
          RIN = as.numeric(ifelse(Agilent_RINe == "", NA, Agilent_RINe))) %>%
   mutate(RIN = ifelse(is.na(RIN), median(RIN, na.rm = T), RIN))
 
+# Reorder cov to match phe 
+pheids <- names(phe)[-(1:4)]
+ord <- match(pheids, cov2$id) 
+cov2 <- cov2[ord,]
+
 covOut.t <- cov2 %>%
   t %>%
   data.frame(stringsAsFactors = F)
