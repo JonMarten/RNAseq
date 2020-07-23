@@ -22,4 +22,4 @@ source activate tensorQTL
 
 CHR=$SLURM_ARRAY_TASK_ID 
 
-python 3_3b_map_cis_eQTLs.py $CHR
+python /rds/user/jm2294/rds-jmmh2-projects/interval_rna_seq/scripts/RNAseq/3_3b_map_cis_eQTLs.py $CHR
