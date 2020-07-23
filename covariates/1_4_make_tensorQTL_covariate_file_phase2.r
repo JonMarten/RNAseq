@@ -78,6 +78,16 @@ cov2 <- cov %>%
          RIN = as.numeric(ifelse(Agilent_RINe == "", NA, Agilent_RINe))) %>%
   mutate(RIN = ifelse(is.na(RIN), median(RIN, na.rm = T), RIN))
 
+# Remove NAs. Oh yuck, I'm going to do it with a loop, but it's quick
+naToMedian <- function(x) {
+  x <- ifelse(is.na(x), median(x, na.rm = T), x)
+  return(x)
+}
+naCols <- which(apply(cov2, 2, anyNA))
+for(i in naCols){
+  cov2[, i] <- naToMedian(cov2[,i])
+}
+
 # Reorder cov to match phe 
 pheids <- names(phe)[-(1:4)]
 ord <- match(pheids, cov2$id) 
