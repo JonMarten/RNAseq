@@ -56,8 +56,8 @@ factors <- PEER_getX(model)
 dim(factors)
 rownames(factors) <- rownames(gene_expr)
 colnames(factors) <- c(colnames(covariates), "intercept", paste0("PEER", 1:nK))
-saveRDS(factors, "peer_30Fact_100Iter_sampleSwapsFixed/PEER_factors.rds")
-write.table(factors,"peer_30Fact_100Iter_sampleSwapsFixed/PEER_factors.txt",quote=F,sep="\t")
+saveRDS(factors, "peer_20Fact_100Iter_sampleSwapsFixed/PEER_factors.rds")
+write.table(factors,"peer_20Fact_100Iter_sampleSwapsFixed/PEER_factors.txt",quote=F,sep="\t")
 
 # Get the variance explained by each covariate and factor - we will use this to choose
 # the number of factors to use in downstream analyses
@@ -65,12 +65,12 @@ factor_variance <- PEER_getAlpha(model)
 factor_variance <- 1/factor_variance # Convert from inverse variance to variance
 rownames(factor_variance) <- c(colnames(covariates), "intercept", paste0("PEER", 1:nK))
 factor_variance <- factor_variance[-(1:(ncol(covariates)+1)),] # ignore covariates and intercept 
-saveRDS(factor_variance, "peer_30Fact_100Iter_sampleSwapsFixed/PEER_factors_varaince_explained.rds")
-write.table(factor_variance,"peer_30Fact_100Iter_sampleSwapsFixed/PEER_factorvariance.txt",quote=F,sep="\t")
+saveRDS(factor_variance, "peer_20Fact_100Iter_sampleSwapsFixed/PEER_factors_varaince_explained.rds")
+write.table(factor_variance,"peer_20Fact_100Iter_sampleSwapsFixed/PEER_factorvariance.txt",quote=F,sep="\t")
 
 # Look at this plot: for downstream analysis you want to choose the first N factors 
 # before the variance drops to 0
-pdf("peer_30Fact_100Iter_sampleSwapsFixed/PEER_factor_kN_selection.pdf")
+pdf("peer_20Fact_100Iter_sampleSwapsFixed/PEER_factor_kN_selection.pdf")
 plot(factor_variance, type="l", ylab="Variance of PEER factor weights", xlab="", xaxt="n")
 points(factor_variance, pch=19)
 dev.off()
@@ -82,4 +82,4 @@ dev.off()
 weights <- PEER_getW(model)
 colnames(weights) <- c(colnames(covariates), "intercept", paste0("PEER", 1:nK))
 rownames(weights) <- colnames(gene_expr)
-write.table(weights,"peer_30Fact_100Iter_sampleSwapsFixed/PEER_weights.txt",quote=F,sep="\t")
+write.table(weights,"peer_20Fact_100Iter_sampleSwapsFixed/PEER_weights.txt",quote=F,sep="\t")
