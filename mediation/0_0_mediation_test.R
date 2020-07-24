@@ -157,6 +157,7 @@ covs2 <- covs %>%
 library(tidyr)
 library(mediation)
 a <- full_join(ltbr, covs2) %>%
+  dplyr::select(-soma__ltbr2636102) %>% 
   drop_na()
 
 # Cell count as mediator
@@ -175,17 +176,64 @@ summary(results_mono)
 
 
 ## RNA as mediator
-model.0 <- lm(olink__cvd3_ltbr___p36941 ~ NEUT_PCT___RNA, a)
-model.M <- lm(ENSG00000111321 ~ NEUT_PCT___RNA, a)
-model.Y <- lm(olink__cvd3_ltbr___p36941 ~ ENSG00000111321 + NEUT_PCT___RNA, a)
+model.0_RNA <- lm(olink__cvd3_ltbr___p36941 ~ NEUT_PCT___RNA, a)
+model.M_RNA <- lm(ENSG00000111321 ~ NEUT_PCT___RNA, a)
+model.Y_RNA <- lm(olink__cvd3_ltbr___p36941 ~ ENSG00000111321 + NEUT_PCT___RNA, a)
 
-results <- mediate(model.M, model.Y, treat = "NEUT_PCT___RNA",  mediator = "ENSG00000111321", boot=TRUE, sims=500)
+results_RNA <- mediate(model.M_RNA, model.Y_RNA, treat = "NEUT_PCT___RNA",  mediator = "ENSG00000111321", boot=TRUE, sims=500)
 summary(results)
 
-model.0_mono <- lm(olink__cvd3_ltbr___p36941 ~ MONO_PCT___RNA, a)
-model.M_mono <- lm(MONO_PCT___RNA ~ ENSG00000111321, a)
-model.Y_mono<- lm(olink__cvd3_ltbr___p36941 ~ ENSG00000111321 + MONO_PCT___RNA, a)
+model.0_mono_RNA <- lm(olink__cvd3_ltbr___p36941 ~ MONO_PCT___RNA, a)
+model.M_mono_RNA <- lm(MONO_PCT___RNA ~ ENSG00000111321, a)
+model.Y_mono_RNA <- lm(olink__cvd3_ltbr___p36941 ~ ENSG00000111321 + MONO_PCT___RNA, a)
 
-results_mono <- mediate(model.M_mono, model.Y_mono, treat = "MONO_PCT___RNA",  mediator = "ENSG00000111321",boot=TRUE, sims=500)
+results_mono_RNA <- mediate(model.M_mono_RNA, model.Y_mono_RNA, treat = "MONO_PCT___RNA",  mediator = "ENSG00000111321",boot=TRUE, sims=500)
 summary(results_mono)
+
+# get genotypes:
+# FUNCTION: Convert bgen AA:AB:BB format to B dosage format
+bgenToDose <- function(bgen){
+  nsnps <- nrow(bgen$variants)
+  nids <- length(bgen$samples)
+  out <- matrix(nrow = nids, ncol = nsnps)
+  rownames(out) <- bgen$samples
+  colnames(out) <- rownames(bgen$variants)
+  for(i in 1:nsnps){
+    out[,i] <- bgen$data[i,,2] + 2*bgen$data[i,,3]
+  }
+  out2 <- list("variants" = bgen$variants, "dosage" = out)
+  return(out2)
+}
+library(rbgen)
+bgenPath <- paste0("/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/genotypes/processing/b38_bgen/filtered/impute_12_interval_b38_filtered_no0_rnaSeqPhase1_2.bgen")
+bgen <- bgen.load(bgenPath, rsids = c("rs2364485", "rs1800693","rs2364480"))
+dose <- bgenToDose(bgen)
+
+snps <- dose$variants %>%
+  mutate(rsid = as.character(rsid),
+         allele0 = as.character(allele0),
+         allele1 = as.character(allele1))
+dosage <- dose$dosage %>%
+  data.frame() %>%
+  mutate(affyID = rownames(dose$dosage))
+
+b <- left_join(a, dosage)
+# DNA -> protein mediated by RNA
+gmodel.0 <- lm(olink__cvd3_ltbr___p36941 ~ rs2364485, b)
+gmodel.M <- lm(ENSG00000111321 ~ rs2364485, b)
+gmodel.Y <- lm(olink__cvd3_ltbr___p36941 ~ ENSG00000111321 + rs2364485, b)
+gresults <- mediate(gmodel.M, gmodel.Y, treat = "rs2364485", mediator = "ENSG00000111321", boot = TRUE, sims = 500)
+
+gmodel.0 <- lm(olink__cvd3_ltbr___p36941 ~ rs1800693, b)
+gmodel.M <- lm(ENSG00000111321 ~ rs1800693, b)
+gmodel.Y <- lm(olink__cvd3_ltbr___p36941 ~ ENSG00000111321 + rs1800693, b)
+gresults <- mediate(gmodel.M, gmodel.Y, treat = "rs1800693", mediator = "ENSG00000111321", boot = TRUE, sims = 500)
+
+gmodel.0 <- lm(olink__cvd3_ltbr___p36941 ~ rs2364480  + sex, b)
+gmodel.M <- lm(ENSG00000111321 ~ rs2364480, b)
+gmodel.Y <- lm(olink__cvd3_ltbr___p36941 ~ ENSG00000111321 + rs2364480, b)
+gresults <- mediate(gmodel.M, gmodel.Y, treat = "rs2364480", mediator = "ENSG00000111321", boot = TRUE, sims = 500)
+
+
+
 
