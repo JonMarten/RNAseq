@@ -48,3 +48,7 @@ Current scripts are as follows:
 * [3_1_make_tensorQTL_input_phase2.R](3_1_make_tensorQTL_input_phase2.R): Output phenotype `.bed` files for use in TensorQTL.
 * [3_2_index_bed.sh](3_2_index_bed.sh): Compress and index `.bed` files from previous step.
 * [3_3a_map_cis_eQTLs_submissions_script.sh](3_3a_map_cis_eQTLs_submissions_script.sh) and [3_3b_map_cis_eQTLs.py](3_3b_map_cis_eQTLs.py): The python script that runs the cis-eQTL mapping in TensorQTL, and the shell script for submission to CSD3.
+
+## Files
+All files on CSD3 are currently located in the project folder, `/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/` (i.e. not in the GWASqc folder, since they're not yet finalised).
+
