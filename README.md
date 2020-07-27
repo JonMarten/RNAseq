@@ -1,6 +1,6 @@
 # INTERVAL RNA-seq eQTL analysis
 ## Scripts
-This is a repository of scripts used in the analysis of the RNA seq data from the INTERVAL cohort. Current generation scripts are stored in the root folder, with the scripts written for the initial Limix pipeline in [01_limix_pipeline](01_limix_pipeline) and the [initial tensorQTL phase I analysis](02_tensorqtl_phase_1) stored for archive purposes.
+This is a repository of scripts used in the analysis of the RNA seq data from the INTERVAL cohort. Current generation scripts are stored in the root folder, with the [initial Limix pipeline](01_limix_pipeline) and the [tensorQTL phase I analysis](02_tensorqtl_phase_1) scripts stored in subfolders for reference purposes.
 
 ## Data
 ### Phenotype
