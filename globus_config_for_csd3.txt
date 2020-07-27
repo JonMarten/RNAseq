@@ -15,6 +15,6 @@ globus login #  generates a link to get an authentication code from the browser
 
 globus endpoint create --personal CSD3
 
-~/bin/globusconnectpersonal-2.3.6/globusconnectpersonal -setup 4befb718-1709-49c9-9e8d-f4adc46efec7 # setup key from previous step
+~/bin/globusconnectpersonal-2.3.6/globusconnectpersonal -setup [key] # setup key from previous step
 
 ~/bin/globusconnectpersonal-2.3.6/globusconnectpersonal -start &
