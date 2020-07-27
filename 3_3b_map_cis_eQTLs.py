@@ -32,7 +32,7 @@ cis_df.to_csv(outpath + "tensorqtl_cis_MAF0.005_cisPerGene_chr" + chr + ".csv", 
 cisnom_df = cis.map_nominal(genotype_df, variant_df, phenotype_df, phenotype_pos_df, covariates_df, prefix=outpath + "tensorqtl_cis_MAF0.005_cisNominal_chr" + chr)
 
 # Conditional analysis
-indep_df = cis.map_independent(genotype_df, variant_df, cis_df, phenotype_df, phenotype_pos_df, covariates_df)
+indep_df = cis.map_independent(genotype_df, variant_df, cis_df, phenotype_df, phenotype_pos_df, covariates_df, nperm=1000)
 indep_df.to_csv(outpath + "tensorqtl_cis_MAF0.005_cisIndependent_chr" + chr + ".csv", index=True, index_label = "Phenotype")
 
 # GxE
