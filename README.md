@@ -1,10 +1,15 @@
-# INTERVAL RNA seq eQTL analysis
-This is a repository of scripts used in the analysis of the RNA seq data from the INTERVAL cohort. Currently this is a work in progress, but this README will be updated as the analysis progresses.
+# INTERVAL RNA-seq eQTL analysis
+## Scripts
+This is a repository of scripts used in the analysis of the RNA seq data from the INTERVAL cohort. Current generation scripts are stored in the root folder, with the scripts written for the initial Limix pipeline in [01_limix_pipeline](01_limix_pipeline) and the [initial tensorQTL phase I analysis](02_tensorqtl_phase_1) stored for archive purposes.
 
 ## Data
 ### Phenotype
 #### Raw data
-All 8 batches of Phase I data have been downloaded from the Sanger Globus server. These are currently stored in `/rds/project/jmmh2/rds-jmmh2-pre_qc_data/interval/rna_seq/raw_data/globus` in subfolders by batch. Within each subfolder, `.cram` files are stored tar files in the `data` folders and processed gene counts are stored in the `results-study5591-*` folders.
+RNA-seq data is downloaded from the Sanger HGI service Globus server. This is accessed from https://app.globus.org/file-manager and requires an endpoint to be set up on CSD3 to transfer files. The commands required to configure this are stored in [globus_config_for_csd3.txt](globus_config_for_csd3.txt).
+
+Initial Phase I data is stored in `/rds/project/jmmh2/rds-jmmh2-pre_qc_data/interval/rna_seq/raw_data/globus` in subfolders by batch. Within each subfolder, `.cram` files are stored tar files in the `data` folders and processed gene counts are stored in the `results-study5591-*` folders.
+
+Phase I was recalled together with batches 9-12 of Phase II to bring INTERVAL into closer alignment with the BioAid and GAINS studies. This latest data release is stored on the globus server, with some files downloaded to `/rds/rds-jmmh2-projects/interval_rna_seq/globus_phase2_recalled`.
 
 ### Annotation
 Genomic positions of genes are obtained from Ensembl. 58,394 features are mapped in the original RNA seq counts. Of these, 92 are listed with "ERCC" identifiers, which I believe are spike-ins. 382 features are retired in the current release of Ensembl and are not included in the annotation file. In the final annotation file, chromosome and position information is incldued for 57,861 Ensembl genes.
