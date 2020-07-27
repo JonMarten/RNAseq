@@ -1,20 +1,3 @@
-# INTERVAL RNA-seq eQTL analysis
-## Scripts
-This is a repository of scripts used in the analysis of the RNA seq data from the INTERVAL cohort. Current generation scripts are stored in the root folder, with the [initial Limix pipeline](01_limix_pipeline) and the [tensorQTL phase I analysis](02_tensorqtl_phase_1) scripts stored in subfolders for reference purposes.
-
-## Data
-### Phenotype
-#### Raw data
-RNA-seq data is downloaded from the Sanger HGI service Globus server. This is accessed from https://app.globus.org/file-manager and requires an endpoint to be set up on CSD3 to transfer files. The commands required to configure this are stored in [globus_config_for_csd3.txt](globus_config_for_csd3.txt).
-
-Initial Phase I data is stored in `/rds/project/jmmh2/rds-jmmh2-pre_qc_data/interval/rna_seq/raw_data/globus` in subfolders by batch. Within each subfolder, `.cram` files are stored tar files in the `data` folders and processed gene counts are stored in the `results-study5591-*` folders.
-
-Phase I was recalled together with batches 9-12 of Phase II to bring INTERVAL into closer alignment with the BioAid and GAINS studies. This latest data release is stored on the globus server, with some files downloaded to `/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/globus_phase2_recalled`. Not all files have been copied,  as many of these files are symlinks on the Sanger side and are ignored by the globus sync functions. This is something that needs to be worked out with Guillaume Noell.
-
-### Annotation
-Genomic positions of genes are obtained from Ensembl. Annotation files are stored in `
-/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/annotation_file`, with the raw BioMart output stored in `19_9_5_mart_export.txt` and the reformatted annotation file in `Feature_Annotation_Ensembl_gene_ids_autosomesPlusChrX_b38.txt`. This is a throwback to the Limix pipeline where annotation was supplied as a separate file, but this information is now stored within the TensorQTL .bed input. However, the phenotype generation scriptes still require the annotation file to be in the Limix format. The script to reformat this is stored [here](3_0_make_annotation_file_autosomes_plus_x.R).
-
 ### Covariates
 Covariate data is stored in a QC-ready file `INTERVAL_RNA_batch1_5_covariates_release31MAY2019.csv`. This file includes technical covariates from the RNA sequencing run as well as age and sysmex data from the same timepoint as the blood sample used for RNA seq. Derivation of this file is detailed [here](https://github.com/JonMarten/RNAseq/blob/master/covariates/README.md#phenotypes-in-the-interval-study).
 
