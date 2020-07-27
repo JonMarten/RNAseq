@@ -46,7 +46,7 @@ bed2 <- bed %>%
 fwrite(bed, sep = "\t", file = "INTERVAL_RNAseq_phase1-2_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis.bed")
 
 # Output per-chromosome phenotype files for trans analysis
-for(i in 1:22) {
+for(i in 1:23) {
   bedChr <- bed %>%
     rename(Chr = "#Chr") %>%
     filter(Chr == i)%>%
