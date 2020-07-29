@@ -56,15 +56,17 @@ Note: As of 29/7/2020 the trans scripts are untested, but I have historically ha
 ## Files
 All files on CSD3 are currently located in the project folder, `/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/` (i.e. not in the GWASqc folder, since they're not yet finalised).
 
-Where possible, file names are intuitive, but broad folder contents are as follows:
+Where possible, file names are intuitive, but folder contents are broadly as follows:
 * **00_testing**: Early tests of the Limix pipeline, mostly around getting things working
-* **01_cis_eqtl_mapping**: Limix pipeline cis-eQTL mapping.
+* **01_cis_eqtl_mapping**: Limix pipeline cis-eQTL mapping in phase I samples.
 	* **results**: Subfolders for results by covariates included, these were used for pipeline configuration
 		* **...5GenesPerChunk**: final complete cis-eQTL results from Limix (switiching to CSD3 meant a 12 hour limit on jobs, necessitating diving the task into 5-gene chunks).
 * **02_trans_eqtl_mapping**: preliminary tests of LIMIX trans-eQTL mapping. Abandoned.
-* **03_tensorqtl**: Initially testing for tensorQTL, evolved into full results.
-	* results: eQTLs mapped using TensorQTL from the command line
-		* python_module_method: eQTLs mapped using TensorQTL as a module loaded within python. This worked more consistently. Files are named by covariates adjusted for. 'cis' refers to the output from `map_cis`, which gives the lead SNP for each genetic feature. 'cis_nominal' is the output from `map_nominal` which outputs a p-value for every SNP-phenotype pair, but does not correct for multiple testing. Applying the `pval_nominal_threshold` from cis to the pvalues from cis_nominal allows identification of eSNPs within a significant eGene.
-		
+* **03_tensorqtl**: Initially testing for tensorQTL, evolved into full phase I results.
+	* **results**: eQTLs mapped using TensorQTL from the command line
+		* **python_module_method**: eQTLs mapped using TensorQTL as a module loaded within python. This worked more consistently. Files are named by covariates adjusted for. 'cis' refers to the output from `map_cis`, which gives the lead SNP for each genetic feature. 'cis_nominal' is the output from `map_nominal` which outputs a p-value for every SNP-phenotype pair, but does not correct for multiple testing. Applying the `pval_nominal_threshold` from cis to the pvalues from cis_nominal allows identification of eSNPs within a significant eGene.
+* **04_phase2_full_analysis**: Folder for latest results using recalled phase I & II samples together for a total of ~4k
+	* **phenotypes**, **covariates**, **genotypes**: input files for TensorQTL. Analysis-ready files are in the root folder, with raw files in *raw* and files generated during processing in *processed*.
+	
 
 Note: No cleanup of files has been done. It is my view that once a finalised set of TensorQTL eQTLs results is available, there is no reason to retain the old results, but I leave this decsion to whoever takes over the project. 
