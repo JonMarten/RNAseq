@@ -6,7 +6,7 @@ import tensorqtl
 from tensorqtl import genotypeio, cis, trans
 
 path = "/home/jm2294/rds/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/"
-outpath = path + "results/cis-eQTLs"
+outpath = path + "results/cis_eQTLs/"
 chr = str(sys.argv[1]) 
 
 phenotype_bed_file = path + "phenotypes/INTERVAL_RNAseq_phase1-2_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis_chr" + chr + ".bed.gz"
