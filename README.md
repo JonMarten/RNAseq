@@ -43,7 +43,8 @@ ChrX files were created as part of the [COVID-19 subproject](covid-19). The file
 ## Pipeline
 Initial cis-eQTL mapping was performed using the [Limix Pipeline](01_limix_pipeline). Experimental trans-eQTL mapping trialed in Limix, but this was switched to TensorQTL, which has been used for all subsequent analyses.
 
-Current scripts are as follows:
+Current-generation scripts are named with `3_#` prefix, for the third iteration of the analysis pipeline. 
+Scripts are as follows:
 * [3_0_make_annotation_file_autosomes_plus_x.R](3_0_make_annotation_file_autosomes_plus_x.R): Converts BioMart annotation file into the right format for the next step.
 * [3_1_make_tensorQTL_input_phase2.R](3_1_make_tensorQTL_input_phase2.R): Output phenotype `.bed` files for use in TensorQTL.
 * [3_2_index_bed.sh](3_2_index_bed.sh): Compress and index `.bed` files from previous step.
@@ -56,5 +57,12 @@ Note: As of 29/7/2020 the trans scripts are untested, but I have historically ha
 All files on CSD3 are currently located in the project folder, `/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/` (i.e. not in the GWASqc folder, since they're not yet finalised).
 
 Where possible, file names are intuitive, but broad folder contents are as follows:
-* **00_testing**: 
+* **00_testing**: Early tests of the Limix pipeline, mostly around getting things working
+* **01_cis_eqtl_mapping**: Limix pipeline cis-eQTL mapping.
+	* results: Subfolders for results by covariates included, these were used for pipeline configuration
+		* `...5GenesPerChunk`: final complete cis-eQTL results (switiching to CSD3 meant a 12 hour limit on jobs, necessitating diving the task into 5-gene chunks.)
+* **02_trans_eqtl_mapping**: preliminary tests of LIMIX trans-eQTL mapping. Abandoned.
+* **03_tensorqtl**: Initially testing for tensorQTL, evolved into full results.
+	* Results
 
+Note: No cleanup of files has been done. It is my view that once a finalised set of TensorQTL eQTLs results is available, there is no reason to retain the old results, but I leave this decsion to whoever takes over the project. 
