@@ -59,10 +59,12 @@ All files on CSD3 are currently located in the project folder, `/rds/project/jmm
 Where possible, file names are intuitive, but broad folder contents are as follows:
 * **00_testing**: Early tests of the Limix pipeline, mostly around getting things working
 * **01_cis_eqtl_mapping**: Limix pipeline cis-eQTL mapping.
-	* results: Subfolders for results by covariates included, these were used for pipeline configuration
-		* `...5GenesPerChunk`: final complete cis-eQTL results (switiching to CSD3 meant a 12 hour limit on jobs, necessitating diving the task into 5-gene chunks.)
+	* **results**: Subfolders for results by covariates included, these were used for pipeline configuration
+		* **...5GenesPerChunk**: final complete cis-eQTL results from Limix (switiching to CSD3 meant a 12 hour limit on jobs, necessitating diving the task into 5-gene chunks).
 * **02_trans_eqtl_mapping**: preliminary tests of LIMIX trans-eQTL mapping. Abandoned.
 * **03_tensorqtl**: Initially testing for tensorQTL, evolved into full results.
-	* Results
+	* results: eQTLs mapped using TensorQTL from the command line
+		* python_module_method: eQTLs mapped using TensorQTL as a module loaded within python. This worked more consistently. Files are named by covariates adjusted for. 'cis' refers to the output from `map_cis`, which gives the lead SNP for each genetic feature. 'cis_nominal' is the output from `map_nominal` which outputs a p-value for every SNP-phenotype pair, but does not correct for multiple testing. Applying the `pval_nominal_threshold` from cis to the pvalues from cis_nominal allows identification of eSNPs within a significant eGene.
+		
 
 Note: No cleanup of files has been done. It is my view that once a finalised set of TensorQTL eQTLs results is available, there is no reason to retain the old results, but I leave this decsion to whoever takes over the project. 
