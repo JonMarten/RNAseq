@@ -55,3 +55,6 @@ Note: As of 29/7/2020 the trans scripts are untested, but I have historically ha
 ## Files
 All files on CSD3 are currently located in the project folder, `/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/` (i.e. not in the GWASqc folder, since they're not yet finalised).
 
+Where possible, file names are intuitive, but broad folder contents are as follows:
+* **00_testing**: 
+
