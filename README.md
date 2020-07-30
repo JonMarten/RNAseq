@@ -82,7 +82,7 @@ Where possible, file names are intuitive, but folder contents are broadly as fol
 * **cram_files**: limited number of CRAM files for sample swap testing.
 * **eQTLgen**: Downloaded eQTL results from eQTLgen for positive control tests
 * **globus_phase2**: Initial download of phase II data from globus
-* **globus_phase2_recalled**: Most up-to-date download of phase I and II data from globus. **NOTE: This is not all the data. A lot remains omn the Sanger system due to file sizes.**
+* **globus_phase2_recalled**: Most up-to-date download of phase I and II data from globus. **NOTE: This is not all the data. A lot remains on the Sanger system due to file sizes.**
 * **hipsci_pipeline**: Marc Jan Bonder's Limix pipeline
 * **matrix_eQTL**: Artika's Phase I matrix eQTL results for comparison purposes
 * **mediation**: Tests of mediation analysis code
