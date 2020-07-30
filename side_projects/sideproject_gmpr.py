@@ -34,17 +34,17 @@ gmpr_variant_df = gmpr_variant_df[gmpr_variant_df['chrom'].notnull()]
 # Call cis-eQTLs
 cis_df = cis.map_cis(gmpr_genotype_df, gmpr_variant_df, phenotype_df, phenotype_pos_df, covariates_df)
 tensorqtl.calculate_qvalues(cis_df, qvalue_lambda=0.85)
-cis_df.to_csv(outpath + "tensorqtl_cis_cisPerGene_chr" + chr + ".csv", index=False, index_label = "Phenotype")
+cis_df.to_csv(outpath + "tensorqtl_cis_cisPerGene_chr" + chr + ".csv", index=True, index_label = "Phenotype")
 
 # Cis nominal mapping
-cisnom_df = cis.map_nominal(gmpr_genotype_df, gmpr_variant_df, phenotype_df, phenotype_pos_df, covariates_df, prefix=outpath + "tensorqtl_cis_MAF0.005_cisNominal_chr" + chr)
+cisnom_df = cis.map_nominal(gmpr_genotype_df, gmpr_variant_df, phenotype_df, phenotype_pos_df, covariates_df, prefix=outpath + "tensorqtl_cis_cisNominal_chr" + chr)
 cisnom_df2 = pd.read_parquet(outpath + "tensorqtl_cis_cisNominal_chr6.cis_qtl_pairs.6.parquet")
 cisnom_df2.to_csv(outpath + "tensorqtl_cis_cisNominal_chr6.cis_qtl_pairs.6.csv", index = False)
-
-# Conditional analysis
-indep_df = cis.map_independent(gmpr_genotype_df, gmpr_variant_df, cis_df, phenotype_df, phenotype_pos_df, covariates_df, nperm=10000)
-indep_df.to_csv(outpath + "tensorqtl_cis_cisIndependent_chr" + chr + ".csv", index=True, index_label = "Phenotype")
 
 # Call trans-eQTLs
 trans_min_df = trans.map_trans(gmpr_genotype_df, gw_phenotype_df, covariates_df, return_sparse=True)
 trans_min_df.to_csv(outpath + "tensorqtl_trans.csv", index = False)
+
+# Conditional cis-analysis (may time out!)
+#indep_df = cis.map_independent(gmpr_genotype_df, gmpr_variant_df, cis_df, phenotype_df, phenotype_pos_df, covariates_df, nperm=10000)
+#indep_df.to_csv(outpath + "tensorqtl_cis_cisIndependent_chr" + chr + ".csv", index=True, index_label = "Phenotype")
