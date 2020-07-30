@@ -55,6 +55,9 @@ Note: As of 29/7/2020 the trans scripts are untested, but I have historically ha
 
 ## Files
 All files on CSD3 are currently located in the project folder, `/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/` (i.e. not in the GWASqc folder, since they're not yet finalised).
+***
+**The most up-to-date analysis files are located in `analysis/04_phase2_full_analysis`. It's unlikely anything outside this will be hugely relevant.
+***
 
 Where possible, file names are intuitive, but folder contents are broadly as follows:
 * **analysis**: files for the main eQTL mapping analysis
