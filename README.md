@@ -57,15 +57,32 @@ Note: As of 29/7/2020 the trans scripts are untested, but I have historically ha
 All files on CSD3 are currently located in the project folder, `/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/` (i.e. not in the GWASqc folder, since they're not yet finalised).
 
 Where possible, file names are intuitive, but folder contents are broadly as follows:
-* **00_testing**: Early tests of the Limix pipeline, mostly around getting things working
-* **01_cis_eqtl_mapping**: Limix pipeline cis-eQTL mapping in phase I samples.
-	* **results**: Subfolders for results by covariates included, these were used for pipeline configuration
-		* **...5GenesPerChunk**: final complete cis-eQTL results from Limix (switiching to CSD3 meant a 12 hour limit on jobs, necessitating diving the task into 5-gene chunks).
-* **02_trans_eqtl_mapping**: preliminary tests of LIMIX trans-eQTL mapping. Abandoned.
-* **03_tensorqtl**: Initially testing for tensorQTL, evolved into full phase I results.
-	* **results**: eQTLs mapped using TensorQTL from the command line
-		* **python_module_method**: eQTLs mapped using TensorQTL as a module loaded within python. This worked more consistently. Files are named by covariates adjusted for. 'cis' refers to the output from `map_cis`, which gives the lead SNP for each genetic feature. 'cis_nominal' is the output from `map_nominal` which outputs a p-value for every SNP-phenotype pair, but does not correct for multiple testing. Applying the `pval_nominal_threshold` from cis to the pvalues from cis_nominal allows identification of eSNPs within a significant eGene.
-* **04_phase2_full_analysis**: Folder for latest results using recalled phase I & II samples together for a total of ~4k
-	* **phenotypes**, **covariates**, **genotypes**: input files for TensorQTL. Analysis-ready files are in the root folder, with raw files in **raw** and files generated during processing in **processed**.
+* **analysis**: files for the main eQTL mapping analysis
+	* **00_testing**: Early tests of the Limix pipeline, mostly around getting things working
+	* **01_cis_eqtl_mapping**: Limix pipeline cis-eQTL mapping in phase I samples. Some of the subfolders here were originally under the root folder, but have been moved. This will have broken some file paths.
+		* **GENETIC_DATA**: (moved from root) genotype data, lifted over from b37 to b38.
+		* **genetic_PCs**: (moved from root) genetic PCs for use as covariates
+		* **results**: Subfolders for results by covariates included, these were used for pipeline configuration
+			* **...5GenesPerChunk**: final complete cis-eQTL results from Limix (switiching to CSD3 meant a 12 hour limit on jobs, necessitating diving the task into 5-gene chunks).
+	* **02_trans_eqtl_mapping**: preliminary tests of LIMIX trans-eQTL mapping. Abandoned.
+	* **03_tensorqtl**: Initially testing for tensorQTL, evolved into full phase I results.
+		* **results**: eQTLs mapped using TensorQTL from the command line
+			* **python_module_method**: eQTLs mapped using TensorQTL as a module loaded within python. This worked more consistently. Files are named by covariates adjusted for. 'cis' refers to the output from `map_cis`, which gives the lead SNP for each genetic feature. 'cis_nominal' is the output from `map_nominal` which outputs a p-value for every SNP-phenotype pair, but does not correct for multiple testing. Applying the `pval_nominal_threshold` from cis to the pvalues from cis_nominal allows identification of eSNPs within a significant eGene.
+	* **04_phase2_full_analysis**: Folder for latest results using recalled phase I & II samples together for a total of ~4k
+		* **phenotypes**, **covariates**, **genotypes**: input files for TensorQTL. Analysis-ready files are in the root folder, with raw files in **raw** and files generated during processing in **processed**.
+		* **results**: cis and trans eQTLs stored in separate folders. Format is as above. Parquet files can be read into python with `pd.read_parquet()`
+		* **side_projects**: data from related analyses done on an ad hoc basis.
+	* **05_sv_analysis**: structural variant data for INTERVAL. This was indended for testing in TensorQTL but I ran out of time. Eugene Gardener has expresssed an interest in doing the analysis itself.
+* **covid-19**: the short-term ACE2 analysis done for Adam Butterworth. Quick and dirty. Associated scripts are in the [covid19](covid-19) folder 
+* **cram_files**: limited number of CRAM files for sample swap testing.
+* **eQTLgen**: Downloaded eQTL results from eQTLgen for positive control tests
+* **globus_phase2**: Initial download of phase II data from globus
+* **globus_phase2_recalled**: Most up-to-date download of phase I and II data from globus. **NOTE: This is not all the data. A lot remains omn the Sanger system due to file sizes.**
+* **hipsci_pipeline**: Marc Jan Bonder's Limix pipeline
+* **matrix_eQTL**: Artika's Phase I matrix eQTL results for comparison purposes
+* **mediation**: Tests of mediation analysis code
+* **RNAseq**: Backup of orignal project folder from cardio cluster
+* **scripts**: Analysis scripts, synced to this repository
+* **vep**: Downloaded files from Enseml Variant Effect Predictor. Never quite got this working, sadly. 
 
 Note: No cleanup of files has been done. It is my view that once a finalised set of TensorQTL eQTLs results is available, there is no reason to retain the old results, but I leave this decsion to whoever takes over the project. 
