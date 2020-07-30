@@ -43,6 +43,8 @@ ChrX files were created as part of the [COVID-19 subproject](covid-19). The file
 ## Pipeline
 Initial cis-eQTL mapping was performed using the [Limix Pipeline](01_limix_pipeline). Experimental trans-eQTL mapping trialed in Limix, but this was switched to TensorQTL, which has been used for all subsequent analyses.
 
+Scripts for generating [covariate](covariates) and [genotype](genotypes) input files are in their own subfolders, please refer to the readme files for details.
+
 Current-generation scripts are named with `3_#` prefix, for the third iteration of the analysis pipeline. 
 Scripts are as follows:
 * [3_0_make_annotation_file_autosomes_plus_x.R](3_0_make_annotation_file_autosomes_plus_x.R): Converts BioMart annotation file into the right format for the next step.
