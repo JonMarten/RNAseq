@@ -3,11 +3,11 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
 #SBATCH -J cis_eQTL
-#SBATCH -A PAUL-SL3-GPU
-#SBATCH --time=12:00:00
-#SBATCH --nodes=2
-#SBATCH --ntasks=4
-#SBATCH --gres=gpu:4
+#SBATCH -A INOUYE-SL2-GPU
+#SBATCH --time=0:30:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --gres=gpu:1
 #SBATCH -p pascal
 
 #! ############################################################

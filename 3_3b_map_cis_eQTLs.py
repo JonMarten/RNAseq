@@ -33,9 +33,9 @@ cisnom_df = cis.map_nominal(genotype_df, variant_df, phenotype_df, phenotype_pos
 cisnom_df2 = pd.read_parquet(outpath + "tensorqtl_cis_MAF0.005_cisNominal_chr" + chr + ".cis_qtl_pairs." + chr + ".parquet")
 cisnom_df2.to_csv(outpath + "tensorqtl_cis_MAF0.005_cisNominal_chr" + chr ".csv", index = False)
 
-# Conditional analysis
-indep_df = cis.map_independent(genotype_df, variant_df, cis_df, phenotype_df, phenotype_pos_df, covariates_df, nperm=10000)
-indep_df.to_csv(outpath + "tensorqtl_cis_MAF0.005_cisIndependent_chr" + chr + ".csv", index=True, index_label = "Phenotype")
+# Conditional analysis # commented out because it times out
+#indep_df = cis.map_independent(genotype_df, variant_df, cis_df, phenotype_df, phenotype_pos_df, covariates_df, nperm=10000)
+#indep_df.to_csv(outpath + "tensorqtl_cis_MAF0.005_cisIndependent_chr" + chr + ".csv", index=True, index_label = "Phenotype")
 
 # GxE
 #interaction_s = pd.read_csv("/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/03_tensorqtl/covariates/INTERVAL_RNAseq_phase1_GxE_neutPCT.txt", sep = "\t", index_col=0, squeeze = True).T
