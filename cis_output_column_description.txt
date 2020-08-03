@@ -1,0 +1,19 @@
+Phenotype				Feature ID
+num_var					Number of SNPs in cis window
+beta_shape1				These parameters are related to the beta distribution used to correct for multiple testing within the gene, see FastQTL method for details			
+beta_shape2				These parameters are related to the beta distribution used to correct for multiple testing within the gene, see FastQTL method for details
+true_df					These parameters are related to the beta distribution used to correct for multiple testing within the gene, see FastQTL method for details
+pval_true_df			These parameters are related to the beta distribution used to correct for multiple testing within the gene, see FastQTL method for details
+variant_id				SNP ID
+tss_distance			Distance of SNP from TSS
+ma_samples				# samples with minor allele
+ma_count				# minor alleles 
+maf						MAF
+ref_factor				I think this is an internal tensorQTL parameter used to record whether or not the reference allele is the minor allele
+pval_nominal			P-value for SNP-phenotype association before any local or global correction for multiple testing
+slope					effect size
+slope_se				effect standard error
+pval_perm				A first permutation p-value directly obtained from the permutations with the direct method. This is basically a corrected version of the nominal p-value that accounts for the fact that multiple variants are tested per molecular phenotype. See FastQTL for details
+pval_beta				A second permutation p-value obtained via beta approximation. This is the one to use for downstream analysis
+qval					Adjusted pval_beta, corrected for multiple testing over all genes by r qvalue function
+pval_nominal_threshold	Threshold for significance within gene. Apply this to cis_nominal output to get the list of significant eSNPs
