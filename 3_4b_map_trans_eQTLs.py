@@ -23,5 +23,5 @@ genotype_df = pd.DataFrame(pr.load_genotypes(), index=pr.bim['snp'], columns=pr.
 variant_df = pr.bim.set_index('snp')[['chrom', 'pos']]
 
 # Call trans-eQTLs
-trans_min_df = trans.map_trans(genotype_df, phenotype_df, covariates_df, return_sparse=True, maf_threshold = 0.005)
-trans_min_df.to_csv(outpath + "tensorqtl_trans_MAF0.005_chr" + str(i) + ".csv")
+trans_df = trans.map_trans(genotype_df, phenotype_df, covariates_df, return_sparse=True, maf_threshold = 0.005)
+trans_df.to_csv(outpath + "tensorqtl_trans_MAF0.005_chr" + chr + ".csv")
