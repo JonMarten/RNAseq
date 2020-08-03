@@ -13,11 +13,11 @@ phenotype_bed_file = path + "phenotypes/INTERVAL_RNAseq_phase1-2_filteredSamples
 covariates_file = path + "covariates/INTERVAL_RNAseq_phase1-2_fullcovariates_foranalysis.txt"
 plink_prefix_path = path + "genotypes/INTERVAL_RNAseq_Phase1-2_imputed_b38_biallelic_MAF0.005_chr" + chr
 
-phenotype_df, phenotype_pos_df = tensorqtl.read_phenotype_bed(phenotype_bed_file)
+all_phenotype_df, all_phenotype_pos_df = tensorqtl.read_phenotype_bed(phenotype_bed_file)
 
 # Limit to 3 phenotypes to test conditional analysis
-phenotype_df = phenotype_df[0:3]
-phenotype_pos_df = phenotype_pos_df[0:3]
+phenotype_df = all_phenotype_df[0:20]
+phenotype_pos_df = all_phenotype_pos_df[0:20]
 
 covariates_df = pd.read_csv(covariates_file, sep='\t', index_col=0).T  # samples x covariates
 
