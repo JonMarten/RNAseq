@@ -46,7 +46,7 @@ bed2 <- bed %>%
 fwrite(bed, sep = "\t", file = "INTERVAL_RNAseq_phase1-2_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis.bed")
 
 # Output per-chromosome phenotype files for trans analysis
-for(i in 1:23) {
+for(i in 1:22) {
   bedChr <- bed %>%
     rename(Chr = "#Chr") %>%
     filter(Chr == i)%>%
@@ -54,3 +54,18 @@ for(i in 1:23) {
   fwrite(bedChr, sep = "\t", file = paste0("INTERVAL_RNAseq_phase1-2_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis_chr",i,".bed"))
   rm(bedChr)
 }
+
+# Output ChrX phenotype file - 2 fewer ids in genotype data due to Savita's filtering
+
+i = 23 
+bedChr <- bed %>%
+  rename(Chr = "#Chr") %>%
+  filter(Chr == i)%>%
+  rename("#Chr" = Chr)
+
+xfam <- fread("../genotypes/INTERVAL_RNAseq_Phase1-2_imputed_b38_biallelic_MAF0.005_chr23.fam", data.table = F)
+xfam <- xfam %>%
+  mutate(id = as.character(V1))
+idcols <- xfam$id[which(xfam$id %in% names(bedChr))]
+bedChr <- bedChr %>% select("#Chr", start, end, ID, idcols)
+fwrite(bedChr, sep = "\t", file = paste0("INTERVAL_RNAseq_phase1-2_filteredSamplesGenes_TMMNormalised_FPKM_Counts_foranalysis_chr",i,".bed"))

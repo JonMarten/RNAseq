@@ -39,6 +39,10 @@ The scripts in the [genotypes](genotypes) subfolder describe the filters applied
 
 ChrX files were created as part of the [COVID-19 subproject](covid-19). The files `INTERVAL_chrX_merged_cleaned_RNAseq_phase1-2_b38_rsids_deduplicated_MAF0.005.*` were copied to `analysis/04_phase2_full_analysis/genotypes` and renamed `INTERVAL_RNAseq_Phase1-2_imputed_b38_biallelic_MAF0.005_chr23.*`
 
+# Analysis
+
+## Cis-mapping
+
 
 ## Pipeline
 Initial cis-eQTL mapping was performed using the [Limix Pipeline](01_limix_pipeline). Experimental trans-eQTL mapping trialed in Limix, but this was switched to TensorQTL, which has been used for all subsequent analyses.
@@ -50,7 +54,7 @@ Scripts are as follows:
 * [3_0_make_annotation_file_autosomes_plus_x.R](3_0_make_annotation_file_autosomes_plus_x.R): Converts BioMart annotation file into the right format for the next step.
 * [3_1_make_tensorQTL_input_phase2.R](3_1_make_tensorQTL_input_phase2.R): Output phenotype `.bed` files for use in TensorQTL.
 * [3_2_index_bed.sh](3_2_index_bed.sh): Compress and index `.bed` files from previous step.
-* [3_3a_map_cis_eQTLs_submissions_script.sh](3_3a_map_cis_eQTLs_submissions_script.sh) and [3_3b_map_cis_eQTLs.py](3_3b_map_cis_eQTLs.py): The python script that runs the cis-eQTL mapping in TensorQTL, and the shell script for submission to CSD3.
+* [3_3a_map_cis_eQTLs_submissions_script.sh](3_3a_map_cis_eQTLs_submissions_script.sh) and [3_3b_map_cis_eQTLs.py](3_3b_map_cis_eQTLs.py): The python script that runs the cis-eQTL mapping in TensorQTL, and the shell script for submission to CSD3. Cis window is definied as +-1Mb from the TSS of the gene - this is the default for TensorQTL but can be modified by specifying a value for `window` in `map_cis` or `map_nominal`.
 * [3_4a_map_trans_eQTLs_submissions_script.sh](3_4a_map_trans_eQTLs_submissions_script.sh) and [3_4b_map_trans_eQTLs.py](3_4b_map_trans_eQTLs.py): The corresponding scripts for submitting trans-eQTL mapping. 
 
 Note: As of 29/7/2020 the trans scripts are untested, but I have historically had errors with trans mapping detailed [here](https://github.com/broadinstitute/tensorqtl/issues/13). These were mitigated for the COVID-19 analysis by expanding the window size to encompass all SNPs in one go, but this may not be possible for genome-wide analysis.
