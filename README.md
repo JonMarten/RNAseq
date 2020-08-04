@@ -39,11 +39,6 @@ The scripts in the [genotypes](genotypes) subfolder describe the filters applied
 
 ChrX files were created as part of the [COVID-19 subproject](covid-19). The files `INTERVAL_chrX_merged_cleaned_RNAseq_phase1-2_b38_rsids_deduplicated_MAF0.005.*` were copied to `analysis/04_phase2_full_analysis/genotypes` and renamed `INTERVAL_RNAseq_Phase1-2_imputed_b38_biallelic_MAF0.005_chr23.*`
 
-# Analysis
-
-## Cis-mapping
-
-
 ## Pipeline
 Initial cis-eQTL mapping was performed using the [Limix Pipeline](01_limix_pipeline). Experimental trans-eQTL mapping trialed in Limix, but this was switched to TensorQTL, which has been used for all subsequent analyses.
 
@@ -57,7 +52,7 @@ Scripts are as follows:
 * [3_3a_map_cis_eQTLs_submissions_script.sh](3_3a_map_cis_eQTLs_submissions_script.sh) and [3_3b_map_cis_eQTLs.py](3_3b_map_cis_eQTLs.py): The python script that runs the cis-eQTL mapping in TensorQTL, and the shell script for submission to CSD3. Cis window is definied as +-1Mb from the TSS of the gene - this is the default for TensorQTL but can be modified by specifying a value for `window` in `map_cis` or `map_nominal`.
 * [3_4a_map_trans_eQTLs_submissions_script.sh](3_4a_map_trans_eQTLs_submissions_script.sh) and [3_4b_map_trans_eQTLs.py](3_4b_map_trans_eQTLs.py): The corresponding scripts for submitting trans-eQTL mapping. 
 
-Note: As of 29/7/2020 the trans scripts are untested, but I have historically had errors with trans mapping detailed [here](https://github.com/broadinstitute/tensorqtl/issues/13). These were mitigated for the COVID-19 analysis by expanding the window size to encompass all SNPs in one go, but this may not be possible for genome-wide analysis.
+Note: Chr X was imputed by Savita for the COVID-19 projects. Fewer individuals are included in the genotype data (I suspect due to call-rate filtering being applied to ChrX only rather than genome-wide). Consequently the sample size is 4038 for ChrX compared to 4140 for the autosomes. It might be possible to find out what happened to these individuals but you'd have to ask Savita, and right now, I don't have time. 
 
 ## Files
 All files on CSD3 are currently located in the project folder, `/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/` (i.e. not in the GWASqc folder, since they're not yet finalised).
@@ -79,7 +74,12 @@ Where possible, file names are intuitive, but folder contents are broadly as fol
 			* **python_module_method**: eQTLs mapped using TensorQTL as a module loaded within python. This worked more consistently. Files are named by covariates adjusted for. 'cis' refers to the output from `map_cis`, which gives the lead SNP for each genetic feature. 'cis_nominal' is the output from `map_nominal` which outputs a p-value for every SNP-phenotype pair, but does not correct for multiple testing. Applying the `pval_nominal_threshold` from cis to the pvalues from cis_nominal allows identification of eSNPs within a significant eGene.
 	* **04_phase2_full_analysis**: Folder for latest results using recalled phase I & II samples together for a total of ~4k
 		* **phenotypes**, **covariates**, **genotypes**: input files for TensorQTL. Analysis-ready files are in the root folder, with raw files in **raw** and files generated during processing in **processed**.
-		* **results**: cis and trans eQTLs stored in separate folders. Format is as above. Parquet files can be read into python with `pd.read_parquet()`
+		* **results**: cis and trans eQTLs stored in separate folders. Files are stored by chromosome:
+			* **cis**:
+				* **tensorqtl_cis_MAF0.005_cisPerGene_chr[#].csv**: TensorQTL output from `map_cis`.
+				* **tensorqtl_cis_MAF0.005_cisNominal_chr[#].csv**: TensorQTL output from `map_nominal`.
+				* **tensorqtl_cis_MAF0.005_cis_chr[#]_significant_eGenes.csv**: `map_cis` output filtered to significant eGenes only
+				* **tensorqtl_cis_MAF0.005_cis_chr[#]_significant_eSNPs.csv**: `map_nominal` output filtered by pval_nominal_threshold for significant eSNPs in significant eGenes
 		* **side_projects**: data from related analyses done on an ad hoc basis.
 	* **05_sv_analysis**: structural variant data for INTERVAL. This was indended for testing in TensorQTL but I ran out of time. Eugene Gardener has expresssed an interest in doing the analysis itself.
 * **covid-19**: the short-term ACE2 analysis done for Adam Butterworth. Quick and dirty. Associated scripts are in the [covid19](covid-19) folder 
