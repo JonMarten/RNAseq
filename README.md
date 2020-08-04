@@ -64,11 +64,12 @@ These files are detailed below:
 	* **phenotypes**, **covariates**, **genotypes**: input files for TensorQTL. Analysis-ready files are in the root folder, with raw files in **raw** and files generated during processing in **processed**.
 	* **results**: cis and trans eQTLs stored in separate folders. Files are stored by chromosome:
 		* **cis**:
-			* **tensorqtl_cis_MAF0.005_cisPerGene_chr[#].csv**: TensorQTL output from `map_cis`.
-			* **tensorqtl_cis_MAF0.005_cisNominal_chr[#].csv**: TensorQTL output from `map_nominal`.
-			* **tensorqtl_cis_MAF0.005_cis_chr[#]_significant_eGenes.csv**: `map_cis` output filtered to significant eGenes only
-			* **tensorqtl_cis_MAF0.005_cis_chr[#]_significant_eSNPs.csv**: `map_nominal` output filtered by pval_nominal_threshold for significant eSNPs in significant eGenes
+			* tensorqtl_cis_MAF0.005_cisPerGene_chr[#].csv: TensorQTL output from `map_cis`. Column names are detailed [here](cis_output_column_description.txt).
+			* tensorqtl_cis_MAF0.005_cisNominal_chr[#].csv: TensorQTL output from `map_nominal`.
+			* tensorqtl_cis_MAF0.005_cis_chr[#]_significant_eGenes.csv: `map_cis` output filtered to significant eGenes only
+			* tensorqtl_cis_MAF0.005_cis_chr[#]_significant_eSNPs.csv: `map_nominal` output filtered by pval_nominal_threshold for significant eSNPs in significant eGenes
 		* **trans**:
+			* tensorqtl_trans_MAF0.005_chr[#].csv: output from `map_trans`. 
 	* **side_projects**: data from related analyses done on an ad hoc basis.
 ***************************************
 
