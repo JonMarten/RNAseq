@@ -56,10 +56,9 @@ Note: Chr X was imputed by Savita for the COVID-19 projects. Fewer individuals a
 
 ## Files
 All files on CSD3 are currently located in the project folder, `/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/` (i.e. not in the GWASqc folder, since they're not yet finalised).
-***
+***************************************
 **The most up-to-date analysis files are located in `analysis/04_phase2_full_analysis`. It's unlikely anything outside this will be hugely relevant.**
 These files are detailed below:
-***
 
 * **04_phase2_full_analysis**: Folder for latest results using recalled phase I & II samples together for a total of ~4k
 	* **phenotypes**, **covariates**, **genotypes**: input files for TensorQTL. Analysis-ready files are in the root folder, with raw files in **raw** and files generated during processing in **processed**.
@@ -71,8 +70,7 @@ These files are detailed below:
 			* **tensorqtl_cis_MAF0.005_cis_chr[#]_significant_eSNPs.csv**: `map_nominal` output filtered by pval_nominal_threshold for significant eSNPs in significant eGenes
 		* **trans**:
 	* **side_projects**: data from related analyses done on an ad hoc basis.
-
-
+***************************************
 
 Where possible, file names are intuitive, but folder contents are broadly as follows:
 * **analysis**: files for the main eQTL mapping analysis
