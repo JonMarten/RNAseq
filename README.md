@@ -58,7 +58,21 @@ Note: Chr X was imputed by Savita for the COVID-19 projects. Fewer individuals a
 All files on CSD3 are currently located in the project folder, `/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/` (i.e. not in the GWASqc folder, since they're not yet finalised).
 ***
 **The most up-to-date analysis files are located in `analysis/04_phase2_full_analysis`. It's unlikely anything outside this will be hugely relevant.**
+These files are detailed below:
 ***
+
+* **04_phase2_full_analysis**: Folder for latest results using recalled phase I & II samples together for a total of ~4k
+	* **phenotypes**, **covariates**, **genotypes**: input files for TensorQTL. Analysis-ready files are in the root folder, with raw files in **raw** and files generated during processing in **processed**.
+	* **results**: cis and trans eQTLs stored in separate folders. Files are stored by chromosome:
+		* **cis**:
+			* **tensorqtl_cis_MAF0.005_cisPerGene_chr[#].csv**: TensorQTL output from `map_cis`.
+			* **tensorqtl_cis_MAF0.005_cisNominal_chr[#].csv**: TensorQTL output from `map_nominal`.
+			* **tensorqtl_cis_MAF0.005_cis_chr[#]_significant_eGenes.csv**: `map_cis` output filtered to significant eGenes only
+			* **tensorqtl_cis_MAF0.005_cis_chr[#]_significant_eSNPs.csv**: `map_nominal` output filtered by pval_nominal_threshold for significant eSNPs in significant eGenes
+		* **trans**:
+	* **side_projects**: data from related analyses done on an ad hoc basis.
+
+
 
 Where possible, file names are intuitive, but folder contents are broadly as follows:
 * **analysis**: files for the main eQTL mapping analysis
@@ -72,15 +86,7 @@ Where possible, file names are intuitive, but folder contents are broadly as fol
 	* **03_tensorqtl**: Initially testing for tensorQTL, evolved into full phase I results.
 		* **results**: eQTLs mapped using TensorQTL from the command line
 			* **python_module_method**: eQTLs mapped using TensorQTL as a module loaded within python. This worked more consistently. Files are named by covariates adjusted for. 'cis' refers to the output from `map_cis`, which gives the lead SNP for each genetic feature. 'cis_nominal' is the output from `map_nominal` which outputs a p-value for every SNP-phenotype pair, but does not correct for multiple testing. Applying the `pval_nominal_threshold` from cis to the pvalues from cis_nominal allows identification of eSNPs within a significant eGene.
-	* **04_phase2_full_analysis**: Folder for latest results using recalled phase I & II samples together for a total of ~4k
-		* **phenotypes**, **covariates**, **genotypes**: input files for TensorQTL. Analysis-ready files are in the root folder, with raw files in **raw** and files generated during processing in **processed**.
-		* **results**: cis and trans eQTLs stored in separate folders. Files are stored by chromosome:
-			* **cis**:
-				* **tensorqtl_cis_MAF0.005_cisPerGene_chr[#].csv**: TensorQTL output from `map_cis`.
-				* **tensorqtl_cis_MAF0.005_cisNominal_chr[#].csv**: TensorQTL output from `map_nominal`.
-				* **tensorqtl_cis_MAF0.005_cis_chr[#]_significant_eGenes.csv**: `map_cis` output filtered to significant eGenes only
-				* **tensorqtl_cis_MAF0.005_cis_chr[#]_significant_eSNPs.csv**: `map_nominal` output filtered by pval_nominal_threshold for significant eSNPs in significant eGenes
-		* **side_projects**: data from related analyses done on an ad hoc basis.
+	* **04_phase2_full_analysis**: see above
 	* **05_sv_analysis**: structural variant data for INTERVAL. This was indended for testing in TensorQTL but I ran out of time. Eugene Gardener has expresssed an interest in doing the analysis itself.
 * **covid-19**: the short-term ACE2 analysis done for Adam Butterworth. Quick and dirty. Associated scripts are in the [covid19](covid-19) folder 
 * **cram_files**: limited number of CRAM files for sample swap testing.
