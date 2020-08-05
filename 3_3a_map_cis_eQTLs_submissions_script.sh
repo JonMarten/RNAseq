@@ -4,7 +4,7 @@
 #SBATCH --mail-user=jm2294@medschl.cam.ac.uk
 #SBATCH -J cis_eQTL
 #SBATCH -A INOUYE-SL2-GPU
-#SBATCH --time=0:30:00
+#SBATCH --time=0:15:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --gres=gpu:1
