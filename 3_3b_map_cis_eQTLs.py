@@ -34,7 +34,7 @@ variant_df = pr.bim.set_index('snp')[['chrom', 'pos']]
 
 # Cis gene-level mapping
 cis_df = cis.map_cis(genotype_df, variant_df, phenotype_df, phenotype_pos_df, covariates_df)
-#tensorqtl.calculate_qvalues(cis_df, qvalue_lambda=0.85) This implementation of FDR correction crashes for chr 9, 18, 22. Will implement directly in R instead
+tensorqtl.calculate_qvalues(cis_df, qvalue_lambda=0) # Lambda of 0 is equivalent to BH correction. Prevents crashes for chr 9, 18, 22. 
 cis_df.to_csv(outpath + "tensorqtl_cis_MAF0.005_cisPerGene_chr" + chr + ".csv", index=True, index_label = "Phenotype")
 
 # Cis nominal mapping
