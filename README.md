@@ -79,6 +79,7 @@ These files are detailed below:
 			* tensorqtl_cis_MAF0.005_cisNominal_chr[#].csv: TensorQTL output from `map_nominal`.
 			* tensorqtl_cis_MAF0.005_cis_chr[#]_significant_eGenes.csv: `map_cis` output filtered to significant eGenes only
 			* tensorqtl_cis_MAF0.005_cis_chr[#]_significant_eSNPs.csv: `map_nominal` output filtered by pval_nominal_threshold for significant eSNPs in significant eGenes
+			* tensorqtl_cis_MAF0.005_cis_chr22_eQTLgen_comparison.csv & chr22_eqtlgen_zscore_comparison.png: comparison of chr22 cis results to eQTLgen results. Generated with [this](3_6_compare_tensorqtl_eQTLgen.R) script.
 		* **trans**:
 			* tensorqtl_trans_MAF0.005_chr[#].csv: output from `map_trans`. 
 	* **side_projects**: data from related analyses done on an ad hoc basis.
