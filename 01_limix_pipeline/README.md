@@ -1,5 +1,5 @@
 ### Covariates
-Covariate data is stored in a QC-ready file `INTERVAL_RNA_batch1_5_covariates_release31MAY2019.csv`. This file includes technical covariates from the RNA sequencing run as well as age and sysmex data from the same timepoint as the blood sample used for RNA seq. Derivation of this file is detailed [here](https://github.com/JonMarten/RNAseq/blob/master/covariates/README.md#phenotypes-in-the-interval-study).
+Covariate data is stored in a QC-ready file `INTERVAL_RNA_batch1_5_covariates_release31MAY2019.csv`. This file includes technical covariates from the RNA sequencing run as well as age and sysmex data from the same timepoint as the blood sample used for RNA seq.
 
 ### Genotype
 The 'master' bgen files are stored in `/scratch/curated_genetic_data/interval/imputed/impute_[CHR]_interval.bgen`, symlinked in `/home/jm2294/GENETIC_DATA/INTERVAL/master`
