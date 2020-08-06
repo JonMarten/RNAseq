@@ -44,6 +44,12 @@ Initial cis-eQTL mapping was performed using the [Limix Pipeline](01_limix_pipel
 
 Scripts for generating [covariate](covariates) and [genotype](genotypes) input files are in their own subfolders, please refer to the readme files for details.
 
+### Configuration
+TensorQTL is a python package and is called as a module by python scripts. There is a command line implementation, but I have found it to be less reliable and less flexible.
+
+To ensure consistency, I have used a conda environment to load the required packages. The details of this environment are stored in [tensorQTL_env.yml](tensorQTL_env.yml). See [here](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file) for instructions on how to create a conda environment from a YAML file. It may be the case that the required version of TensorQTL is different to the one available on conda, in which case install directly from the [TensorQTL github page](https://github.com/broadinstitute/tensorqtl). **The scripts below will not work unless you have a conda environment called TensorQTL to load**. The name of the environment to be loaded can be changed but one way or another, you need the TensorQTL module installed for the analysis to run!
+
+### Scripts
 Current-generation scripts are named with `3_#` prefix, for the third iteration of the analysis pipeline. 
 Scripts are as follows:
 * [3_0_make_annotation_file_autosomes_plus_x.R](3_0_make_annotation_file_autosomes_plus_x.R): Converts BioMart annotation file into the right format for the next step.
@@ -51,6 +57,7 @@ Scripts are as follows:
 * [3_2_index_bed.sh](3_2_index_bed.sh): Compress and index `.bed` files from previous step.
 * [3_3a_map_cis_eQTLs_submissions_script.sh](3_3a_map_cis_eQTLs_submissions_script.sh) and [3_3b_map_cis_eQTLs.py](3_3b_map_cis_eQTLs.py): The python script that runs the cis-eQTL mapping in TensorQTL, and the shell script for submission to CSD3. Cis window is definied as +-1Mb from the TSS of the gene - this is the default for TensorQTL but can be modified by specifying a value for `window` in `map_cis` or `map_nominal`.
 * [3_4a_map_trans_eQTLs_submissions_script.sh](3_4a_map_trans_eQTLs_submissions_script.sh) and [3_4b_map_trans_eQTLs.py](3_4b_map_trans_eQTLs.py): The corresponding scripts for submitting trans-eQTL mapping. 
+* [3_5_call_cis_eSNPs.R](3_5_call_cis_eSNPs.R): annotate cis results with positions and allele information and call eGenes and eSNPs.
 
 Note: Chr X was imputed by Savita for the COVID-19 projects. Fewer individuals are included in the genotype data (I suspect due to call-rate filtering being applied to ChrX only rather than genome-wide). Consequently the sample size is 4038 for ChrX compared to 4140 for the autosomes. It might be possible to find out what happened to these individuals but you'd have to ask Savita, and right now, I don't have time. 
 
