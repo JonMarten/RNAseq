@@ -31,10 +31,12 @@ for(i in 1:23) {
   eSNPs <- data.frame()
   cat(paste0("\n\tGetting eSNPs for ", nrow(eGenes), " significant eGenes"))
   for(j in 1:nrow(eGenes)){
+    cat(".")
     feature <- eGenes$Phenotype[j]
     cisSNPs <- cis_nom %>% 
       filter(phenotype_id == feature) %>%
-      filter(pval_nominal <= cis$pval_nominal_threshold[j])
+      filter(!is.na(pval_nominal)) %>%
+      filter(pval_nominal <= eGenes$pval_nominal_threshold[j])
     eGenes$num_sig_eSNPs[j] <- nrow(cisSNPs)
     eSNPs <- rbind(eSNPs, cisSNPs)
     rm(feature, cisSNPs)
