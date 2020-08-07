@@ -80,9 +80,8 @@ These files are detailed below:
 	* **phenotypes**, **covariates**, **genotypes**: input files for TensorQTL. Analysis-ready files are in the root folder, with raw files in **raw** and files generated during processing in **processed**.
 	* **results**: cis and trans eQTLs stored in separate folders. Files are stored by chromosome:
 		* **cis**:
-			* tensorqtl_cis_MAF0.005_cisPerGene_chr[#].csv: TensorQTL output from `map_cis`. Column names are detailed [here](cis_output_column_description.txt).
-			* tensorqtl_cis_MAF0.005_cisPerGene_chr[#].csv: TensorQTL output from `map_cis`. Outputs a p-value for every SNP-phenotype pair, but does not correct for multiple testing. 
-			* tensorqtl_cis_MAF0.005_cisNominal_chr[#].csv: TensorQTL output from `map_nominal`. 
+			* tensorqtl_cis_MAF0.005_cisPerGene_chr[#].csv: TensorQTL output from `map_cis`. Lists the most significant variant for every phenotype. Column names are detailed [here](cis_output_column_description.txt).
+			* tensorqtl_cis_MAF0.005_cisNominal_chr[#].csv: TensorQTL output from `map_nominal`.  Outputs a p-value for every SNP-phenotype pair, but does not correct for multiple testing. 
 			* tensorqtl_cis_MAF0.005_cis_chr[#]_significant_eGenes.csv: `map_cis` output filtered to significant eGenes only
 			* tensorqtl_cis_MAF0.005_cis_chr[#]_significant_eSNPs.csv: `map_nominal` output filtered by pval_nominal_threshold for significant eSNPs in significant eGenes
 			* tensorqtl_cis_MAF0.005_cis_chr22_eQTLgen_comparison.csv & chr22_eqtlgen_zscore_comparison.png: comparison of chr22 cis results to eQTLgen results. Generated with [this](3_6_compare_tensorqtl_eQTLgen.R) script.
