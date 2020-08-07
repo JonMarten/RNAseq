@@ -1,12 +1,12 @@
 #!/bin/bash
 #SBATCH --job-name=plink_calc_PCs_benscript
 #SBATCH -p skylake-himem
-#SBATCH -A PAUL-SL3-CPU
+#		SBATCH -A PAUL-SL3-CPU
 #SBATCH --time=12:0:0
 #SBATCH --mem=15G
 #SBATCH --output=/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/logs/genotype_processing/plink_calc_PCs_%A.log
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=jm2294@medschl.cam.ac.uk
+#		SBATCH --mail-type=ALL
+#		SBATCH --mail-user=jm2294@medschl.cam.ac.uk
 
 
 #----------------------------------------------------------------------------------#

@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --output=/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/logs/tensorqtl_cis_%A_%a.log
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=jm2294@medschl.cam.ac.uk
+#     SBATCH --mail-type=ALL # remove spaces between # and sbatch to get email notifications of jobs running
+#     SBATCH --mail-user=jm2294@medschl.cam.ac.uk # remove spaces here and replace with your email address to get job notifications
 #SBATCH -J cis_eQTL
 #SBATCH -A INOUYE-SL2-GPU
 #SBATCH --time=0:15:00

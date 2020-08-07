@@ -3,10 +3,10 @@
 #SBATCH --mem 10G
 #SBATCH --time=12:0:0
 #SBATCH --output=/rds/project/jmmh2/rds-jmmh2-projects/interval_rna_seq/analysis/04_phase2_full_analysis/logs/genotype_processing/liftover_bgen_%A_%a.log
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=jm2294@medschl.cam.ac.uk
+#     	SBATCH --mail-type=ALL
+#     	SBATCH --mail-user=jm2294@medschl.cam.ac.uk
 #SBATCH --job-name=liftover_bgen
-#SBATCH -A PAUL-SL3-CPU
+#		SBATCH -A PAUL-SL3-CPU
 
 # Adapted from 05_make_small_bgen.sh. SNP filter lists are re-used from 02_generate_snp_ids.R
 
