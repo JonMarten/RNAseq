@@ -81,7 +81,8 @@ These files are detailed below:
 	* **results**: cis and trans eQTLs stored in separate folders. Files are stored by chromosome:
 		* **cis**:
 			* tensorqtl_cis_MAF0.005_cisPerGene_chr[#].csv: TensorQTL output from `map_cis`. Column names are detailed [here](cis_output_column_description.txt).
-			* tensorqtl_cis_MAF0.005_cisNominal_chr[#].csv: TensorQTL output from `map_nominal`.
+			* tensorqtl_cis_MAF0.005_cisPerGene_chr[#].csv: TensorQTL output from `map_cis`. Outputs a p-value for every SNP-phenotype pair, but does not correct for multiple testing. 
+			* tensorqtl_cis_MAF0.005_cisNominal_chr[#].csv: TensorQTL output from `map_nominal`. 
 			* tensorqtl_cis_MAF0.005_cis_chr[#]_significant_eGenes.csv: `map_cis` output filtered to significant eGenes only
 			* tensorqtl_cis_MAF0.005_cis_chr[#]_significant_eSNPs.csv: `map_nominal` output filtered by pval_nominal_threshold for significant eSNPs in significant eGenes
 			* tensorqtl_cis_MAF0.005_cis_chr22_eQTLgen_comparison.csv & chr22_eqtlgen_zscore_comparison.png: comparison of chr22 cis results to eQTLgen results. Generated with [this](3_6_compare_tensorqtl_eQTLgen.R) script.
@@ -101,8 +102,8 @@ Where possible, file names are intuitive, but folder contents are broadly as fol
 	* **02_trans_eqtl_mapping**: preliminary tests of LIMIX trans-eQTL mapping. Abandoned.
 	* **03_tensorqtl**: Initially testing for tensorQTL, evolved into full phase I results.
 		* **results**: eQTLs mapped using TensorQTL from the command line
-			* **python_module_method**: eQTLs mapped using TensorQTL as a module loaded within python. This worked more consistently. Files are named by covariates adjusted for. 'cis' refers to the output from `map_cis`, which gives the lead SNP for each genetic feature. 'cis_nominal' is the output from `map_nominal` which outputs a p-value for every SNP-phenotype pair, but does not correct for multiple testing. Applying the `pval_nominal_threshold` from cis to the pvalues from cis_nominal allows identification of eSNPs within a significant eGene.
-	* **04_phase2_full_analysis**: see above
+			* **python_module_method**: eQTLs mapped using TensorQTL as a module loaded within python. This worked more consistently. Files are named by covariates adjusted for. 
+	* **04_phase2_full_analysis**: see start of this section for details
 	* **05_sv_analysis**: structural variant data for INTERVAL. This was indended for testing in TensorQTL but I ran out of time. Eugene Gardener has expresssed an interest in doing the analysis itself.
 * **covid-19**: the short-term ACE2 analysis done for Adam Butterworth. Quick and dirty. Associated scripts are in the [covid19](covid-19) folder 
 * **cram_files**: limited number of CRAM files for sample swap testing.
