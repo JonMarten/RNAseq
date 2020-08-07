@@ -37,7 +37,7 @@ The Sysmex traits included as covariates were all the traits used in the [Astle 
 ### Genotype
 TensorQTL takes plink genotype format as input. This does mean imputed genotypes are hard-called, but I consider the trade off in speed to be worth it. 
 
-The scripts in the [genotypes](genotypes) subfolder describe the filters applied. Genetic PCs are calculated using [this script](genotypes/1_7_plink_get_PCs.sh) which is based on Ben's code from the SomaLogic analysis.
+The scripts in the [genotypes](genotypes) subfolder describe the filters applied - Hardy-Weinberg equilibrium exact test p-value below < 1e-6, genotype missingness > 0.05 and minor allele frequency < 0.5%. Genetic PCs are calculated using [this script](genotypes/1_7_plink_get_PCs.sh) which is based on Ben's code from the SomaLogic analysis.
 
 ChrX files were created as part of the [COVID-19 subproject](covid-19). The files `INTERVAL_chrX_merged_cleaned_RNAseq_phase1-2_b38_rsids_deduplicated_MAF0.005.*` were copied to `analysis/04_phase2_full_analysis/genotypes` and renamed `INTERVAL_RNAseq_Phase1-2_imputed_b38_biallelic_MAF0.005_chr23.*`
 
