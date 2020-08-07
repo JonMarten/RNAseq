@@ -42,6 +42,11 @@ The scripts in the [genotypes](genotypes) subfolder describe the filters applied
 ChrX files were created as part of the [COVID-19 subproject](covid-19). The files `INTERVAL_chrX_merged_cleaned_RNAseq_phase1-2_b38_rsids_deduplicated_MAF0.005.*` were copied to `analysis/04_phase2_full_analysis/genotypes` and renamed `INTERVAL_RNAseq_Phase1-2_imputed_b38_biallelic_MAF0.005_chr23.*`
 
 ## Pipeline
+
+The first thing to note is that most of these scripts are were run interactively, particularly the R scripts. In theory, they can all be run in using `Rscript` but this is untested in many cases. If it doesn't work, try copying the commands to an interactive R session. In any cases where submission to the cluster is necessary, the corresponding shell script is provided. 
+
+**NOTE: these scripts are configured for my own user account.** I've commented out the scripted `#SBATCH` parameters specifying my email address for job notifications and the projects I'm assigned to. You can change this to your own details if you want to speed up job submission. You will either need to be a member of the `INOUYE-SL2-GPU` project or else run the TensorQTL shell scritps under a different GPU project that you can assigned with `sbatch -A [project] [script.sh]`.
+
 Initial cis-eQTL mapping was performed using the [Limix Pipeline](01_limix_pipeline). Experimental trans-eQTL mapping trialed in Limix, but this was switched to TensorQTL, which has been used for all subsequent analyses.
 
 Scripts for generating [covariate](covariates) and [genotype](genotypes) input files are in their own subfolders, please refer to the readme files for details.
