@@ -87,7 +87,7 @@ These files are detailed below:
 			* tensorqtl_cis_MAF0.005_cis_chr22_eQTLgen_comparison.csv & chr22_eqtlgen_zscore_comparison.png: comparison of chr22 cis results to eQTLgen results. Generated with [this](3_6_compare_tensorqtl_eQTLgen.R) script.
 		* **trans**:
 			* tensorqtl_trans_MAF0.005_chr[#].csv: output from `map_trans`. 
-	* **side_projects**: data from related analyses done on an ad hoc basis.
+	* **side_projects**: data from related analyses done on an ad hoc basis. This currently includes the mediation analysis and GMPR data extraction.
 ***************************************
 
 Where possible, file names are intuitive, but folder contents are broadly as follows:
